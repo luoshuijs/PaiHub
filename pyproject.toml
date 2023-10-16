@@ -7,6 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+aiomysql = "^0.2.0"
+httpx = "^0.25.0"
+sqlmodel = "^0.0.8"
+python-dotenv = "^1.0.0"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
