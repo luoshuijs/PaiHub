@@ -3,7 +3,7 @@ from typing import Optional
 
 from sqlmodel import SQLModel, Field, Column, Relationship, BigInteger, Integer, DateTime
 
-from core.services.review.models import Review
+from paihub.services.review.models import Review
 
 
 class Push(SQLModel):

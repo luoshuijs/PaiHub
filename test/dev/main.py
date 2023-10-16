@@ -6,7 +6,7 @@ from sqlalchemy.sql import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncEngine
 from sqlalchemy.engine import URL
 
-from core.services.artwork.models import PixivTable as Pixiv
+from paihub.services.artwork.models import PixivTable as Pixiv
 from test.dev.config import Settings
 
 

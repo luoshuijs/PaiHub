@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from sqlmodel import SQLModel, Column, Relationship, Field, BigInteger, Integer, VARCHAR, DateTime
 
-from core.services.sites.models import Web
+from paihub.services.sites.models import Web
 
 
 class Artist(SQLModel):

@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from sqlmodel import SQLModel, Field, Column, Relationship, BigInteger, Integer, DateTime, VARCHAR, Text
 
-from core.services.artwork.models import Artwork
+from paihub.services.artwork.models import Artwork
 
 
 class WorkChannel(SQLModel):
