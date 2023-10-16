@@ -3,10 +3,11 @@ import asyncio
 import dotenv
 import pydantic
 from sqlalchemy.sql import select
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 from sqlalchemy.engine import URL
 
 from paihub.services.artwork.models import PixivTable as Pixiv
+from paihub.sqlmodel.session import AsyncSession
 from test.dev.config import Settings
 
 
