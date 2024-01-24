@@ -5,6 +5,8 @@ from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, VARCHAR, Date
 
 
 class Web(SQLModel):
+    __tablename__ = "web"
+
     id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
     web_name: Optional[str] = Field(default=None, sa_column=Column("web_name", VARCHAR(255)))
     web_key: Optional[str] = Field(default=None, sa_column=Column("web_key", VARCHAR(255)))
