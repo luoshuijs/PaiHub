@@ -1,5 +1,3 @@
-
-
 class PaiHubException(Exception):
     pass
 

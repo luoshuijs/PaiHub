@@ -61,4 +61,3 @@ class UserAdminService(BaseService):
             await self.user_repository.update(user)
             return await self._cache.remove(user.user_id)
         return False
-

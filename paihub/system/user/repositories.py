@@ -10,8 +10,6 @@ from paihub.system.user.entities import User
 __all__ = ("UserRepository",)
 
 
-
-
 class UserRepository(Component):
     def __init__(self, database: DataBase):
         self.engine = database.engine

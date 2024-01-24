@@ -1,6 +1,2 @@
-
-
-
 class Artwork:
-
     pass
