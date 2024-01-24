@@ -9,7 +9,7 @@ from paihub.services.review.models import Review
 class Push(SQLModel):
     id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
     review_id: Optional[int] = Field(default=None, foreign_key="review.id")
-    #channel_id: Optional[int]
+    # channel_id: Optional[int]
     date: Optional[datetime] = Field(default=None, sa_column=Column("date", DateTime))
     status: Optional[str] = Field(default=None, sa_column=Column("status", Integer))
     create_by: Optional[int] = Field(default=None, sa_column=Column("create_by", Integer))
