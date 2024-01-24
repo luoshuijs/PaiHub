@@ -3,13 +3,13 @@ from typing import Optional
 
 from sqlmodel import SQLModel, Field, Column, Relationship, BigInteger, Integer, DateTime
 
-from paihub.services.review.models import Review
-
 
 class Push(SQLModel):
+    __tablename__ = "push"
+
     id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
     review_id: Optional[int] = Field(default=None, foreign_key="review.id")
-    #channel_id: Optional[int]
+    # channel_id: Optional[int]
     date: Optional[datetime] = Field(default=None, sa_column=Column("date", DateTime))
     status: Optional[str] = Field(default=None, sa_column=Column("status", Integer))
     create_by: Optional[int] = Field(default=None, sa_column=Column("create_by", Integer))
@@ -17,8 +17,4 @@ class Push(SQLModel):
     update_by: Optional[int] = Field(default=None, sa_column=Column("update_by", Integer))
     update_time: Optional[datetime] = Field(default=None, sa_column=Column("update_at", DateTime))
 
-    review: Optional[Review] = Relationship()
-
-
-class PushTable(Push, table=True):
-    __tablename__ = "push"
+    # review: Optional[Review] = Relationship()
