@@ -46,11 +46,17 @@ class WorkRepository(Component):
             return results.all()
 
 
-class WorkRuleRepository:
+class WorkRuleRepository(Component):
     def __init__(self, database: DataBase):
         self.engine = database.engine
 
     async def get_by_work_id(self, work_id: int) -> Optional[WorkRule]:
+        async with AsyncSession(self.engine) as session:
+            statement = select(WorkRule).where(WorkRule.work_id == work_id)
+            results = await session.exec(statement)
+            return results.first()
+
+    async def get_by_rule_id(self, work_id: int) -> Optional[WorkRule]:
         async with AsyncSession(self.engine) as session:
             statement = select(WorkRule).where(WorkRule.id == work_id)
             results = await session.exec(statement)
