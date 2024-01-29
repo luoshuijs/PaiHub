@@ -14,7 +14,7 @@ class Work(SQLModel, table=True):
 
 
 class WorkRule(SQLModel, table=True):
-    __tablename__ = "work_rule"
+    __tablename__ = "work_rules"
 
     id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
     work_id: int = Field(foreign_key="work.id")
