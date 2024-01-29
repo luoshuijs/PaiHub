@@ -1,9 +1,11 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Set, Optional, List
+
 from persica import BaseComponent
 
 if TYPE_CHECKING:
     from telegram.ext import Application as BotApplication
     from paihub.application import Application
+    from paihub.entities.artwork import ArtWork
 
 
 class Component(BaseComponent, component=False):
@@ -51,3 +53,42 @@ class BaseCommand(BaseComponent, component=False):
 
     async def shutdown(self) -> None:
         """Stop & clear resources used by this service"""
+
+
+class BaseSiteService(BaseComponent, component=False):
+    site_name: str
+    application: "Application"
+
+    def set_application(self, application: "Application"):
+        self.application = application
+
+    async def initialize(self) -> None:
+        """Initialize resources used by this service"""
+
+    async def shutdown(self) -> None:
+        """Stop & clear resources used by this service"""
+
+    async def get_artworks_id_by_tags(
+        self, search_text: str, is_pattern: bool, page_number: int, lines_per_page: int = 1000
+    ) -> Set[int]:
+        pass
+
+    async def get_artwork(self, artwork_id: int) -> "ArtWork":
+        pass
+
+    async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
+        pass
+
+    async def initialize_review(
+        self,
+        work_id: int,
+        search_text: str,
+        is_pattern: bool,
+        lines_per_page: int = 1000,
+        create_by: Optional[int] = None,
+    ) -> int:
+        pass
+
+    @staticmethod
+    def extract(text: str) -> Optional[int]:
+        pass
