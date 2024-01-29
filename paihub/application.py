@@ -8,7 +8,7 @@ import pytz
 from telegram.ext import ApplicationBuilder as BotApplicationBuilder, Defaults
 from telegram.warnings import PTBUserWarning
 
-from paihub.base import BaseDependence, BaseService, BaseCommand
+from paihub.base import BaseDependence, BaseService, BaseCommand, BaseSiteService
 from paihub.config import Settings
 from paihub.log import logger
 from persica import Factor
@@ -22,7 +22,7 @@ class Application:
         asyncio.set_event_loop(self.loop)
         self.settings = Settings()
         self.factor = Factor(
-            paths=["paihub.dependence", "paihub.system", "paihub.command"],
+            paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command"],
             kwargs=[self.settings, self.settings.database, self.settings.redis],
         )
         self.bot = (
@@ -60,6 +60,13 @@ class Application:
                 logger.error("%s 初始化失败", d.__class__.__name__)
                 raise exc
         for s in self.factor.get_components(BaseService):
+            try:
+                s.set_application(self)
+                await s.initialize()
+            except Exception as exc:
+                logger.error("%s 初始化失败", s.__class__.__name__)
+                raise exc
+        for s in self.factor.get_components(BaseSiteService):
             try:
                 s.set_application(self)
                 await s.initialize()
