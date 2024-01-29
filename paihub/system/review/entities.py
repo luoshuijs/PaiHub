@@ -1,27 +1,26 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
-from sqlmodel import SQLModel, Field, Column, Relationship, BigInteger, Integer, DateTime, VARCHAR, Text
-
-from paihub.system.artwork.entities import Artwork
+from sqlalchemy import func
+from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime, VARCHAR
 
 
 class Review(SQLModel, table=True):
     __tablename__ = "review"
 
     id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    artwork_id: Optional[int] = Field(default=None, foreign_key="artwork.id")
     work_id: Optional[int] = Field(default=None, foreign_key="work.id")
+    web_id: Optional[int] = Field(default=None, foreign_key="sites.id")
+    artwork_id: Optional[int] = Field(default=None)
     status: Optional[int] = Field(default=None, sa_column=Column("status", Integer))
-    auto: Optional[int] = Field(default=None, sa_column=Column("auto", Integer))
+    auto: Optional[bool] = Field(default=None, sa_column=Column("auto", Integer))
     reviewer_notes: Optional[str] = Field(default=None, sa_column=Column("reviewer_notes", VARCHAR(255)))
     create_by: Optional[int] = Field(default=None, sa_column=Column("create_by", Integer))
-    create_time: Optional[datetime] = Field(default=None, sa_column=Column("create_time", DateTime))
+    create_time: Optional[datetime] = Field(default=None, sa_column=Column("create_time", DateTime, default=func.now()))
     update_by: Optional[int] = Field(default=None, sa_column=Column("update_by", Integer))
-    update_time: Optional[datetime] = Field(default=None, sa_column=Column("update_time", DateTime))
-
-    # artwork: Optional[Artwork] = Relationship()
-    # work: Optional[Work] = Relationship()
+    update_time: Optional[datetime] = Field(
+        default=None, sa_column=Column("update_time", DateTime, onupdate=func.now())
+    )
 
 
 # class AutoReviewRule(SQLModel):
