@@ -4,8 +4,8 @@ from typing import Optional
 from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, VARCHAR, DateTime
 
 
-class Web(SQLModel):
-    __tablename__ = "web"
+class Site(SQLModel, table=True):
+    __tablename__ = "sites"
 
     id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
     web_name: Optional[str] = Field(default=None, sa_column=Column("web_name", VARCHAR(255)))
