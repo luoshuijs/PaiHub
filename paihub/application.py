@@ -1,15 +1,19 @@
 import asyncio
 import platform
 import signal
+import warnings
 from typing import Sequence, Optional, NoReturn
 
 import pytz
 from telegram.ext import ApplicationBuilder as BotApplicationBuilder, Defaults
+from telegram.warnings import PTBUserWarning
 
 from paihub.base import BaseDependence, BaseService, BaseCommand
 from paihub.config import Settings
 from paihub.log import logger
 from persica import Factor
+
+warnings.filterwarnings("ignore", category=PTBUserWarning)
 
 
 class Application:
