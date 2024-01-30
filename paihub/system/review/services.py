@@ -3,7 +3,7 @@ from typing import Optional
 from paihub.base import BaseService
 
 from paihub.system.review.cache import ReviewCache
-from paihub.system.review.entities import Review
+from paihub.system.review.entities import Review, ReviewStatus
 from paihub.system.review.ext import ReviewCallbackContext
 from paihub.system.review.repositories import ReviewRepository
 from paihub.system.sites.manager import SitesManager
@@ -46,7 +46,9 @@ class ReviewService(BaseService):
         count = 0
         page_number = 1
         while True:
-            reviews_id = await self.review_repository.get_by_status_is_null(work_id, page_number=page_number)
+            reviews_id = await self.review_repository.get_by_status(
+                work_id, status=ReviewStatus.WAIT, page_number=page_number
+            )
             if len(reviews_id) == 0:
                 break
             count += await self.review_cache.set_pending_review(reviews_id, work_id)

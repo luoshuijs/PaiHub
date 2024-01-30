@@ -1,8 +1,17 @@
 from datetime import datetime
+from enum import IntEnum
 from typing import Optional
 
-from sqlalchemy import func
-from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime, VARCHAR
+from sqlalchemy import func, Enum
+from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime, AutoString
+
+
+class ReviewStatus(IntEnum):
+    WAIT = 0
+    REJECT = 1
+    PASS = 2
+    PUSH = 3
+    MOVE = 10
 
 
 class Review(SQLModel, table=True):
@@ -12,9 +21,9 @@ class Review(SQLModel, table=True):
     work_id: Optional[int] = Field(default=None, foreign_key="work.id")
     web_id: Optional[int] = Field(default=None, foreign_key="sites.id")
     artwork_id: Optional[int] = Field(default=None)
-    status: Optional[int] = Field(default=None, sa_column=Column("status", Integer))
+    status: Optional[ReviewStatus] = Field(default=ReviewStatus.WAIT, sa_column=Column("status", Enum(ReviewStatus)))
     auto: Optional[bool] = Field(default=None, sa_column=Column("auto", Integer))
-    reviewer_notes: Optional[str] = Field(default=None, sa_column=Column("reviewer_notes", VARCHAR(255)))
+    reviewer_notes: Optional[str] = Field(default=None, sa_column=Column("reviewer_notes", AutoString))
     create_by: Optional[int] = Field(default=None, sa_column=Column("create_by", Integer))
     create_time: Optional[datetime] = Field(default=None, sa_column=Column("create_time", DateTime, default=func.now()))
     update_by: Optional[int] = Field(default=None, sa_column=Column("update_by", Integer))

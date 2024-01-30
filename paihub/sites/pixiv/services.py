@@ -13,6 +13,7 @@ from paihub.log import logger
 from paihub.sites.pixiv.cache import PixivReviewCache, PixivCache
 from paihub.sites.pixiv.repositories import PixivRepository
 from paihub.sites.pixiv.utils import compiled_patterns
+from paihub.system.review.entities import ReviewStatus
 from paihub.system.review.repositories import ReviewRepository
 from paihub.system.sites.repositories import SitesRepository
 
@@ -114,7 +115,7 @@ class PixivSitesService(BaseSiteService):
             page_number += 1
         difference = await self.review_cache.get_ready_review_artwork_ids()
         await self.review_repository.set_reviews_id(
-            work_id=work_id, web_id=self.web_id, reviews_id=difference, create_by=create_by
+            work_id=work_id, web_id=self.web_id, status=ReviewStatus.WAIT, reviews_id=difference, create_by=create_by
         )
         return len(difference)
 

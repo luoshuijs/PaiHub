@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import Component
 from paihub.dependence.database import DataBase
-from paihub.system.review.entities import Review
+from paihub.system.review.entities import Review, ReviewStatus
 
 
 class ReviewRepository(Component):
@@ -52,22 +52,34 @@ class ReviewRepository(Component):
             result = await session.execute(statement, params)
             return result.scalars().all()
 
-    async def get_by_status_is_null(self, work_id: int, page_number: int, lines_per_page: int = 1000) -> List[int]:
+    async def get_by_status(
+        self, work_id: int, status: ReviewStatus, page_number: int, lines_per_page: int = 1000
+    ) -> List[int]:
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             statement = text(
-                "SELECT id " "FROM review " "WHERE work_id = :work_id and status IS NULL " "LIMIT :limit OFFSET :offset"
+                "SELECT id "
+                "FROM review "
+                "WHERE work_id = :work_id and status = :status "
+                "LIMIT :limit OFFSET :offset"
             )
-            params = {"work_id": work_id, "limit": lines_per_page, "offset": offset}
+            params = {"work_id": work_id, "status": status.name, "limit": lines_per_page, "offset": offset}
             result = await session.execute(statement, params)
             return result.scalars().all()
 
     async def set_reviews_id(
-        self, work_id: int, web_id: int, reviews_id: Iterable[int], create_by: Optional[int] = None, **kwargs
+        self,
+        work_id: int,
+        web_id: int,
+        status: ReviewStatus,
+        reviews_id: Iterable[int],
+        create_by: Optional[int] = None,
+        **kwargs,
     ):
         async with AsyncSession(self.engine) as session:
             instances = [
-                Review(work_id=work_id, web_id=web_id, artwork_id=i, create_by=create_by, **kwargs) for i in reviews_id
+                Review(work_id=work_id, web_id=web_id, artwork_id=i, status=status, create_by=create_by, **kwargs)
+                for i in reviews_id
             ]
             session.add_all(instances)
             await session.commit()
