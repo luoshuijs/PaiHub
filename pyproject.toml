@@ -14,6 +14,7 @@ python-dotenv = "^1.0.0"
 colorlog = "^6.8.0"
 python-telegram-bot = { version = "^20.7", extras = ["ext", "rate-limiter"] }
 async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv" }
+ujson = "^5.9.0"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
