@@ -24,10 +24,15 @@ class Redis(BaseSettings):
     database: Union[str, int] = 0
     password: Optional[str] = None
 
+    class Config(BaseSettings.Config):
+        env_prefix = "redis_"
+
 
 class Bot(BaseSettings):
     token: str
     owner: int
+    base_url: Optional[str] = None
+    base_file_url: Optional[str] = None
 
     class Config(BaseSettings.Config):
         env_prefix = "bot_"

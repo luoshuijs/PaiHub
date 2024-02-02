@@ -30,12 +30,14 @@ class Application:
             paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command"],
             kwargs=[self.settings, self.settings.database, self.settings.redis],
         )
-        self.bot = (
-            BotApplicationBuilder()
-            .defaults(Defaults(tzinfo=pytz.timezone("Asia/Shanghai")))
-            .token(self.settings.bot.token)
-            .build()
-        )
+        build_bot = BotApplicationBuilder()
+        build_bot.defaults(Defaults(tzinfo=pytz.timezone("Asia/Shanghai")))
+        build_bot.token(self.settings.bot.token)
+        if self.settings.bot.base_url is not None:
+            build_bot.base_url(self.settings.bot.base_url)
+        if self.settings.bot.base_file_url is not None:
+            build_bot.base_file_url(self.settings.bot.base_file_url)
+        self.bot = build_bot.build()
         self.scheduler = AsyncIOScheduler(timezone=pytz.timezone("Asia/Shanghai"))
         self.scheduler.add_listener(self.scheduler_error_listener, EVENT_JOB_ERROR)
 
