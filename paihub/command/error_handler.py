@@ -10,7 +10,6 @@ from telegram.ext import CallbackContext
 
 from paihub.base import BaseCommand
 from paihub.log import logger
-from paihub.utils.pb import PbClient
 
 try:
     import ujson as jsonlib
@@ -27,7 +26,6 @@ class ErrorHandler(BaseCommand):
         self.report_dir = os.path.join(current_dir, "report")
         if not os.path.exists(self.report_dir):
             os.mkdir(self.report_dir)
-        self.pb = PbClient()
 
     def add_handlers(self):
         self.bot.add_error_handler(self.error_handler)
