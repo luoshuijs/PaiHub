@@ -26,9 +26,7 @@ class URLCommand(BaseCommand):
     def add_handlers(self):
         self.bot.add_handler(
             MessageHandler(
-                filters=filters.ChatType.PRIVATE & filters.Regex(URL_REGEX),
-                callback=self.start,
-                block=False
+                filters=filters.ChatType.PRIVATE & filters.Regex(URL_REGEX), callback=self.start, block=False
             )
         )
 
@@ -99,5 +97,3 @@ class URLCommand(BaseCommand):
                     except Exception as exc:
                         await message.reply_text("Review时发生致命错误，详情请查看日志")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
-
-
