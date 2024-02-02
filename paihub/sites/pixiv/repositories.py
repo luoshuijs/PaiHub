@@ -50,7 +50,6 @@ class PixivRepository(Component):
             await session.execute(statement, params)
             await session.commit()
 
-
     async def get(self, artwork_id: int) -> Optional[Pixiv]:
         async with AsyncSession(self.engine) as session:
             statement = select(Pixiv).where(Pixiv.id == artwork_id)
