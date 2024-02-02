@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from telegram.ext import ContextTypes
 
 
-class Start(BaseCommand):
+class StartCommand(BaseCommand):
     def add_handlers(self):
         self.bot.add_handler(CommandHandler("start", self.start, block=False))
 

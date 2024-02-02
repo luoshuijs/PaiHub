@@ -13,6 +13,9 @@ class PixivReviewCache(Component):
     def __init__(self, redis: Redis):
         self.client = redis.client
 
+    async def del_already_review_artwork_ids(self):
+        return await self.client.delete("pixiv:review:database")
+
     async def set_database_artwork_ids(self, values: Iterable[int]) -> int:
         return await self.client.sadd("pixiv:review:database", *values)
 

@@ -1,13 +1,23 @@
-from contextlib import asynccontextmanager
 from asyncio import current_task
+from contextlib import asynccontextmanager
+from typing import cast, TYPE_CHECKING
 
-from sqlalchemy import URL
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, async_scoped_session, AsyncEngine
+from sqlalchemy import URL, inspect
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    async_sessionmaker,
+    async_scoped_session,
+    AsyncEngine,
+    AsyncConnection,
+)
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import BaseDependence
-from paihub.log import logger
 from paihub.config import Database as DatabaseConfig
+from paihub.log import logger
+
+if TYPE_CHECKING:
+    from sqlalchemy.engine import Connection
 
 
 class DataBase(BaseDependence):
@@ -27,6 +37,22 @@ class DataBase(BaseDependence):
         self._session = async_sessionmaker(bind=self._engine, class_=AsyncSession, autocommit=False, autoflush=False)
         self._session_factory = async_scoped_session(self._session, current_task)
 
+    @staticmethod
+    def _test_connection(subject: "Connection"):
+        inspector = inspect(subject)
+        table_names = inspector.get_table_names()
+        logger.info("连接数据库成功")
+        logger.info("当前数据库表 %s", " ".join(f"[{table_name}]" for table_name in table_names))
+
+    async def initialize(self) -> None:
+        try:
+            async with self._engine.begin() as _conn:
+                conn = cast(AsyncConnection, _conn)
+                await conn.run_sync(self._test_connection)
+        except Exception as exc:
+            logger.error("连接数据库失败")
+            raise exc
+
     @property
     def engine(self) -> AsyncEngine:
         return self._engine
@@ -35,7 +61,7 @@ class DataBase(BaseDependence):
         await self._session_factory.close_all()
 
     @asynccontextmanager
-    async def session(self):
+    async def session(self) -> "AsyncSession":
         session: "AsyncSession" = self._session_factory()
         try:
             yield session

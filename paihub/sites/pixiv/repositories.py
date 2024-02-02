@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 
 from sqlalchemy import text
@@ -17,12 +18,12 @@ class PixivRepository(Component):
         self.engine = database.engine
 
     async def get_artworks_by_tags(
-        self, search_text: str, is_pattern: bool, page_number: int, lines_per_page: int = 1000
+        self, search_text: str, is_pattern: bool, page_number: int, lines_per_page: int = 10000
     ) -> List[int]:
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             if is_pattern:
-                statement = text("SELECT id FROM pixiv WHERE tags REGEXP :regex_pattern LIMIT :limit OFFSET :offset")
+                statement = text("SELECT id FROM pixiv WHERE tags REGEXP :search_text LIMIT :limit OFFSET :offset")
             else:
                 statement = text("SELECT id FROM pixiv WHERE tags LIKE :search_text LIMIT :limit OFFSET :offset")
                 search_text = f"%{search_text}%"
@@ -31,25 +32,48 @@ class PixivRepository(Component):
             )
             return result.scalars().all()
 
+    async def add_review_form_pixiv(self, work_id: int, artwork_id: int, create_by: Optional[int] = None):
+        create_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        async with _AsyncSession(self.engine) as session:
+            statement = text(
+                "INSERT INTO review (work_id, site_key, artwork_id, author_id, status, create_by, create_time) "
+                "SELECT :work_id, 'pixiv', pixiv.id, pixiv.author_id, 'WAIT' , :create_by , :create_time "
+                "FROM pixiv "
+                "WHERE pixiv.id = :artwork_id"
+            )
+            params = {
+                "work_id": work_id,
+                "artwork_id": artwork_id,
+                "create_by": create_by,
+                "create_time": create_time,
+            }
+            await session.execute(statement, params)
+            await session.commit()
+
+
     async def get(self, artwork_id: int) -> Optional[Pixiv]:
         async with AsyncSession(self.engine) as session:
             statement = select(Pixiv).where(Pixiv.id == artwork_id)
             results = await session.exec(statement)
             return results.first()
 
-    async def add(self, user: Pixiv):
+    async def add(self, value: Pixiv):
         async with AsyncSession(self.engine) as session:
-            session.add(user)
+            session.add(value)
             await session.commit()
 
-    async def update(self, user: Pixiv) -> Pixiv:
+    async def merge(self, value: Pixiv):
         async with AsyncSession(self.engine) as session:
-            session.add(user)
-            await session.commit()
-            await session.refresh(user)
-            return user
+            await session.merge(value)
 
-    async def remove(self, user: Pixiv):
+    async def update(self, value: Pixiv) -> Pixiv:
         async with AsyncSession(self.engine) as session:
-            await session.delete(user)
+            session.add(value)
+            await session.commit()
+            await session.refresh(value)
+            return value
+
+    async def remove(self, value: Pixiv):
+        async with AsyncSession(self.engine) as session:
+            await session.delete(value)
             await session.commit()

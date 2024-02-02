@@ -3,7 +3,7 @@ from typing import Optional
 from paihub.base import BaseService
 
 from paihub.system.review.cache import ReviewCache
-from paihub.system.review.entities import Review, ReviewStatus
+from paihub.system.review.entities import Review, ReviewStatus, AutoReviewResult
 from paihub.system.review.ext import ReviewCallbackContext
 from paihub.system.review.repositories import ReviewRepository
 from paihub.system.sites.manager import SitesManager
@@ -26,7 +26,7 @@ class ReviewService(BaseService):
         self.review_cache = review_cache
 
     async def initialize_site_review(
-        self, work_id: int, lines_per_page: int = 1000, create_by: Optional[int] = None
+        self, work_id: int, lines_per_page: int = 10000, create_by: Optional[int] = None
     ) -> int:
         count = 0
         work_rule = await self.work_rule_repository.get_by_work_id(work_id)
@@ -60,14 +60,24 @@ class ReviewService(BaseService):
         if review_id is None:
             return None
         review_data = await self.review_repository.get(int(review_id))
-        site_service = self.sites_manager.get_site_by_site_id(review_data.web_id)
-        return ReviewCallbackContext(review=review_data, site_service=site_service)
+        site_service = self.sites_manager.get_site_by_site_key(review_data.site_key)
+        return ReviewCallbackContext(review=review_data, site_service=site_service, review_service=self)
 
     async def get_review_count(self, work_id: int) -> int:
         return await self.review_cache.get_review_count(work_id)
 
-    async def get_by_review_id(self, review_id: int) -> Review:
+    async def get_by_review_id(self, review_id: int) -> Optional[Review]:
         return await self.review_repository.get(review_id)
 
     async def update_review(self, review: Review) -> Review:
         return await self.review_repository.update(review)
+
+    async def try_auto_review(self, work_id: int, site_key: str, author_id: int) -> Optional[AutoReviewResult]:
+        statistics = await self.review_repository.get_by_status_statistics(
+            work_id, site_key=site_key, author_id=author_id
+        )
+        if statistics.already >= 3:
+            if statistics.pass_count / statistics.already >= 0.5:
+                return AutoReviewResult(status=True, statistics=statistics)
+            return AutoReviewResult(status=False, statistics=statistics)
+        return None

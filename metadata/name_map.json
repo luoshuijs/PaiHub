@@ -1,0 +1,825 @@
+{
+    "Albedo": {
+        "name": [
+            "Albedo",
+            "阿贝多"
+        ],
+        "regex": [
+            "アルベド"
+        ]
+    },
+    "Alhaitham": {
+        "name": [
+            "Alhaitham",
+            "艾尔海森"
+        ],
+        "regex": [
+            "アルハイゼン"
+        ]
+    },
+    "Aloy": {
+        "name": [
+            "Aloy",
+            "埃洛伊"
+        ],
+        "regex": [
+            "アーロイ"
+        ]
+    },
+    "Arlecchino": {
+        "name": [
+            "Arlecchino",
+            "阿蕾奇诺"
+        ],
+        "regex": [
+            "アルレッキーノ"
+        ]
+    },
+    "Ayaka": {
+        "name": [
+            "Ayaka",
+            "神里绫华"
+        ],
+        "regex": [
+            "(?:神里)?綾華",
+            "Kamisato.?Ayaka",
+            "Ayaka.?Kamisato"
+        ]
+    },
+    "Ayato": {
+        "name": [
+            "Ayato",
+            "神里绫人"
+        ],
+        "regex": [
+            "(?:神里)?綾人",
+            "Kamisato.?Ayato",
+            "Ayato.?Kamisato"
+        ]
+    },
+    "Amber": {
+        "name": [
+            "Amber",
+            "安柏"
+        ],
+        "regex": [
+            "アンバー"
+        ]
+    },
+    "Baizhu": {
+        "name": [
+            "Baizhu",
+            "白术"
+        ],
+        "regex": [
+            "白朮"
+        ]
+    },
+    "Barbara": {
+        "name": [
+            "Barbara",
+            "芭芭拉"
+        ],
+        "regex": [
+            "バーバラ"
+        ]
+    },
+    "Beidou": {
+        "name": [
+            "Beidou",
+            "北斗"
+        ],
+        "regex": [
+        ]
+    },
+    "Bennett": {
+        "name": [
+            "Bennett",
+            "班尼特"
+        ],
+        "regex": [
+            "ベネット"
+        ]
+    },
+    "Candace": {
+        "name": [
+            "Candace",
+            "坎蒂丝"
+        ],
+        "regex": [
+            "キャンディス"
+        ]
+    },
+    "Charlotte": {
+        "name": [
+            "Charlotte",
+            "夏洛蒂"
+        ],
+        "regex": [
+            "シャルロット"
+        ]
+    },
+    "Chevreuse": {
+        "name": [
+            "Chevreuse",
+            "夏沃蕾"
+        ],
+        "regex": [
+            "シュヴルーズ"
+        ]
+    },
+    "Chiori": {
+        "name": [
+            "Chiori",
+            "千织"
+        ],
+        "regex": [
+            "千織"
+        ]
+    },
+    "Chongyun": {
+        "name": [
+            "Chongyun",
+            "重云"
+        ],
+        "regex": [
+            "重雲"
+        ]
+    },
+    "Clorinde": {
+        "name": [
+            "Clorinde",
+            "克洛琳德"
+        ],
+        "regex": [
+            "クロリンデ"
+        ]
+    },
+    "Collei": {
+        "name": [
+            "Collei",
+            "柯莱"
+        ],
+        "regex": [
+            "コレイ"
+        ]
+    },
+    "Columbina": {
+        "name": [
+            "Columbina",
+            "哥伦比娅"
+        ],
+        "regex": [
+            "コロンビーナ"
+        ]
+    },
+    "Cyno": {
+        "name": [
+            "Cyno",
+            "赛诺"
+        ],
+        "regex": [
+            "セノ"
+        ]
+    },
+    "Diluc": {
+        "name": [
+            "Diluc",
+            "迪卢克"
+        ],
+        "regex": [
+            "ディルック"
+        ]
+    },
+    "Dehya": {
+        "name": [
+            "Dehya",
+            "迪希雅"
+        ],
+        "regex": [
+            "ディシア"
+        ]
+    },
+    "Diona": {
+        "name": [
+            "Diona",
+            "迪奥娜"
+        ],
+        "regex": [
+            "ディオナ"
+        ]
+    },
+    "Dori": {
+        "name": [
+            "Dori",
+            "多莉"
+        ],
+        "regex": [
+            "ドリー"
+        ]
+    },
+    "Egeria": {
+        "name": [
+            "Egeria",
+            "厄歌莉娅"
+        ],
+        "regex": [
+            "エゲリア"
+        ]
+    },
+    "Eula": {
+        "name": [
+            "Eula",
+            "优菈"
+        ],
+        "regex": [
+            "エウルア",
+            "ユーラ"
+        ]
+    },
+    "Faruzan": {
+        "name": [
+            "Faruzan",
+            "珐露珊"
+        ],
+        "regex": [
+            "ファルザン"
+        ]
+    },
+    "Fischl": {
+        "name": [
+            "Fischl",
+            "菲谢尔"
+        ],
+        "regex": [
+            "フィッシュル"
+        ]
+    },
+    "Freminet": {
+        "name": [
+            "Freminet",
+            "菲米尼"
+        ],
+        "regex": [
+            "フレミネ"
+        ]
+    },
+    "Furina": {
+        "name": [
+            "Furina",
+            "芙宁娜"
+        ],
+        "regex": [
+            "フリーナ"
+        ]
+    },
+    "Gaming": {
+        "name": [
+            "Gaming",
+            "嘉明"
+        ],
+        "regex": []
+    },
+    "Ganyu": {
+        "name": [
+            "Ganyu",
+            "甘雨"
+        ],
+        "regex": [
+        ]
+    },
+    "Gorou": {
+        "name": [
+            "Gorou",
+            "五郎"
+        ],
+        "regex": [
+            "ゴロー"
+        ]
+    },
+    "Heizou": {
+        "name": [
+            "Heizou",
+            "平藏"
+        ],
+        "regex": [
+            "(?:Shikanoin.?)Heizou",
+            "(?:鹿野院?)平藏",
+            "(?:しかのいん?)へいぞう"
+        ]
+    },
+    "Hutao": {
+        "name": [
+            "Hutao",
+            "胡桃"
+        ],
+        "regex": [
+        ]
+    },
+    "Itto": {
+        "name": [
+            "Itto",
+            "荒泷一斗"
+        ],
+        "regex": [
+            "荒瀧一斗",
+            "(?:Arataki.?)Itto",
+            "(?:Itto.?)Arataki"
+        ]
+    },
+    "Jean": {
+        "name": [
+            "Jean",
+            "琴"
+        ],
+        "regex": [
+            "ジン"
+        ]
+    },
+    "Kaeya": {
+        "name": [
+            "Kaeya",
+            "凯亚"
+        ],
+        "regex": [
+            "ガイア"
+        ]
+    },
+    "Kaveh": {
+        "name": [
+            "Kaveh",
+            "卡维"
+        ],
+        "regex": [
+            "カーヴェ"
+        ]
+    },
+    "Kazuha": {
+        "name": [
+            "Kazuha",
+            "枫原万叶"
+        ],
+        "regex": [
+            "万叶",
+            "楓原万葉",
+            "Kaedehara.?Kazuha",
+            "Kazuha.?Kaedehara"
+        ]
+    },
+    "Keqing": {
+        "name": [
+            "Keqing",
+            "刻晴"
+        ],
+        "regex": [
+        ]
+    },
+    "Kirara": {
+        "name": [
+            "Kirara",
+            "绮良良"
+        ],
+        "regex": [
+            "綺良々"
+        ]
+    },
+    "Klee": {
+        "name": [
+            "Klee",
+            "可莉"
+        ],
+        "regex": [
+            "クレー"
+        ]
+    },
+    "Kokomi": {
+        "name": [
+            "Kokomi",
+            "珊瑚宫心海"
+        ],
+        "regex": [
+            "(?:珊瑚宮)?心海",
+            "(?:Sangonomiya)?Kokomi"
+        ]
+    },
+    "KujouSara": {
+        "name": [
+            "KujouSara",
+            "九条裟罗"
+        ],
+        "regex": [
+            "九条裟羅",
+            "Kujou.?Sara"
+        ]
+    },
+    "Layla": {
+        "name": [
+            "Layla",
+            "莱依拉"
+        ],
+        "regex": [
+            "レイラ"
+        ]
+    },
+    "Lynette": {
+        "name": [
+            "Lynette",
+            "琳妮特"
+        ],
+        "regex": [
+            "リネット"
+        ]
+    },
+    "Lyney": {
+        "name": [
+            "Lyney",
+            "林尼"
+        ],
+        "regex": [
+            "リネ"
+        ]
+    },
+    "Lisa": {
+        "name": [
+            "Lisa",
+            "丽莎"
+        ],
+        "regex": [
+            "リサ"
+        ]
+    },
+    "Mona": {
+        "name": [
+            "Mona",
+            "莫娜"
+        ],
+        "regex": [
+            "モナ"
+        ]
+    },
+    "Mika": {
+        "name": [
+            "Mika",
+            "米卡"
+        ],
+        "regex": [
+            "ミカ"
+        ]
+    },
+    "Miko": {
+        "name": [
+            "Miko",
+            "八重神子"
+        ],
+        "regex": [
+            "神子",
+            "Yae.?Miko",
+            "Miko.?Yae"
+        ]
+    },
+    "Nahida": {
+        "name": [
+            "Nahida",
+            "纳西妲"
+        ],
+        "regex": [
+            "Kusanali",
+            "クサナリ",
+            "(?:小吉祥)?草王",
+            "ナヒーダ",
+            "草神"
+        ]
+    },
+    "Navia": {
+        "name": [
+            "Navia",
+            "娜维娅"
+        ],
+        "regex": [
+            "ナヴィア"
+        ]
+    },
+    "Neuvillette": {
+        "name": [
+            "Neuvillette",
+            "那维莱特"
+        ],
+        "regex": [
+            "ヌヴィレット"
+        ]
+    },
+    "Nilou":{
+        "name": [
+            "Nilou",
+            "妮露"
+        ],
+        "regex": [
+            "nilu",
+            "ニィロウ"
+        ]
+    },
+    "Ningguang": {
+        "name": [
+            "Ningguang",
+            "凝光"
+        ],
+        "regex": [
+        ]
+    },
+    "Noelle": {
+        "name": [
+            "Noelle",
+            "诺艾尔"
+        ],
+        "regex": [
+            "ノエル"
+        ]
+    },
+    "Paimon": {
+        "name": [
+            "Paimon",
+            "派蒙"
+        ],
+        "regex": [
+            "パイモン"
+        ]
+    },
+    "Qiqi": {
+        "name": [
+            "Qiqi",
+            "七七"
+        ],
+        "regex": [
+        ]
+    },
+    "RaidenShogun": {
+        "name": [
+            "RaidenShogun",
+            "雷电将军"
+        ],
+        "regex": [
+            "Baal",
+            "(?:雷神)?バアル",
+            "雷電(?:将軍)?",
+            "Raiden(?:Shogun)?"
+        ]
+    },
+    "Razor": {
+        "name": [
+            "Razor",
+            "雷泽"
+        ],
+        "regex": [
+            "レザー"
+        ]
+    },
+    "Rosaria": {
+        "name": [
+            "Rosaria",
+            "罗莎莉亚"
+        ],
+        "regex": [
+            "ロサリア"
+        ]
+    },
+    "Sayu": {
+        "name": [
+            "Sayu",
+            "早柚"
+        ],
+        "regex": [
+        ]
+    },
+    "Scaramouche": {
+        "name": [
+            "Scaramouche",
+            "散兵"
+        ],
+        "regex": [
+            "Wanderer",
+            "Kunikuzushi",
+            "Balladeer",
+            "流浪者",
+            "国崩",
+            "スカラムーシュ",
+            "放浪者"
+        ]
+    },
+    "Shenhe": {
+        "name": [
+            "Shenhe",
+            "申鹤"
+        ],
+        "regex": [
+            "申鶴"
+        ]
+    },
+    "Shinobu": {
+        "name": [
+            "Shinobu",
+            "久岐忍"
+        ],
+        "regex": [
+            "(?:Kuki.?)?Shinobu",
+            "久岐忍"
+        ]
+    },
+    "Sigewinne": {
+        "name": [
+            "Sigewinne",
+            "希格雯"
+        ],
+        "regex": [
+            "シグウィン"
+        ]
+    },
+    "Signora": {
+        "name": [
+            "Signora",
+            "女士"
+        ],
+        "regex": [
+            "La.?Signora",
+            "シニョーラ"
+        ]
+    },
+    "Skirk": {
+        "name": [
+            "Skirk",
+            "丝柯克"
+        ],
+        "regex": [
+            "スカーク"
+        ]
+    },
+    "Sucrose": {
+        "name": [
+            "Sucrose",
+            "砂糖"
+        ],
+        "regex": [
+            "スクロース"
+        ]
+    },
+    "Tartaglia": {
+        "name": [
+            "Tartaglia",
+            "达达利亚"
+        ],
+        "regex": [
+            "Childe",
+            "タルタリヤ"
+        ]
+    },
+    "Thoma": {
+        "name": [
+            "Thoma",
+            "托马"
+        ],
+        "regex": [
+            "トーマ"
+        ]
+    },
+    "Tighnari": {
+        "name": [
+            "Tighnari",
+            "提纳里"
+        ],
+        "regex": [
+            "ティナリ"
+        ]
+    },
+    "Lumine": {
+        "name": [
+            "Lumine",
+            "荧"
+        ],
+        "regex": [
+            "蛍"
+        ]
+    },
+    "Aether": {
+        "name": [
+            "Aether",
+            "空"
+        ],
+        "regex": [
+        ]
+    },
+    "Venti": {
+        "name": [
+            "Venti",
+            "温迪"
+        ],
+        "regex": [
+            "ウェンティ"
+        ]
+    },
+    "Wriothesley": {
+        "name": [
+            "Wriothesley",
+            "莱欧斯利"
+        ],
+        "regex": [
+            "リオセスリ"
+        ]
+    },
+    "Xiangling": {
+        "name": [
+            "Xiangling",
+            "香菱"
+        ],
+        "regex": [
+        ]
+    },
+    "Xianyun": {
+        "name": [
+            "Xianyun",
+            "闲云"
+        ],
+        "regex": [
+            "閑雲",
+            "留云借风",
+            "留雲借風",
+            "Cloud.?Retainer"
+        ]
+    },
+    "Xiao": {
+        "name": [
+            "Xiao",
+            "魈"
+        ],
+        "regex": [
+        ]
+    },
+    "Xingqiu": {
+        "name": [
+            "Xingqiu",
+            "行秋"
+        ],
+        "regex": [
+        ]
+    },
+    "Xinyan": {
+        "name": [
+            "Xinyan",
+            "辛焱"
+        ],
+        "regex": [
+        ]
+    },
+    "Yanfei": {
+        "name": [
+            "Yanfei",
+            "烟绯"
+        ],
+        "regex": [
+            "煙緋"
+        ]
+    },
+    "Yaoyao": {
+        "name": [
+            "Yaoyao",
+            "瑶瑶"
+        ],
+        "regex": [
+            "ヨォーヨ"
+        ]
+    },
+    "Yelan": {
+        "name": [
+            "Yelan",
+            "夜兰"
+        ],
+        "regex": [
+            "夜蘭"
+        ]
+    },
+    "Yoimiya": {
+        "name": [
+            "Yoimiya",
+            "宵宫"
+        ],
+        "regex": [
+            "宵宮"
+        ]
+    },
+    "Yunjin": {
+        "name": [
+            "Yunjin",
+            "云堇"
+        ],
+        "regex": [
+            "雲菫"
+        ]
+    },
+    "Zhongli": {
+        "name": [
+            "Zhongli",
+            "钟离"
+        ],
+        "regex": [
+            "鍾離"
+        ]
+    }
+}

@@ -1,4 +1,4 @@
-from typing import Optional, List, Iterable
+from typing import Optional, List
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import Component
 from paihub.dependence.database import DataBase
-from paihub.system.review.entities import Review, ReviewStatus
+from paihub.system.review.entities import Review, ReviewStatus, StatusStatistics
 
 
 class ReviewRepository(Component):
@@ -38,17 +38,17 @@ class ReviewRepository(Component):
             await session.commit()
 
     async def get_artwork_id_by_work_and_web(
-        self, work_id: int, web_id: int, page_number: int, lines_per_page: int = 1000
+        self, work_id: int, site_key: str, page_number: int, lines_per_page: int = 10000
     ) -> List[int]:
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             statement = text(
                 "SELECT artwork_id "
                 "FROM review "
-                "WHERE work_id = :work_id and web_id = :web_id "
+                "WHERE work_id = :work_id and site_key = :site_key "
                 "LIMIT :limit OFFSET :offset"
             )
-            params = {"work_id": work_id, "web_id": web_id, "limit": lines_per_page, "offset": offset}
+            params = {"work_id": work_id, "site_key": site_key, "limit": lines_per_page, "offset": offset}
             result = await session.execute(statement, params)
             return result.scalars().all()
 
@@ -67,19 +67,37 @@ class ReviewRepository(Component):
             result = await session.execute(statement, params)
             return result.scalars().all()
 
-    async def set_reviews_id(
-        self,
-        work_id: int,
-        web_id: int,
-        status: ReviewStatus,
-        reviews_id: Iterable[int],
-        create_by: Optional[int] = None,
-        **kwargs,
-    ):
-        async with AsyncSession(self.engine) as session:
-            instances = [
-                Review(work_id=work_id, web_id=web_id, artwork_id=i, status=status, create_by=create_by, **kwargs)
-                for i in reviews_id
-            ]
-            session.add_all(instances)
-            await session.commit()
+    async def get_by_status_statistics(self, work_id: int, site_key: str, author_id: int) -> StatusStatistics:
+        async with _AsyncSession(self.engine) as session:
+            statement = text(
+                "SELECT `status`, COUNT(*) AS count "
+                "FROM review "
+                "WHERE work_id = :work_id and author_id = :author_id and site_key = :site_key "
+                "GROUP BY `status`"
+            )
+            params = {"work_id": work_id, "author_id": author_id, "site_key": site_key}
+            result = await session.execute(statement, params)
+            return StatusStatistics.parse_form_result(result)
+
+    async def get_filtered_status_counts(
+        self, site_key: str, min_total_count: int = 10, pass_ratio_threshold: float = 0.8
+    ) -> List[int]:
+        async with _AsyncSession(self.engine) as session:
+            statement = text(
+                "SELECT "
+                "artwork_id, "
+                "SUM(IF(status = 'PASS', 1, 0)) AS pass_count, "
+                "SUM(IF(status = 'REJECT', 1, 0)) AS reject_count, "
+                "SUM(IF(status = 'PASS' OR status = 'REJECT', 1, 0)) AS total_count "
+                "FROM review "
+                "WHERE site_key = :site_key "
+                "GROUP BY artwork_id "
+                "HAVING total_count > :min_total_count AND (total_count / pass_count) >= :pass_ratio_threshold "
+            )
+            params = {
+                "site_key": site_key,
+                "min_total_count": min_total_count,
+                "pass_ratio_threshold": pass_ratio_threshold,
+            }
+            result = await session.execute(statement, params)
+            return result.scalars().all()

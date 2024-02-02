@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Set, Optional, List
+from typing import TYPE_CHECKING, Optional, List
 
 from persica import BaseComponent
 
@@ -56,7 +56,8 @@ class BaseCommand(BaseComponent, component=False):
 
 
 class BaseSiteService(BaseComponent, component=False):
-    site_name: str
+    site_name: str  # 网站名称
+    site_key: str  # 网站关键标识符 最大长度不超过16
     application: "Application"
 
     def set_application(self, application: "Application"):
@@ -67,11 +68,6 @@ class BaseSiteService(BaseComponent, component=False):
 
     async def shutdown(self) -> None:
         """Stop & clear resources used by this service"""
-
-    async def get_artworks_id_by_tags(
-        self, search_text: str, is_pattern: bool, page_number: int, lines_per_page: int = 1000
-    ) -> Set[int]:
-        pass
 
     async def get_artwork(self, artwork_id: int) -> "ArtWork":
         pass
@@ -92,3 +88,32 @@ class BaseSiteService(BaseComponent, component=False):
     @staticmethod
     def extract(text: str) -> Optional[int]:
         pass
+
+
+class BaseApi(BaseComponent, component=False):
+    application: "Application"
+
+    def set_application(self, application: "Application"):
+        self.application = application
+
+    async def initialize(self) -> None:
+        """Initialize resources used by this service"""
+
+    async def shutdown(self) -> None:
+        """Stop & clear resources used by this service"""
+
+
+class BaseSpider(BaseComponent, component=False):
+    application: "Application"
+
+    def set_application(self, application: "Application"):
+        self.application = application
+
+    def add_jobs(self) -> None:
+        pass
+
+    async def initialize(self) -> None:
+        """Initialize resources used by this service"""
+
+    async def shutdown(self) -> None:
+        """Stop & clear resources used by this service"""
