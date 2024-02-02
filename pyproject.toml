@@ -13,6 +13,7 @@ sqlmodel = "^0.0.14"
 python-dotenv = "^1.0.0"
 colorlog = "^6.8.0"
 python-telegram-bot = { version = "^20.7", extras = ["ext", "rate-limiter"] }
+async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv" }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
