@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional, List
 
-from async_pixiv.error import PixivError, ArtWorkTypeError
+from async_pixiv.error import PixivError
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import BaseSiteService
@@ -93,10 +93,16 @@ class PixivSitesService(BaseSiteService):
 
     async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
         # 对于动态图片作品需要 ffmpeg 转换
-        try:
-            return await self.api.illust.download(artwork_id)
-        except ArtWorkTypeError:
+        artwork = (await self.api.illust.detail(artwork_id)).illust
+        if artwork.type == IllustType.ugoira:
             return await self.api.illust.download_ugoira(artwork_id, type="mp4")
+        if not artwork.meta_pages:
+            return [await self.api.client.download(str(artwork.image_urls.large))]
+        else:
+            result: List[bytes] = []
+            for meta_page in artwork.meta_pages:
+                result.append(await self.api.client.download(str(meta_page.image_urls.large)))
+            return result
 
     @staticmethod
     def extract(text: str) -> Optional[int]:
