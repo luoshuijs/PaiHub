@@ -1,12 +1,12 @@
 import asyncio
 from typing import Optional, List
 
-from async_pixiv.error import PixivError
+from async_pixiv.error import PixivError, NotExist
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import BaseSiteService
 from paihub.entities.artwork import ImageType
-from paihub.error import BadRequest
+from paihub.error import BadRequest, ArtWorkNotFoundError
 from paihub.log import logger
 from paihub.sites.pixiv.api import PixivApi
 from paihub.sites.pixiv.cache import PixivReviewCache, PixivCache
@@ -78,6 +78,8 @@ class PixivSitesService(BaseSiteService):
     async def get_artwork(self, artwork_id: int) -> PixivArtWork:
         try:
             illust_detail = await self.api.illust.detail(artwork_id)
+        except NotExist as exc:
+            raise ArtWorkNotFoundError from exc
         except PixivError as exc:
             raise BadRequest from exc
         auther = PixivAuthor(auther_id=illust_detail.illust.user.id, name=illust_detail.illust.user.name)
