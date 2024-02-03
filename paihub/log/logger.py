@@ -23,7 +23,7 @@ class Logger:
             os.mkdir(log_path)
 
         self.log_file_name = os.path.join(log_path, "log.log")
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger("PaiHub")
         self.logger.setLevel(logging.INFO)  # Set the base level to DEBUG
 
         log_colors_config = {
@@ -57,8 +57,6 @@ class Logger:
 
         self.logger.addHandler(fh)
         self.logger.addHandler(ch)
-
-        logging.basicConfig(level=logging.DEBUG, handlers=[fh, ch])
 
     def debug(self, message, *args, exc_info: any = None, **kwargs):
         self.logger.debug(message, *args, exc_info=exc_info, extra=kwargs)
