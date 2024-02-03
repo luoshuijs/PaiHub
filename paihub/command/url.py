@@ -51,10 +51,12 @@ class URLCommand(BaseCommand):
                             f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
                         )
                         if len(artwork_images) > 1:
-                            media = [InputMediaPhoto(media=data) for data in artwork_images]
+                            media = [
+                                InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)
+                            ]
+                            for data in artwork_images[1:]:
+                                media.append(InputMediaPhoto(media=data))
                             media = media[:10]
-                            media[0].caption = media
-                            media[0].parse_mode = ParseMode.HTML
                             await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
                             await message.reply_media_group(
                                 media,

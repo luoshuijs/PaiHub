@@ -114,10 +114,10 @@ class PushCommand(BaseCommand):
                     f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
                 )
                 if len(artwork_images) > 1:
-                    media = [InputMediaPhoto(media=data) for data in artwork_images]
+                    media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
+                    for data in artwork_images[1:]:
+                        media.append(InputMediaPhoto(media=data))
                     media = media[:10]
-                    media[0].caption = media
-                    media[0].parse_mode = ParseMode.HTML
                     send_media_group_message = await bot.send_media_group(
                         chat_id=push_context.channel_id,
                         media=media,
