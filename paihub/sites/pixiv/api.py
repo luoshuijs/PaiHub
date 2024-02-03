@@ -31,9 +31,10 @@ class PixivApi(BaseApi):
         login_token = await self.cache.get_login_token()
         if login_token is None:
             try:
-                username = self.config["login"]["username"]
-                password = self.config["login"]["password"]
-                proxy = self.config["login"]["proxy"] if self.config["login"]["proxy"] != "" else None
+                login = self.config.get("login")
+                username = login.get("username")
+                password = login.get("password")
+                proxy = login.get("proxy") if login.get("proxy") != "" else None
                 if password != "" or username != "":
                     user = await self.client.login_with_pwd(username, password, proxy=proxy)
                     logger.info("Pixiv Login with Password Success, Login User [%s]%s", user.id, user.name)
