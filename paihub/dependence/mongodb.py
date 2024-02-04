@@ -10,6 +10,7 @@ class Mongodb(BaseDependence):
     def __init__(self):
         config = MongodbConfig()
         self.client = AsyncIOMotorClient(config.host, config.port)
+        self.default_database: str = config.default_database
 
     async def initialize(self) -> None:
         try:
@@ -21,4 +22,4 @@ class Mongodb(BaseDependence):
 
     @property
     def db(self) -> AgnosticDatabase:
-        return self.client["paihub"]
+        return self.client[self.default_database]

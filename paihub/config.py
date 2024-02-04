@@ -41,6 +41,7 @@ class BotConfig(BaseSettings):
 class MongodbConfig(BaseSettings):
     host: str = "localhost"
     port: int = 27017
+    default_database: str = "PaiHub"
 
     class Config(BaseSettings.Config):
         env_prefix = "mongodb_"
