@@ -8,7 +8,7 @@ from paihub.base import BaseSiteService
 from paihub.entities.artwork import ImageType
 from paihub.error import BadRequest, ArtWorkNotFoundError
 from paihub.log import logger
-from paihub.sites.pixiv.api import PixivApi
+from paihub.sites.pixiv.api import PixivMobileApi
 from paihub.sites.pixiv.cache import PixivReviewCache, PixivCache
 from paihub.sites.pixiv.entities import PixivArtWork, PixivAuthor
 from paihub.sites.pixiv.repositories import PixivRepository
@@ -26,7 +26,7 @@ class PixivSitesService(BaseSiteService):
         review_cache: PixivReviewCache,
         review_repository: ReviewRepository,
         cache: PixivCache,
-        api: PixivApi,
+        api: PixivMobileApi,
     ):
         self.repository = repository
         self.review_cache = review_cache
