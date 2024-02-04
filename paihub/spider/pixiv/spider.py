@@ -26,7 +26,7 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(self.run, "cron", hour=3, minute=0)
 
     async def run(self):
-        logger.logger("正在进行Pixiv爬虫任务")
+        logger.info("正在进行Pixiv爬虫任务")
         await self.search()
 
     async def search(self):
