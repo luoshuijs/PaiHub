@@ -40,8 +40,6 @@ class PixivSpider(BaseSpider):
         while True:
             search_result = await client.search("原神", offset=offset, start_date=start_date, end_date=end_date)
             count = len(search_result.illusts)
-            if count == 0:
-                break
             offset += count
             for illust in search_result.illusts:
                 if self.filter_artwork(illust):
@@ -49,8 +47,10 @@ class PixivSpider(BaseSpider):
                     add_count += add_count
 
             await asyncio.sleep(random.randint(3, 5))
-            if offset % 100 == 0:
+            if offset % 90 == 0:
                 logger.info("当前已经在搜索到 %s 张作品", offset)
+            if count != 30:
+                break
         logger.info("Pixiv搜索结束")
 
     async def set(self):
