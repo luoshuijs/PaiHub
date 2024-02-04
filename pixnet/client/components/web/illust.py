@@ -12,6 +12,7 @@ class Illust(BaseClient):
     async def search_illusts(
         self,
         word: str,
+        page: Optional[int] = None,
         search_mode: str = "s_tag_full",
         search_type: str = "all",
         lang: Optional[str] = None,
@@ -23,6 +24,8 @@ class Illust(BaseClient):
             params["scd"] = start_date.strftime("%Y-%m-%d")
         if end_date is not None:
             params["ecd"] = end_date.strftime("%Y-%m-%d")
+        if page is not None:
+            params["p"] = page
         return await self.request_api("GET", "https://www.pixiv.net/touch/ajax/search/illusts", params=params)
 
     async def get_recommend(self, illust_id: int, limit: int = 18, lang: Optional[str] = None) -> JSONDict:
