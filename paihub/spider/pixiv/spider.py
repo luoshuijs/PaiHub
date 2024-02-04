@@ -51,7 +51,7 @@ class PixivSpider(BaseSpider):
                 logger.info("当前已经在搜索到 %s 张作品", offset)
             if count != 30:
                 break
-        logger.info("Pixiv搜索结束")
+        logger.info("Pixiv搜索结束 已经添加到作品数 %s", add_count)
 
     async def set(self):
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
@@ -73,7 +73,7 @@ class PixivSpider(BaseSpider):
     @staticmethod
     def filter_artwork(illust: "Illust"):
         # 移除 AI 作品
-        if illust.ai_type != 0:
+        if illust.ai_type == 2:
             return False
         days_hundred_fold = (time.time() - illust.create_date.timestamp()) / 24 / 60 / 60 * 100
         if 10 <= days_hundred_fold <= 300 and illust.total_bookmarks >= 700:
