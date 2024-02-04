@@ -54,8 +54,8 @@ class SetCommand(BaseCommand):
 
         keyboard = [
             [
-                InlineKeyboardButton(text="通过", callback_data=f"set_review_status|{review_info.id}|1"),
-                InlineKeyboardButton(text="拒绝", callback_data=f"set_review_status|{review_info.id}|0"),
+                InlineKeyboardButton(text="通过", callback_data=f"reset_review_status|{review_info.id}|1"),
+                InlineKeyboardButton(text="拒绝", callback_data=f"reset_review_status|{review_info.id}|0"),
             ],
             [
                 InlineKeyboardButton(text="退出", callback_data="exit"),
