@@ -6,7 +6,7 @@ from pydantic import BaseSettings
 dotenv.load_dotenv()
 
 
-class Database(BaseSettings):
+class DatabaseConfig(BaseSettings):
     driver_name: str = "mysql+asyncmy"
     host: Optional[str] = None
     port: Optional[int] = None
@@ -18,7 +18,7 @@ class Database(BaseSettings):
         env_prefix = "db_"
 
 
-class Redis(BaseSettings):
+class RedisConfig(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 6379
     database: Union[str, int] = 0
@@ -28,7 +28,7 @@ class Redis(BaseSettings):
         env_prefix = "redis_"
 
 
-class Bot(BaseSettings):
+class BotConfig(BaseSettings):
     token: str
     owner: int
     base_url: Optional[str] = None
@@ -36,6 +36,7 @@ class Bot(BaseSettings):
 
     class Config(BaseSettings.Config):
         env_prefix = "bot_"
+
 
 class MongodbConfig(BaseSettings):
     host: str = "localhost"
@@ -46,6 +47,4 @@ class MongodbConfig(BaseSettings):
 
 
 class Settings(BaseSettings):
-    bot: Bot = Bot()
-    database: Database = Database()
-    redis: Redis = Redis()
+    bot: BotConfig = BotConfig()

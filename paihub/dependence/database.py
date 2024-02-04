@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import BaseDependence
-from paihub.config import Database as DatabaseConfig
+from paihub.config import DatabaseConfig
 from paihub.log import logger
 
 if TYPE_CHECKING:
@@ -21,10 +21,8 @@ if TYPE_CHECKING:
 
 
 class DataBase(BaseDependence):
-    def __init__(
-        self,
-        config: DatabaseConfig,
-    ):
+    def __init__(self):
+        config = DatabaseConfig()
         self._url = URL.create(
             config.driver_name,
             username=config.username,

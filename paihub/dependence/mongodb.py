@@ -8,8 +8,8 @@ from paihub.log import logger
 
 class Mongodb(BaseDependence):
     def __init__(self):
-        self._config = MongodbConfig()
-        self.client = AsyncIOMotorClient(self._config.host, self._config.port)
+        config = MongodbConfig()
+        self.client = AsyncIOMotorClient(config.host, config.port)
 
     async def initialize(self) -> None:
         try:

@@ -27,8 +27,7 @@ class Application:
         asyncio.set_event_loop(self.loop)
         self.settings = Settings()
         self.factor = Factor(
-            paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command", "paihub.spider"],
-            kwargs=[self.settings, self.settings.database, self.settings.redis],
+            paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command", "paihub.spider"]
         )
         build_bot = BotApplicationBuilder()
         build_bot.defaults(Defaults(tzinfo=pytz.timezone("Asia/Shanghai")))

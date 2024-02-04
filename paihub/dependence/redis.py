@@ -1,11 +1,12 @@
 from paihub.base import BaseDependence
-from paihub.config import Redis as RedisConfig
+from paihub.config import RedisConfig
 from paihub.log import logger
 from paihub.utils.aioredis import aioredis, RedisTimeoutError, RedisConnectionError
 
 
 class Redis(BaseDependence):
-    def __init__(self, config: RedisConfig):
+    def __init__(self):
+        config = RedisConfig()
         self.client = aioredis.Redis(
             host=config.host, port=config.port, db=config.database, password=config.password, decode_responses=True
         )
