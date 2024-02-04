@@ -12,5 +12,5 @@ except ImportError:
 
 
 application = Application()
-logger.info("PaiGram")
+logger.info("Welcome to PaiHub!")
 application.run()
