@@ -64,6 +64,7 @@ class PixivRepository(Component):
     async def merge(self, value: Pixiv):
         async with AsyncSession(self.engine) as session:
             await session.merge(value)
+            await session.commit()
 
     async def update(self, value: Pixiv) -> Pixiv:
         async with AsyncSession(self.engine) as session:
