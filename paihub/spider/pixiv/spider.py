@@ -1,4 +1,5 @@
 import asyncio
+import random
 import time
 from datetime import datetime, timedelta
 
@@ -47,8 +48,8 @@ class PixivSpider(BaseSpider):
                     await self.repository.merge(self.get_database_form_illust(illust))
                     add_count += add_count
 
-            await asyncio.sleep(count)
-            if count % 100 == 0:
+            await asyncio.sleep(random.randint(3, 5))
+            if offset % 100 == 0:
                 logger.info("当前已经在搜索到 %s 张作品", offset)
         logger.info("Pixiv搜索结束")
 
