@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from async_pixiv.model.illust import Illust
 
 from paihub.base import BaseSpider
+from paihub.log import logger
 from paihub.sites.pixiv.api import PixivApi
 from paihub.sites.pixiv.cache import PixivCache
 from paihub.sites.pixiv.entities import Pixiv as _Pixiv
@@ -25,6 +26,7 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(self.run, "cron", hour=3, minute=0)
 
     async def run(self):
+        logger.logger("正在进行Pixiv爬虫任务")
         await self.search()
 
     async def search(self):
@@ -32,6 +34,7 @@ class PixivSpider(BaseSpider):
         start_date = current_time.date()
         end_date = (current_time - timedelta(days=30)).date()
         offset: int = 0
+        add_count: int = 0
         client = self.api.illust
         while True:
             search_result = await client.search("原神", offset=offset, start_date=start_date, end_date=end_date)
@@ -41,9 +44,13 @@ class PixivSpider(BaseSpider):
             offset += count
             for illust in search_result.illusts:
                 if self.filter_artwork(illust):
-                    await self.repository.add(self.get_database_form_illust(illust))
+                    await self.repository.merge(self.get_database_form_illust(illust))
+                    add_count += add_count
 
             await asyncio.sleep(count)
+            if count % 100 == 0:
+                logger.info("当前已经在搜索到 %s 张作品", offset)
+        logger.info("Pixiv搜索结束")
 
     async def set(self):
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
