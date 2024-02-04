@@ -10,7 +10,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from telegram.ext import ApplicationBuilder as BotApplicationBuilder, Defaults
 from telegram.warnings import PTBUserWarning
 
-from paihub.base import BaseDependence, BaseService, BaseCommand, BaseSiteService, BaseApi
+from paihub.base import BaseDependence, BaseService, BaseCommand, BaseSiteService, BaseApi, BaseSpider
 from paihub.config import Settings
 from paihub.log import logger
 from persica import Factor
@@ -99,6 +99,14 @@ class Application:
                 c.add_handlers()
             except Exception as exc:
                 logger.error("%s 初始化失败", c.__class__.__name__)
+                raise exc
+        for s in self.factor.get_components(BaseSpider):
+            try:
+                s.set_application(self)
+                await s.initialize()
+                s.add_jobs()
+            except Exception as exc:
+                logger.error("%s 初始化失败", s.__class__.__name__)
                 raise exc
 
         try:
