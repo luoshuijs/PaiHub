@@ -105,11 +105,11 @@ class ReviewCommand(BaseCommand):
             work_id = get_callback_query(callback_query.data)
             count = await self.review_service.get_review_count(work_id)
             if count == 0:
-                await message.edit_text("当前 Review 队列无任务\n退出 Review")
+                await message.reply_text("当前 Review 队列无任务\n退出 Review")
                 return ConversationHandler.END
             review_context = await self.review_service.review_next(work_id=work_id)
             if review_context is None:
-                await message.edit_text("当前 Review 队列无任务\n退出 Review")
+                await message.reply_text("当前 Review 队列无任务\n退出 Review")
                 return ConversationHandler.END
             try:
                 artwork = await review_context.get_artwork()
