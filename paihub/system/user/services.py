@@ -9,13 +9,13 @@ from paihub.system.user.repositories import UserRepository
 
 
 class UserAdminService(BaseService):
-    def __init__(self, user_repository: UserRepository, cache: UserAdminCache, config: Settings):
+    def __init__(self, user_repository: UserRepository, cache: UserAdminCache):
         self.user_repository = user_repository
         self._cache = cache
-        self.config = config
 
     async def initialize(self):
-        owner = self.config.bot.owner
+        config = self.application.settings
+        owner = config.bot.owner
         if owner:
             user = await self.user_repository.get_by_user_id(owner)
             if user:
