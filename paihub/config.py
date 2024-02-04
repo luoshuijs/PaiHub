@@ -37,6 +37,7 @@ class Bot(BaseSettings):
     class Config(BaseSettings.Config):
         env_prefix = "bot_"
 
+
 class MongodbConfig(BaseSettings):
     host: str = "localhost"
     port: int = 27017
