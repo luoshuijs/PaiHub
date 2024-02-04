@@ -45,7 +45,7 @@ class PixivSpider(BaseSpider):
     async def mobile_search(self):
         current_time = datetime.now()
         start_date = current_time.date()
-        end_date = (current_time - timedelta(days=30)).date()
+        end_date = (current_time - timedelta(days=7)).date()
         offset: int = 0
         add_count: int = 0
         client = self.mobile_api.illust
@@ -81,7 +81,7 @@ class PixivSpider(BaseSpider):
     async def web_search(self):
         current_time = datetime.now()
         start_date = current_time.date()
-        end_date = (current_time - timedelta(days=30)).date()
+        end_date = (current_time - timedelta(days=7)).date()
         count: int = 0
         page: int = 1
         while True:
