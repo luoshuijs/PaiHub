@@ -99,9 +99,9 @@ class PixivSpider(BaseSpider):
                 break
             if count > 5000:
                 break
-            page += 1
             logger.info("Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
             await asyncio.sleep(random.randint(3, 10))
+            page += 1
 
     async def set(self):
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
