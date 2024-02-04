@@ -7,7 +7,7 @@ from pixnet.utils.types import JSONDict
 class Illust(BaseClient):
     async def get_detail(self, illust_id: int, lang: Optional[str] = None) -> JSONDict:
         params = {"illust_id": illust_id, "lang": self.lang or lang}
-        return await self.request_json("https://www.pixiv.net/touch/ajax/illust/detail", params=params)
+        return await self.request_api("GET", "https://www.pixiv.net/touch/ajax/illust/detail", params=params)
 
     async def search_illusts(
         self,
@@ -23,9 +23,9 @@ class Illust(BaseClient):
             params["scd"] = start_date.strftime("%Y-%m-%d")
         if end_date is not None:
             params["ecd"] = end_date.strftime("%Y-%m-%d")
-        return await self.request_json("https://www.pixiv.net/touch/ajax/search/illusts", params=params)
+        return await self.request_api("GET", "https://www.pixiv.net/touch/ajax/search/illusts", params=params)
 
     async def get_recommend(self, illust_id: int, limit: int = 18, lang: Optional[str] = None) -> JSONDict:
         params = {"limit": limit, "lang": self.lang or lang}
         url = f"https://www.pixiv.net/ajax/illust/{illust_id}/recommend/init"
-        return await self.request_json(url, params=params)
+        return await self.request_api("GET", url, params=params)

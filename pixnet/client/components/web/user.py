@@ -7,7 +7,7 @@ from pixnet.utils.types import JSONDict
 class User(BaseClient):
     async def get_user_status(self, lang: Optional[str] = None) -> JSONDict:
         params = {"lang": self.lang or lang}
-        result = await self.request_json("https://www.pixiv.net/touch/ajax/user/self/status", params=params)
+        result = await self.request_api("GET", "https://www.pixiv.net/touch/ajax/user/self/status", params=params)
         return result["user_status"]
 
     async def get_user_following(
@@ -18,7 +18,7 @@ class User(BaseClient):
             raise RuntimeError
         params = {"offset": offset, "limit": limit, "lang": self.lang or lang}
         url = f"https://www.pixiv.net/ajax/user/{user_id}/following"
-        return await self.request_json(url, params=params)
+        return await self.request_api("GET", url, params=params)
 
     async def add_bookmark_user(self, user_id: int):
         params = {"mode": "add_bookmark_user", "restrict": 0, "user_id": user_id}

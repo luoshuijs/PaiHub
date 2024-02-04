@@ -60,3 +60,8 @@ class NotSupported(BadRequest):
     """API not supported."""
 
     original = "API not supported or has been removed."
+
+
+class TooManyRequest(BadRequest):
+
+    original = "too many request."

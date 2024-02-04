@@ -102,10 +102,10 @@ class BaseClient(AsyncContextManager["BaseClient"]):
     async def request_api(
         self,
         method: str,
-        url: URLTypes,
+        url: "URLTypes",
         json: Optional[Any] = None,
-        params: Optional[QueryParamTypes] = None,
-        headers: Optional[HeaderTypes] = None,
+        params: "Optional[QueryParamTypes]" = None,
+        headers: "Optional[HeaderTypes]" = None,
     ) -> JSONDict:
         response = await self.request(
             method,
@@ -122,16 +122,6 @@ class BaseClient(AsyncContextManager["BaseClient"]):
             return data["body"]
         if response.status_code == 404:
             raise NotSupported
-        raise BadRequest(status_code=response.status_code, message=response.text)
-
-    async def request_json(
-        self,
-        url: URLTypes,
-        method: Optional[str] = None,
-        data: Optional[Any] = None,
-        params: Optional[QueryParamTypes] = None,
-        headers: Optional[HeaderTypes] = None,
-    ) -> JSONDict:
-        if method is None:
-            method = "GET" if data else "POST"
-        return await self.request_api(method=method, url=url, json=data, params=params, headers=headers)
+        if response.status_code == 500:
+            raise NotSupported
+        raise BadRequest(status_code=response.status_code, response=response.json())
