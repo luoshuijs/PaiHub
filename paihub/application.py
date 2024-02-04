@@ -27,7 +27,7 @@ class Application:
         asyncio.set_event_loop(self.loop)
         self.settings = Settings()
         self.factor = Factor(
-            paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command"],
+            paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command", "paihub.spider"],
             kwargs=[self.settings, self.settings.database, self.settings.redis],
         )
         build_bot = BotApplicationBuilder()
