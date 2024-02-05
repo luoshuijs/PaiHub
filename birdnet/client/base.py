@@ -133,7 +133,7 @@ class BaseClient(AsyncContextManager["BaseClient"]):
             raise BadRequest(message="Hit API rate limit, please try again later. " + detail)
         raise BadRequest(status_code=response.status_code)
 
-    async def request_tweet_detail(
+    async def request_api(
         self,
         method: str,
         url: "URLTypes",

@@ -39,13 +39,11 @@ class WebClient(BaseClient):
         api = (
             f"https://twitter.com/i/api/graphql/{TweetDetailAPI.LOGGED_IN if self.auth_token else TweetDetailAPI.GUEST}"
         )
-        self.client.headers.update(
-            {
+        headers = {
                 HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN
                 if self.auth_token
                 else AuthorizationToken.GUEST
             }
-        )
         variables = DEFAULT_VARIABLES.copy()
         variables.update({"focalTweetId": tweet_id})
         params = {
@@ -53,7 +51,7 @@ class WebClient(BaseClient):
             "features": self.default_features_json,
         }
         await self._require_auth()
-        return await self.request_tweet_detail("GET", api, params=params)
+        return await self.request_api("GET", api, params=params, headers=headers)
 
     async def tweet_result_by_rest_id(self, tweet_id: str):
         api = "https://twitter.com/i/api/graphql/0hWvDhmW8YQ-S_ib3azIrw/TweetResultByRestId"
@@ -63,9 +61,9 @@ class WebClient(BaseClient):
             "variables": jsonlib.dumps(variables),
             "features": self.default_features_json,
         }
-        self.client.headers.update({HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN})
+        headers = {HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN}
         await self._require_auth()
-        response = await self.request_json("GET", api, params=params)
+        response = await self.request_json("GET", api, params=params, headers=headers)
         result: "JSONDict" = response["data"]["tweetResult"]["result"]
         if result.get("__typename") == "TweetUnavailable":
             reason = error_message_by_reason(result.get("reason"))
