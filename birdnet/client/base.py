@@ -21,11 +21,9 @@ RT = TypeVar("RT", bound="BaseClient")
 class BaseClient(AsyncContextManager["BaseClient"]):
     def __init__(
         self,
-        user_id: Optional[int] = None,
         cookies: "Optional[CookieTypes]" = None,
         headers: "Optional[HeaderTypes]" = None,
         timeout: "Optional[TimeoutTypes]" = None,
-        lang: Optional[str] = None,
     ) -> None:
         """Initialize the client with the given parameters."""
         if timeout is None:
@@ -38,8 +36,6 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         headers = Headers(headers)
         headers.setdefault("User-Agent", self.user_agent)
         self.client = AsyncClient(cookies=cookies, timeout=timeout, headers=headers)
-        self.user_id = user_id
-        self.lang = lang
 
     async def __aenter__(self: RT) -> RT:
         """Enter the async context manager and initialize the client."""
