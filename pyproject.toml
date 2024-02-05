@@ -18,6 +18,7 @@ asyncmy = "^0.2.9"
 redis = "^5.0.1"
 toml = "^0.10.2"
 motor = "^3.3.2"
+async-lru = "^2.0.4"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
