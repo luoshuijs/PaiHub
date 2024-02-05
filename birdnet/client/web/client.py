@@ -8,6 +8,7 @@ from birdnet.client.web.authorization import AuthorizationToken
 from birdnet.client.web.error import error_message_by_reason
 from birdnet.client.web.features import DEFAULT_FEATURES
 from birdnet.client.web.headers import HeadersKeyName, DEFAULT_HEADERS
+from birdnet.client.web.tweet import TweetDetailAPI
 from birdnet.client.web.variables import DEFAULT_VARIABLES
 from birdnet.errors import BadRequest, NetworkError
 from birdnet.utils.types import JSONDict
@@ -22,12 +23,37 @@ if TYPE_CHECKING:
 
 
 class WebClient(BaseClient):
-    def __init__(self, timeout: "Optional[TimeoutTypes]" = None):
+    def __init__(self, auth_token: Optional[str] = None, timeout: "Optional[TimeoutTypes]" = None):
+        self.auth_token = auth_token
         csrf_token = secrets.token_hex(16)
         cookies = {"ct0": csrf_token}
         headers = DEFAULT_HEADERS.copy()
         headers[HeadersKeyName.CSRF_TOKEN] = csrf_token
+        if self.auth_token is not None:
+            headers[HeadersKeyName.AUTH_TYPE] = "OAuth2Session"
+            cookies["auth_token"] = auth_token
+        self.default_features_json = jsonlib.dumps(DEFAULT_FEATURES)
         super().__init__(cookies=cookies, headers=headers, timeout=timeout)
+
+    async def tweet_detail(self, tweet_id: str):
+        api = (
+            f"https://twitter.com/i/api/graphql/{TweetDetailAPI.LOGGED_IN if self.auth_token else TweetDetailAPI.GUEST}"
+        )
+        self.client.headers.update(
+            {
+                HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN
+                if self.auth_token
+                else AuthorizationToken.GUEST
+            }
+        )
+        variables = DEFAULT_VARIABLES.copy()
+        variables.update({"focalTweetId": tweet_id})
+        params = {
+            "variables": jsonlib.dumps(variables),
+            "features": self.default_features_json,
+        }
+        await self._require_auth()
+        return await self.request_tweet_detail("GET", api, params=params)
 
     async def tweet_result_by_rest_id(self, tweet_id: str):
         api = "https://twitter.com/i/api/graphql/0hWvDhmW8YQ-S_ib3azIrw/TweetResultByRestId"
@@ -35,7 +61,7 @@ class WebClient(BaseClient):
         variables.update({"tweetId": tweet_id})
         params = {
             "variables": jsonlib.dumps(variables),
-            "features": jsonlib.dumps(DEFAULT_FEATURES),
+            "features": self.default_features_json,
         }
         self.client.headers.update({HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN})
         await self._require_auth()

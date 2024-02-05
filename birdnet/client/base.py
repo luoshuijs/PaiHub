@@ -133,6 +133,20 @@ class BaseClient(AsyncContextManager["BaseClient"]):
             raise BadRequest(message="Hit API rate limit, please try again later. " + detail)
         raise BadRequest(status_code=response.status_code)
 
+    async def request_tweet_detail(
+        self,
+        method: str,
+        url: "URLTypes",
+        data: Optional[Any] = None,
+        params: "Optional[QueryParamTypes]" = None,
+        headers: "Optional[HeaderTypes]" = None,
+    ) -> JSONDict:
+        result = await self.request_json(method, url, json=data, params=params, headers=headers)
+        errors = result.get("errors")
+        if errors:
+            raise BadRequest(message="\n".join([error["message"] for error in errors]))
+        return result["data"]
+
     async def download(self, url: "URLTypes", chunk_size: Optional[int] = None) -> bytes:
         data = b""
         async with self.client.stream("GET", url) as response:
