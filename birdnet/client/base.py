@@ -132,3 +132,10 @@ class BaseClient(AsyncContextManager["BaseClient"]):
                 detail = f"Rate limit: {rate_limit}, Reset time: {reset_time}"
             raise BadRequest(message="Hit API rate limit, please try again later. " + detail)
         raise BadRequest(status_code=response.status_code)
+
+    async def download(self, url: "URLTypes", chunk_size: Optional[int] = None) -> bytes:
+        data = b""
+        async with self.client.stream("GET", url) as response:
+            async for chunk in response.aiter_bytes(chunk_size):
+                data += chunk
+        return data
