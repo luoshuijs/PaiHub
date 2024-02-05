@@ -1,7 +1,9 @@
 from http.cookies import SimpleCookie
+from typing import Any, Dict
 
 import toml
 from async_pixiv import PixivClient
+from async_pixiv.client._section._base import V1_API
 from async_pixiv.error import LoginError, PixivError
 from playwright.async_api import Error as PlaywrightError
 
@@ -66,6 +68,12 @@ class PixivMobileApi(BaseApi):
                 logger.error("Pixiv Login Error")
             except PixivError as exc:
                 logger.error("Pixiv Login Error", exc_info=exc)
+
+    async def user_follow_add(self, user_id: int | str, restrict: str = "public") -> Dict[str, Any]:
+        url = V1_API / "user/follow/add"
+        data = {"user_id": user_id, "restrict": restrict}
+        r = await self.client.request("POST", url, data=data)
+        return r.json()
 
 
 class PixivWebAPI(BaseApi):
