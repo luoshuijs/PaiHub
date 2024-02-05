@@ -76,6 +76,8 @@ class PixivSpider(BaseSpider):
                     await self.repository.merge(instance)
                     add_count += add_count
             logger.info("当前已经在搜索到 %s 张作品", offset)
+            if offset > 5000:
+                break
             await asyncio.sleep(random.randint(3, 10))
 
     async def web_search(self):
@@ -94,10 +96,11 @@ class PixivSpider(BaseSpider):
                 if illust.get("ai_type") == 2:
                     continue
                 await self.spider_document.set_web_search_data(illust)
-            count += len(illusts)
+            illusts_count = len(illusts)
+            count += illusts_count
             if count >= total:
                 break
-            if count > 5000:
+            if illusts_count == 0:
                 break
             logger.info("Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
             await asyncio.sleep(random.randint(3, 10))
