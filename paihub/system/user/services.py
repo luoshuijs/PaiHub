@@ -1,7 +1,6 @@
 from typing import List
 
 from paihub.base import BaseService
-from paihub.config import Settings
 from paihub.log import logger
 from paihub.system.user.cache import UserAdminCache
 from paihub.system.user.entities import PermissionsEnum, User

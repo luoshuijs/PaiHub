@@ -1,5 +1,5 @@
-from typing import Tuple, Set, Iterable
 import re
+from typing import Tuple, Set, Iterable
 
 try:
     import ujson as jsonlib

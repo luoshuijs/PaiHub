@@ -1,7 +1,6 @@
 from typing import Optional
 
 from paihub.base import BaseService
-
 from paihub.system.review.cache import ReviewCache
 from paihub.system.review.entities import Review, ReviewStatus, AutoReviewResult
 from paihub.system.review.ext import ReviewCallbackContext

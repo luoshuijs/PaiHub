@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 from sqlalchemy import func, Enum
-from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime, AutoString
+from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime
 
 from paihub.utils.sql_types import SiteKey, JSON
 

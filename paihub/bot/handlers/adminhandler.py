@@ -1,4 +1,3 @@
-import asyncio
 from typing import TypeVar, TYPE_CHECKING, Any, Optional
 
 from telegram import Update

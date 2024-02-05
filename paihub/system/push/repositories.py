@@ -6,7 +6,6 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import Component
-
 from paihub.dependence.database import DataBase
 from paihub.system.push.entities import Push
 
