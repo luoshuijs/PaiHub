@@ -28,6 +28,12 @@ class Illust(BaseClient):
             params["p"] = page
         return await self.request_api("GET", "https://www.pixiv.net/touch/ajax/search/illusts", params=params)
 
+    async def get_follow_latest(self, page: Optional[int] = None, mode: str = "all", lang: Optional[str] = None):
+        params = {"mode": mode, "lang": self.lang or lang}
+        if page is not None:
+            params["p"] = page
+        return await self.request_api("GET", "https://www.pixiv.net/ajax/follow_latest/illust", params=params)
+
     async def get_recommend(self, illust_id: int, limit: int = 18, lang: Optional[str] = None) -> JSONDict:
         params = {"limit": limit, "lang": self.lang or lang}
         url = f"https://www.pixiv.net/ajax/illust/{illust_id}/recommend/init"
