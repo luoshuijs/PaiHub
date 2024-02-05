@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Set
 
 from apscheduler.triggers.interval import IntervalTrigger
+from async_pixiv.error import NotExist
 from async_pixiv.model.illust import Illust
 
 from paihub.base import BaseSpider
@@ -135,8 +136,14 @@ class PixivSpider(BaseSpider):
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
         need_follows = authors_id.difference(user_follows)
         for user_id in need_follows:
-            await self.mobile_api.user_follow_add(user_id)
-            logger.info("Pixiv Web Search 添加关注列表 %s", user_id)
+            if await self.spider_document.if_user_not_exist(user_id):
+                continue
+            try:
+                await self.mobile_api.user_follow_add(user_id)
+                logger.info("Pixiv Web Follow 添加关注列表 %s", user_id)
+            except NotExist:
+                logger.info("添加 %s 关注列表失败 用户不存在", user_id)
+                await self.spider_document.set_not_exist_user(user_id)
             await asyncio.sleep(random.randint(3, 10))
 
     async def get_web_follow(self):
