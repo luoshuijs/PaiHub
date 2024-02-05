@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Set
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
@@ -81,18 +81,18 @@ class ReviewRepository(Component):
 
     async def get_filtered_status_counts(
         self, site_key: str, min_total_count: int = 10, pass_ratio_threshold: float = 0.8
-    ) -> List[int]:
+    ) -> Set[int]:
         async with _AsyncSession(self.engine) as session:
             statement = text(
                 "SELECT "
-                "artwork_id, "
+                "author_id, "
                 "SUM(IF(status = 'PASS', 1, 0)) AS pass_count, "
                 "SUM(IF(status = 'REJECT', 1, 0)) AS reject_count, "
                 "SUM(IF(status = 'PASS' OR status = 'REJECT', 1, 0)) AS total_count "
                 "FROM review "
                 "WHERE site_key = :site_key "
-                "GROUP BY artwork_id "
-                "HAVING total_count > :min_total_count AND (total_count / pass_count) >= :pass_ratio_threshold "
+                "GROUP BY author_id "
+                "HAVING total_count > :min_total_count AND (pass_count / total_count) >= :pass_ratio_threshold "
             )
             params = {
                 "site_key": site_key,
@@ -100,4 +100,4 @@ class ReviewRepository(Component):
                 "pass_ratio_threshold": pass_ratio_threshold,
             }
             result = await session.execute(statement, params)
-            return result.scalars().all()
+            return {row[0] for row in result}
