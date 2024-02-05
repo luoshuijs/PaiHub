@@ -79,7 +79,7 @@ class PixivSpider(BaseSpider):
                     instance = _Pixiv(
                         id=illust.id,
                         title=illust.title,
-                        tags=[tag for tag in web_search_tags.get("tags")],
+                        tags=web_search_tags.get("tags"),
                         love_count=illust.total_bookmarks,
                         like_count=illust.total_bookmarks,
                         view_count=illust.total_view,
@@ -188,7 +188,7 @@ class PixivSpider(BaseSpider):
                 instance = _Pixiv(
                     id=illust.id,
                     title=illust.title,
-                    tags=[tag for tag in web_follow_tags.get("tags")],
+                    tags=web_follow_tags.get("tags"),
                     love_count=illust.total_bookmarks,
                     like_count=illust.total_bookmarks,
                     view_count=illust.total_view,
