@@ -40,10 +40,8 @@ class WebClient(BaseClient):
             f"https://twitter.com/i/api/graphql/{TweetDetailAPI.LOGGED_IN if self.auth_token else TweetDetailAPI.GUEST}"
         )
         headers = {
-                HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN
-                if self.auth_token
-                else AuthorizationToken.GUEST
-            }
+            HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN if self.auth_token else AuthorizationToken.GUEST
+        }
         variables = DEFAULT_VARIABLES.copy()
         variables.update({"focalTweetId": tweet_id})
         params = {
