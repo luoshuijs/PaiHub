@@ -35,7 +35,7 @@ class PixivSpider(BaseSpider):
 
     def add_jobs(self) -> None:
         self.application.scheduler.add_job(self.run, "cron", hour=3, minute=0)
-        asyncio.create_task(self.run())
+        # asyncio.create_task(self.run())
 
     async def run(self):
         logger.info("正在进行Pixiv爬虫任务")
