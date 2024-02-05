@@ -41,7 +41,7 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(
             self.follow_job, IntervalTrigger(hours=1), next_run_time=datetime.now() + timedelta(hours=1)
         )
-        # asyncio.create_task(self.follow_job())
+        asyncio.create_task(self.follow_user())
 
     async def search_job(self):
         logger.info("正在进行Pixiv搜索爬虫任务")
@@ -135,7 +135,7 @@ class PixivSpider(BaseSpider):
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
         need_follows = authors_id.difference(user_follows)
         for user_id in need_follows:
-            await self.web_api.client.add_bookmark_user(user_id)
+            await self.mobile_api.user_follow_add(user_id)
             logger.info("Pixiv Web Search 添加关注列表 %s", user_id)
             await asyncio.sleep(random.randint(3, 10))
 
