@@ -63,5 +63,4 @@ class NotSupported(BadRequest):
 
 
 class TooManyRequest(BadRequest):
-
-    original = "too many request."
+    message = "too many request."
