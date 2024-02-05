@@ -6,6 +6,10 @@ class PaiHubSystemExit(PaiHubException):
     pass
 
 
+class ConnectionTimedOut(PaiHubException):
+    pass
+
+
 class BadRequest(PaiHubException):
     message: str
 
