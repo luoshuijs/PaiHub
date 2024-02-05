@@ -5,7 +5,7 @@ from typing import List, Dict, Optional, Union
 import toml
 
 from birdnet.client.web.client import WebClient
-from birdnet.errors import BadRequest as BirdNetBadRequest
+from birdnet.errors import BadRequest as BirdNetBadRequest, TimedOut as BirdNetTimedOut
 from paihub.base import BaseApi
 from paihub.error import BadRequest, ArtWorkNotFoundError
 from paihub.log import logger
@@ -33,6 +33,8 @@ class WebClientApi(BaseApi):
                 self.login_status = True
             except BirdNetBadRequest as exc:
                 logger.error("Twitter Web Login Error: %s", exc.message)
+            except BirdNetTimedOut:
+                logger.error("Twitter Web Login Timed Out")
         else:
             logger.warning("Twitter Web API Auth Token Not Found")
 
