@@ -83,11 +83,11 @@ class BaseSiteService(BaseComponent, component=False):
         lines_per_page: int = 1000,
         create_by: Optional[int] = None,
     ) -> int:
-        pass
+        return 0
 
     @staticmethod
     def extract(text: str) -> Optional[int]:
-        pass
+        return None
 
 
 class BaseApi(BaseComponent, component=False):
