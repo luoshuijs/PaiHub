@@ -46,7 +46,7 @@ class ReviewCommand(BaseCommand):
         works = await self.work_service.get_all()
         keyboard: List[List[InlineKeyboardButton]] = []
         row: List[InlineKeyboardButton] = []
-        for index, work in enumerate(works):
+        for work in works:
             row.append(InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}"))
             if len(row) == 2:
                 keyboard.append(row)
