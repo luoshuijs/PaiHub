@@ -70,6 +70,22 @@ class WebClient(BaseClient):
             raise BadRequest(message=f"Tweet is unavailable, reason: {reason}.")
         return result
 
+    async def get_account_settings(self):
+        api = "https://api.twitter.com/1.1/account/settings.json"
+        params = {
+            "include_mention_filter": "true",
+            "include_nsfw_user_flag": "true",
+            "include_nsfw_admin_flag": "true",
+            "include_ranked_timeline": "true",
+            "include_alt_text_compose": "true",
+            "ext": "ssoConnections",
+            "include_country_code": "true",
+            "include_ext_dm_nsfw_media_filter": "true",
+            "include_ext_sharing_audiospaces_listening_data_with_followers": "true",
+        }
+        headers = {HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN}
+        return await self.request_json("GET", api, params=params, headers=headers)
+
     async def _require_auth(self):
         if not self.client.headers.get(HeadersKeyName.AUTH_TYPE):
             await self._get_guest_token()
