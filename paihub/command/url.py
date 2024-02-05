@@ -88,7 +88,7 @@ class URLCommand(BaseCommand):
                     except ArtWorkNotFoundError:
                         await message.reply_text("作品不存在")
                     except BadRequest as exc:
-                        await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
+                        await message.reply_text(f"获取图片详细信息时发生错误：\n{exc.message}")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
                     except BotBadRequest as exc:
                         await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
@@ -97,5 +97,5 @@ class URLCommand(BaseCommand):
                         await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
                     except Exception as exc:
-                        await message.reply_text("Review时发生致命错误，详情请查看日志")
+                        await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)

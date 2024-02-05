@@ -198,7 +198,10 @@ class ReviewCommand(BaseCommand):
             except ArtWorkNotFoundError:
                 await review_context.set_review_status(ReviewStatus.NOT_FOUND, update_by=user.id)
                 await message.reply_text(f"[{review_context.site_key}]{review_context.artwork_id} 作品不存在 自动跳过")
+                logger.warning("[%s]%s 作品不存在", review_context.site_key, review_context.artwork_id)
+                continue
             except BadRequest as exc:
+                await message.reply_text(f"Review 时发生错误：\n{exc.message}")
                 await review_context.set_review_status(ReviewStatus.ERROR, update_by=user.id)
                 logger.warning("Review时发生致命错误", exc_info=exc)
                 continue
