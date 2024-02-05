@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
 from typing import Any, Dict
 
 import toml
+from apscheduler.triggers.interval import IntervalTrigger
 from async_pixiv import PixivClient
 from async_pixiv.client._section._base import V1_API
 from async_pixiv.error import LoginError, PixivError
@@ -34,6 +36,12 @@ class PixivMobileApi(BaseApi):
         self.novel = self.client.NOVEL
 
     async def initialize(self) -> None:
+        await self.login()
+        self.application.scheduler.add_job(
+            self.login, IntervalTrigger(minutes=30), next_run_time=datetime.now() + timedelta(minutes=30)
+        )
+
+    async def login(self):
         login_token = await self.cache.get_login_token()
         if login_token is None:
             try:
