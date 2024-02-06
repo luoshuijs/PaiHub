@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 class StartCommand(BaseCommand):
     def add_handlers(self):
         self.bot.add_handler(CommandHandler("start", self.start, block=False))
+        self.bot.add_handler(CommandHandler("ping", self.ping, block=False))
 
     @staticmethod
     async def start(update: "Update", context: "ContextTypes.DEFAULT_TYPE"):
@@ -25,3 +26,7 @@ class StartCommand(BaseCommand):
         if args is not None and len(args) >= 1:
             return
         await message.reply_markdown_v2(f"你好 {user.mention_markdown_v2()} {escape_markdown('！')}")
+
+    @staticmethod
+    async def ping(update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
+        await update.effective_message.reply_text("online! ヾ(✿ﾟ▽ﾟ)ノ")
