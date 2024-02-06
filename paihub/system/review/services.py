@@ -6,6 +6,7 @@ from paihub.system.review.entities import Review, ReviewStatus, AutoReviewResult
 from paihub.system.review.ext import ReviewCallbackContext
 from paihub.system.review.repositories import ReviewRepository
 from paihub.system.sites.manager import SitesManager
+from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.repositories import WorkRepository, WorkRuleRepository
 
 
@@ -30,7 +31,7 @@ class ReviewService(BaseService):
         count = 0
         work_rule = await self.work_rule_repository.get_by_work_id(work_id)
         if work_rule is None:
-            raise RuntimeError
+            raise WorkRuleNotFound
         for s in self.sites_manager.get_all_sites():
             count += await s.initialize_review(
                 work_id,

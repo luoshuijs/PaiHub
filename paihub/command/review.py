@@ -13,6 +13,7 @@ from paihub.error import BadRequest, ArtWorkNotFoundError
 from paihub.log import logger
 from paihub.system.review.entities import ReviewStatus
 from paihub.system.review.services import ReviewService
+from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.services import WorkService
 
 if TYPE_CHECKING:
@@ -68,10 +69,14 @@ class ReviewCommand(BaseCommand):
 
         work_id = get_callback_query(callback_query.data)
         await message.edit_text("正在初始化 Review 队列")
-        count = await self.review_service.initialize_site_review(
-            work_id=work_id, create_by=user.id, lines_per_page=10000
-        )
         await message.reply_chat_action(ChatAction.TYPING)
+        try:
+            count = await self.review_service.initialize_site_review(
+                work_id=work_id, create_by=user.id, lines_per_page=10000
+            )
+        except WorkRuleNotFound:
+            await message.edit_text("当前 Work 未配置规则 退出任务")
+            return ConversationHandler.END
         logger.info("Site review 已经初始化完毕，目前加入的作品有 %s", count)
         count = await self.review_service.get_review(work_id=work_id)
         logger.info("review 队列已经初始化完毕， 刚刚加入的作品有 %s", count)
