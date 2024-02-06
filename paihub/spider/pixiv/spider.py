@@ -44,7 +44,7 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(
             self.follow_job, IntervalTrigger(hours=1), next_run_time=datetime.now() + timedelta(hours=1)
         )
-        self.application.scheduler.add_job(self.follow_job, CronTrigger(hour=3, minute=0))
+        self.application.scheduler.add_job(self.follow_user_job, CronTrigger(hour=3, minute=0))
         # 调试使用 asyncio.create_task(self.follow_job())
 
     async def search_job(self):
@@ -155,7 +155,7 @@ class PixivSpider(BaseSpider):
             except NotExist:
                 logger.info("添加 %s 关注列表失败 用户不存在", user_id)
                 await self.spider_document.set_not_exist_user(user_id)
-            await asyncio.sleep(60)
+            await asyncio.sleep(30)
 
     async def get_web_follow(self):
         current_time = datetime.now()
