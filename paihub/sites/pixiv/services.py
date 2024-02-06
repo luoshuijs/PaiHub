@@ -45,18 +45,18 @@ class PixivSitesService(BaseSiteService):
     ) -> int:
         count = 0
         page_number = 1
+        logger.info("清理 Pixiv 审核缓存")
+        await self.review_cache.del_review_all_cache()
+        start_time = self.loop.time()
         while True:
-            start_time = self.loop.time()
             artworks_id = await self.repository.get_artworks_by_tags(
                 search_text, is_pattern, page_number, lines_per_page
             )
-            logger.info("从Pixiv数据库获取匹配内容使用了 %s 秒", self.loop.time() - start_time)
-            start_time = self.loop.time()
             if len(artworks_id) == 0:
                 break
             count += await self.review_cache.set_database_artwork_ids(artworks_id)
             page_number += 1
-            logger.info("从存储到Redis中使用了 %s 秒", self.loop.time() - start_time)
+        logger.info("从Pixiv数据库中获取匹配内容使用了 %s 秒", self.loop.time() - start_time)
         page_number = 1
         start_time = self.loop.time()
         while True:
