@@ -24,6 +24,7 @@ class ReviewService(BaseService):
         self.sites_manager = sites_manager
         self.work_rule_repository = work_rule_repository
         self.review_cache = review_cache
+        # todo : 这里的全部操作都属于线程不安全 后期需要加锁运行
 
     async def initialize_site_review(
         self, work_id: int, lines_per_page: int = 10000, create_by: Optional[int] = None
