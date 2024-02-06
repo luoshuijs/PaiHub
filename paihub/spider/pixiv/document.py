@@ -6,9 +6,9 @@ from paihub.dependence.mongodb import Mongodb
 
 class PixivSpiderDocument(BaseService):
     def __init__(self, mogo: Mongodb):
-        self.web_search = mogo.db["web_search_data"]
-        self.web_follow = mogo.db["web_search_data"]
-        self.not_exist_user = mogo.db["pixiv_not_exist_user"]
+        self.web_search = mogo.db["pixiv_spider_web_search_data"]
+        self.web_follow = mogo.db["pixiv_spider_web_follow"]
+        self.not_exist_user = mogo.db["pixiv_spider_not_exist_user"]
 
     async def initialize(self) -> None:
         await self.web_search.create_index([("id", 1)])
