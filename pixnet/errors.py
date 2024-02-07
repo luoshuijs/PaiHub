@@ -57,7 +57,6 @@ class BadRequest(PixNetException):
 
 
 class NotExited(BadRequest):
-
     original = "data not exited."
 
 
