@@ -20,7 +20,7 @@ try:
 except ImportError:
     import json as jsonlib
 
-UPDATE_DATA = os.path.join(os.getcwd(), "data", "update.json")
+UPDATE_DATA = os.path.join(os.getcwd(), "update.json")
 
 
 class UpdateCommand(BaseCommand):
