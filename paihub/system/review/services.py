@@ -26,6 +26,10 @@ class ReviewService(BaseService):
         self.review_cache = review_cache
         # todo : 这里的全部操作都属于线程不安全 后期需要加锁运行
 
+    @property
+    def repository(self):
+        return self.review_repository
+
     async def initialize_site_review(
         self, work_id: int, lines_per_page: int = 10000, create_by: Optional[int] = None
     ) -> int:
@@ -101,3 +105,17 @@ class ReviewService(BaseService):
 
     async def get_review_by_artwork_id(self, artwork_id: int) -> List[Review]:
         return await self.review_repository.get_review_by_artwork_id(artwork_id)
+
+    async def set_send_review(
+        self, work_id: int, site_key: str, artwork_id: int, create_by: int, status: ReviewStatus = ReviewStatus.PASS
+    ):
+        review_info = await self.review_repository.get_review(work_id, site_key, artwork_id)
+        if review_info is None:
+            instance = Review(
+                work_id=work_id, site_key=site_key, artwork_id=artwork_id, status=status, create_by=create_by
+            )
+            await self.review_repository.add(instance)
+            return await self.review_repository.get_review(work_id, site_key, artwork_id, status)
+        review_info.status = status
+        review_info.update_by = create_by
+        return await self.review_repository.update(review_info)

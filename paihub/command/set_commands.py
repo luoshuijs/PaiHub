@@ -22,6 +22,7 @@ class SetBotCommand(BaseCommand):
         BotCommand("push", "开始推送"),
         BotCommand("reset", "重设审核"),
         BotCommand("update", "更新代码"),
+        BotCommand("send", "快速发送"),
         BotCommand("ping", "Ping！"),
     ]
 

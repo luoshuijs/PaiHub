@@ -20,21 +20,21 @@ class ReviewRepository(Component):
             results = await session.exec(statement)
             return results.first()
 
-    async def add(self, key: Review):
+    async def add(self, instance: Review):
         async with AsyncSession(self.engine) as session:
-            session.add(key)
+            session.add(instance)
             await session.commit()
 
-    async def update(self, key: Review) -> Review:
+    async def update(self, instance: Review) -> Review:
         async with AsyncSession(self.engine) as session:
-            session.add(key)
+            session.add(instance)
             await session.commit()
-            await session.refresh(key)
-            return key
+            await session.refresh(instance)
+            return instance
 
-    async def remove(self, key: Review):
+    async def remove(self, instance: Review):
         async with AsyncSession(self.engine) as session:
-            await session.delete(key)
+            await session.delete(instance)
             await session.commit()
 
     async def get_artwork_id_by_work_and_web(
@@ -107,3 +107,23 @@ class ReviewRepository(Component):
             statement = select(Review).where(Review.artwork_id == artwork_id)
             results = await session.exec(statement)
             return results.all()
+
+    async def get_review(
+        self,
+        work_id: Optional[int] = None,
+        site_key: Optional[str] = None,
+        artwork_id: Optional[int] = None,
+        status: Optional[StatusStatistics] = None,
+    ) -> Optional[Review]:
+        async with AsyncSession(self.engine) as session:
+            statement = select(Review)
+            if work_id is not None:
+                statement = statement.where(Review.work_id == work_id)
+            if site_key is not None:
+                statement = statement.where(Review.site_key == site_key)
+            if artwork_id is not None:
+                statement = statement.where(Review.artwork_id == artwork_id)
+            if status is not None:
+                statement = statement.where(Review.status == status)
+            results = await session.exec(statement)
+            return results.first()

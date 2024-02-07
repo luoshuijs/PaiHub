@@ -53,3 +53,17 @@ class PushService(BaseService):
             review_id=review_id, channel_id=channel_id, message_id=message_id, status=status, create_by=create_by
         )
         await self.push_repository.add(instance)
+
+    async def set_send_push(self, review_id: int, channel_id: int, message_id: int, status: bool, create_by: int):
+        instance = await self.push_repository.get_push(review_id)
+        if instance is None:
+            instance = Push(
+                review_id=review_id, channel_id=channel_id, message_id=message_id, status=status, create_by=create_by
+            )
+            await self.push_repository.add(instance)
+            return
+        instance.channel_id = channel_id
+        instance.message_id = message_id
+        instance.status = status
+        instance.update_by = create_by
+        await self.push_repository.update(instance)
