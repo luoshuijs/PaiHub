@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from paihub.base import BaseService
 from paihub.system.review.cache import ReviewCache
@@ -73,6 +73,21 @@ class ReviewService(BaseService):
     async def update_review(self, review: Review) -> Review:
         return await self.review_repository.update(review)
 
+    async def remove_review(self, review: Review) -> Review:
+        return await self.review_repository.remove(review)
+
+    async def move_review(self, review: Review, target_work_id: int, update_by: int):
+        review.set_move(update_by, target_work_id)
+        review = await self.review_repository.update(review)
+        move = review.copy()
+        move.work_id = target_work_id
+        move.id = None
+        move.create_by = update_by
+        move.create_time = None
+        move.update_by = None
+        move.update_time = None
+        await self.review_repository.add(move)
+
     async def try_auto_review(self, work_id: int, site_key: str, author_id: int) -> Optional[AutoReviewResult]:
         statistics = await self.review_repository.get_by_status_statistics(
             work_id, site_key=site_key, author_id=author_id
@@ -82,3 +97,6 @@ class ReviewService(BaseService):
                 return AutoReviewResult(status=True, statistics=statistics)
             return AutoReviewResult(status=False, statistics=statistics)
         return None
+
+    async def get_review_by_artwork_id(self, artwork_id: int) -> List[Review]:
+        return await self.review_repository.get_review_by_artwork_id(artwork_id)

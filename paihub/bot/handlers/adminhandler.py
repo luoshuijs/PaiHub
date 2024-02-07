@@ -17,10 +17,11 @@ CCT = TypeVar("CCT", bound="CallbackContext[Any, Any, Any, Any]")
 
 
 class AdminHandler(BaseHandler[Update, CCT]):
-    def __init__(self, handler: BaseHandler[Update, CCT], application: "Application") -> None:
+    def __init__(self, handler: BaseHandler[Update, CCT], application: "Application", need_notify: bool = True) -> None:
         self.handler = handler
         self.application = application
         self.user_service: Optional["UserAdminService"] = None
+        self.need_notify = need_notify
         super().__init__(self.handler.callback, self.handler.block)
 
     def check_update(self, update: object) -> bool:
@@ -41,12 +42,17 @@ class AdminHandler(BaseHandler[Update, CCT]):
         application: "TelegramApplication[Any, CCT, Any, Any, Any, Any]",
         check_result: Any,
         context: "CCT",
-    ) -> RT:
+    ) -> "RT":
         user_service = await self._get_user_service()
         user = update.effective_user
         if await user_service.is_admin(user.id):
             return await self.handler.handle_update(update, application, check_result, context)
         message = update.effective_message
+        callback_query = update.callback_query
         logger.warning("用户 %s[%s] 触发尝试调用Admin命令但权限不足", user.full_name, user.id)
-        await message.reply_text("权限不足")
+        if self.need_notify:
+            if callback_query is not None:
+                await message.edit_text("权限不足")
+            else:
+                await message.reply_text("权限不足")
         raise ApplicationHandlerStop

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from paihub.base import BaseService
 from paihub.system.work.entities import Work, WorkRule
@@ -15,3 +15,6 @@ class WorkService(BaseService):
 
     async def get_work_rule_by_work_id(self, work_id: int) -> WorkRule:
         return await self.work_rule_repository.get_by_work_id(work_id)
+
+    async def get_by_work_id(self, work_id: int) -> Optional[Work]:
+        return await self.work_repository.get_by_work_id(work_id)

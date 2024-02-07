@@ -93,6 +93,17 @@ class Review(SQLModel, table=True):
         self.status = ReviewStatus.WAIT
         self.update_by = update_by
 
+    def set_move(self, update_by: int, move_work_id: Optional[int] = None):
+        """设置审核状态为已经移动
+        :param update_by: 更新的用户ID
+        :param move_work_id: 设置移动打的 work
+        :return: None
+        """
+        self.status = ReviewStatus.MOVE
+        self.update_by = update_by
+        if move_work_id is not None:
+            self.ext["move_work_id"] = move_work_id
+
 
 class StatusStatistics(BaseModel):
     wait_count: int = 0

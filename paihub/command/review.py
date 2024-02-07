@@ -168,7 +168,7 @@ class ReviewCommand(BaseCommand):
                         keyboard = [
                             [
                                 InlineKeyboardButton(
-                                    text="撤销该修改", callback_data=f"reset_review|{review_context.review_id}"
+                                    text="撤销该修改", callback_data=f"reset_review_form_command|{review_context.review_id}"
                                 ),
                             ],
                         ]
@@ -177,7 +177,7 @@ class ReviewCommand(BaseCommand):
                         keyboard = [
                             [
                                 InlineKeyboardButton(
-                                    text="撤销该修改", callback_data=f"reset_review|{review_context.review_id}"
+                                    text="撤销该修改", callback_data=f"reset_review_form_command|{review_context.review_id}"
                                 ),
                             ],
                         ]

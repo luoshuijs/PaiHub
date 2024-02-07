@@ -101,3 +101,9 @@ class ReviewRepository(Component):
             }
             result = await session.execute(statement, params)
             return {row[0] for row in result}
+
+    async def get_review_by_artwork_id(self, artwork_id: int) -> List[Review]:
+        async with AsyncSession(self.engine) as session:
+            statement = select(Review).where(Review.artwork_id == artwork_id)
+            results = await session.exec(statement)
+            return results.all()
