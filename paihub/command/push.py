@@ -87,6 +87,7 @@ class PushCommand(BaseCommand):
             return _work_id
 
         work_id = get_callback_query(callback_query.data)
+        await message.edit_text("正在推送")
 
         while True:
             count = await self.push_service.get_push_count(work_id)
@@ -163,16 +164,16 @@ class PushCommand(BaseCommand):
                 continue
             except BotBadRequest as exc:
                 await push_context.set_push(status=False, create_by=user.id)
-                await message.edit_text("推送时发生致命错误，详情请查看日志")
+                await message.reply_text("推送时发生致命错误，详情请查看日志")
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
             except BotNetworkError as exc:
                 await push_context.set_push(status=False, create_by=user.id)
-                await message.edit_text("推送时发生致命错误，详情请查看日志")
+                await message.reply_text("推送时发生致命错误，详情请查看日志")
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
             except Exception as exc:
-                await message.edit_text("推送时发生致命错误，详情请查看日志")
+                await message.reply_text("推送时发生致命错误，详情请查看日志")
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
 

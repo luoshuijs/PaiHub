@@ -262,7 +262,7 @@ class SendCommand(BaseCommand):
             await message.reply_text("作品不存在")
             return ConversationHandler.END
         except BadRequest as exc:
-            await message.reply_text(f"推送时发生错误：\n{exc.message}")
+            await message.edit_text(f"推送时发生错误：\n{exc.message}")
             logger.warning("推送时发生致命错误", exc_info=exc)
             return ConversationHandler.END
         except BotBadRequest as exc:
