@@ -20,10 +20,9 @@ class StartCommand(BaseCommand):
     async def start(update: "Update", context: "ContextTypes.DEFAULT_TYPE"):
         user = update.effective_user
         message = update.effective_message
-        args = context.args
-        args_text = " ".join(args) if args else ""
-        logger.info("用户 %s[%s] 发出start命令 args[%s]", user.full_name, user.id, args_text)
-        if args is not None and len(args) >= 1:
+        aegs = context.args
+        logger.info("用户 %s[%s] 发出start命令", user.full_name, user.id)
+        if aegs is not None and len(aegs) >= 1:
             return
         await message.reply_markdown_v2(f"你好 {user.mention_markdown_v2()} {escape_markdown('！')}")
 
