@@ -40,15 +40,21 @@ class PixivSpiderDocument(BaseService):
         return await self.web_follow.find_one({"id": f"{data_id}"}, {"_id": 0, "tags": 1})
 
     async def set_not_exist_user(self, user_id: int):
-        return await self.pixiv_spider_author_info.update_one({"user_id": user_id}, {"$set": {"not_exist": True}}, upsert=True)
+        return await self.pixiv_spider_author_info.update_one(
+            {"user_id": user_id}, {"$set": {"not_exist": True}}, upsert=True
+        )
 
     async def set_artwork_fetch_status(self, user_id: int):
-        return await self.pixiv_spider_author_info.update_one({"user_id": user_id}, {"$set": {"artwork_fetch_status": True}}, upsert=True)
+        return await self.pixiv_spider_author_info.update_one(
+            {"user_id": user_id}, {"$set": {"artwork_fetch_status": True}}, upsert=True
+        )
 
     async def if_user_not_exist(self, user_id: int) -> bool:
         document = await self.pixiv_spider_author_info.find_one({"user_id": user_id}, {"_id": 0, "not_exist": 1})
         return document.get("not_exist") is True
 
     async def if_artwork_fetch_status(self, user_id: int) -> bool:
-        document = await self.pixiv_spider_author_info.find_one({"user_id": user_id}, {"_id": 0, "artwork_fetch_status": 1})
+        document = await self.pixiv_spider_author_info.find_one(
+            {"user_id": user_id}, {"_id": 0, "artwork_fetch_status": 1}
+        )
         return document.get("artwork_fetch_status") is True
