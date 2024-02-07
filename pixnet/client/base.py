@@ -9,7 +9,14 @@ if TYPE_CHECKING:
     from httpx import Response
     from httpx._types import RequestData, URLTypes, QueryParamTypes, HeaderTypes, CookieTypes, TimeoutTypes
 
-from pixnet.errors import BadRequest, NotSupported, TimedOut, NetworkError
+from pixnet.errors import BadRequest, TooManyRequest, TimedOut, NetworkError, NotExited
+
+try:
+    import ujson as jsonlib
+
+except ImportError:
+    import json as jsonlib
+
 
 __all__ = ("BaseClient",)
 
@@ -115,13 +122,17 @@ class BaseClient(AsyncContextManager["BaseClient"]):
             headers=headers,
         )
         if not response.is_error:
-            data = response.json()
-            ret_code = data.get("error", False)
-            if ret_code:
-                raise BadRequest(response.json())
+            data = jsonlib.loads(response.content)
+            error = data.get("error", False)
+            if error:
+                raise BadRequest(response=data)
             return data["body"]
+        try:
+            data = jsonlib.loads(response.content)
+        except jsonlib.JSONDecodeError:
+            data = None
         if response.status_code == 404:
-            raise NotSupported
+            raise NotExited(response=data)
         if response.status_code == 500:
-            raise NotSupported
-        raise BadRequest(status_code=response.status_code, response=response.json())
+            raise TooManyRequest(response=data)
+        raise BadRequest(status_code=response.status_code, response=data)

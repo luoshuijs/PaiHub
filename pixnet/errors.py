@@ -56,10 +56,9 @@ class BadRequest(PixNetException):
         return {"message": self.original}
 
 
-class NotSupported(BadRequest):
-    """API not supported."""
+class NotExited(BadRequest):
 
-    original = "API not supported or has been removed."
+    original = "data not exited."
 
 
 class TooManyRequest(BadRequest):
