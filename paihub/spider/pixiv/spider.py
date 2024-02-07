@@ -7,7 +7,7 @@ from typing import List, Dict, Set
 
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from async_pixiv.error import NotExist
+from async_pixiv.error import NotExist, ApiError
 from async_pixiv.model.illust import Illust
 
 from paihub.base import BaseSpider
@@ -18,6 +18,7 @@ from paihub.sites.pixiv.entities import Pixiv as _Pixiv
 from paihub.sites.pixiv.repositories import PixivRepository
 from paihub.spider.pixiv.document import PixivSpiderDocument
 from paihub.system.review.repositories import ReviewRepository
+from pixnet.errors import NotExited
 
 
 class PixivSpider(BaseSpider):
@@ -99,7 +100,7 @@ class PixivSpider(BaseSpider):
             if offset > 5000:
                 logger.info("Pixiv Mobile Search 结束任务")
                 break
-            await asyncio.sleep(random.randint(3, 10))
+            await asyncio.sleep(random.randint(10, 30))
 
     async def web_search(self):
         current_time = datetime.now()
@@ -126,7 +127,7 @@ class PixivSpider(BaseSpider):
                 logger.info("Pixiv Web Search 结束任务")
                 break
             logger.info("Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
-            await asyncio.sleep(random.randint(3, 10))
+            await asyncio.sleep(random.randint(10, 30))
             page += 1
 
     async def follow_user(self):
@@ -142,7 +143,7 @@ class PixivSpider(BaseSpider):
             logger.info("已经获取到关注列表第 %s 个", offset)
             if len(user_list) < 24:
                 break
-            await asyncio.sleep(random.randint(3, 10))
+            await asyncio.sleep(random.randint(10, 30))
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
         need_follows = authors_id.difference(user_follows)
         logger.info("目前需要新添关注 %s 个", len(need_follows))
@@ -154,6 +155,9 @@ class PixivSpider(BaseSpider):
                 logger.info("Pixiv Spider Follow 添加关注列表 %s", user_id)
             except NotExist:
                 logger.info("添加 %s 关注列表失败 用户不存在", user_id)
+                await self.spider_document.set_not_exist_user(user_id)
+            except ApiError as exc:
+                logger.info("添加 %s 关注列表失败 %s", user_id, str(exc.message))
                 await self.spider_document.set_not_exist_user(user_id)
             await asyncio.sleep(30)
 
@@ -179,7 +183,7 @@ class PixivSpider(BaseSpider):
             if illusts_count < 60:
                 break
             logger.info("Pixiv Spider User Follow 正在获取列表，当前列表页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
-            await asyncio.sleep(random.randint(3, 10))
+            await asyncio.sleep(random.randint(10, 30))
             page += 1
 
     async def get_mobile_follow(self):
@@ -221,7 +225,7 @@ class PixivSpider(BaseSpider):
             logger.info("当前已经获取到 %s 张作品 已经添加 %s 张作品到数据库", offset, add_count)
             if offset > 1000:
                 break
-            await asyncio.sleep(random.randint(3, 10))
+            await asyncio.sleep(random.randint(10, 30))
 
     @staticmethod
     def get_database_form_illust(illust: "Illust"):
