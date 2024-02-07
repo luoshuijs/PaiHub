@@ -184,7 +184,7 @@ class ResetCommand(BaseCommand):
             if row:
                 keyboard.append(row)
             keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
-            await message.edit_text("已经删除该审核信息", reply_markup=InlineKeyboardMarkup(keyboard))
+            await message.edit_text("请选择要修改的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
             return MOVE_REVIEW
         else:
             await message.edit_text("未知的 Callback Query Data")

@@ -87,6 +87,7 @@ class ReviewService(BaseService):
         move.update_by = None
         move.update_time = None
         await self.review_repository.add(move)
+        await self.review_repository.update(review)
 
     async def try_auto_review(self, work_id: int, site_key: str, author_id: int) -> Optional[AutoReviewResult]:
         statistics = await self.review_repository.get_by_status_statistics(
