@@ -46,14 +46,9 @@ class ReviewCommand(BaseCommand):
         logger.info("用户 %s[%s] 发出 review 命令", user.full_name, user.id)
         works = await self.work_service.get_all()
         keyboard: List[List[InlineKeyboardButton]] = []
-        row: List[InlineKeyboardButton] = []
         for work in works:
-            row.append(InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}"))
-            if len(row) == 2:
-                keyboard.append(row)
-                row = []
-        if row:
-            keyboard.append(row)
+            keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")])
+        keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
         await message.reply_html(f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard))
         return GET_WORK
 
