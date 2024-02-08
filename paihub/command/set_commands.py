@@ -24,6 +24,7 @@ class SetBotCommand(BaseCommand):
         BotCommand("update", "更新代码"),
         BotCommand("send", "快速发送"),
         BotCommand("ping", "Ping！"),
+        BotCommand("cancel", "取消操作"),
     ]
 
     def add_handlers(self):
