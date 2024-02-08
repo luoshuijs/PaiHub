@@ -8,7 +8,7 @@ from pixnet.utils.types import JSONDict
 class Illust(BaseClient):
     async def get_detail(self, illust_id: int, lang: Optional[str] = None) -> JSONDict:
         params = {"illust_id": illust_id, "lang": self.lang or lang}
-        return await self.request_api("GET", "https://www.pixiv.net/touch/ajax/illust/detail", params=params)
+        return await self.request_api("GET", "https://www.pixiv.net/touch/ajax/illust/details", params=params)
 
     async def search_illusts(
         self,
