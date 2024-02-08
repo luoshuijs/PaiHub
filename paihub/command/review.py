@@ -83,7 +83,7 @@ class ReviewCommand(BaseCommand):
         keyboard = [
             [
                 InlineKeyboardButton(text="启动！", callback_data=f"start_review_work|{work_id}"),
-                InlineKeyboardButton(text="取消", callback_data="cancel"),
+                InlineKeyboardButton(text="取消", callback_data="exit"),
             ],
         ]
 

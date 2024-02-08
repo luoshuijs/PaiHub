@@ -181,7 +181,7 @@ class SendCommand(BaseCommand):
                 InlineKeyboardButton(text="确认", callback_data=f"send_artwork|{work.id}|{site_key}|{artwork_id}"),
             ],
             [
-                InlineKeyboardButton(text="退出", callback_data=f"exit"),
+                InlineKeyboardButton(text="退出", callback_data="exit"),
             ],
         ]
         await message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
