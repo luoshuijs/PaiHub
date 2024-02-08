@@ -45,7 +45,7 @@ class PushCommand(BaseCommand):
         works = await self.work_service.get_all()
         keyboard: List[List[InlineKeyboardButton]] = []
         for work in works:
-            keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")])
+            keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_push_work|{work.id}")])
         keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
         await message.reply_html(f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard))
         return GET_WORK

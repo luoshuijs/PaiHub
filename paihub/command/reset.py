@@ -174,7 +174,7 @@ class ResetCommand(BaseCommand):
             works = await self.work_service.get_all()
             keyboard: List[List[InlineKeyboardButton]] = []
             for work in works:
-                keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")])
+                keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"reset_review_move|{work.id}")])
             keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
             await message.edit_text("请选择要修改的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
             return MOVE_REVIEW
