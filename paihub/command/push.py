@@ -121,7 +121,7 @@ class PushCommand(BaseCommand):
                         read_timeout=10,
                         write_timeout=30,
                     )
-                    await push_context.set_push(message_id=send_media_group_message.id, create_by=user.id)
+                    await push_context.set_push(message_id=send_media_group_message[0].id, create_by=user.id)
                 elif len(artwork_images) == 1:
                     if artwork.image_type == ImageType.STATIC:
                         send_photo_message = await bot.send_photo(
