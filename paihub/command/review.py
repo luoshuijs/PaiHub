@@ -33,7 +33,10 @@ class ReviewCommand(BaseCommand):
             entry_points=[AdminHandler(CommandHandler("review", self.start, block=False), self.application)],
             states={
                 GET_WORK: [CallbackQueryHandler(self.get_work, pattern=r"^set_review_work\|", block=False)],
-                START_REVIEW: [CallbackQueryHandler(self.start_review, pattern=r"^start_review_work\|", block=False)],
+                START_REVIEW: [
+                    CallbackQueryHandler(self.start_review, pattern=r"^start_review_work\|", block=False),
+                    CallbackQueryHandler(self.revert_review_change, pattern=r"^revert_review_change\|", block=False),
+                ],
                 SET_REVIEW: [CallbackQueryHandler(self.set_review, pattern=r"^set_review_status\|", block=False)],
             },
             fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^exit")],
@@ -233,6 +236,9 @@ class ReviewCommand(BaseCommand):
 
         review_id, status = get_callback_query(callback_query.data)
         review_info = await self.review_service.get_by_review_id(review_id=review_id)
+        if review_info is None:
+            await message.edit_text("该 Review 不存在")
+            return ConversationHandler.END
         if status == 1:
             review_info.set_pass(user.id)
             await message.edit_text("你选择了通过")
@@ -246,14 +252,14 @@ class ReviewCommand(BaseCommand):
                 InlineKeyboardButton(text="继续", callback_data=f"start_review_work|{review_info.work_id}"),
             ],
             [
-                InlineKeyboardButton(text="撤销修改", callback_data=f"cancel_review|{review_info.work_id}"),
+                InlineKeyboardButton(text="撤销修改", callback_data=f"revert_review_change|{review_info.work_id}"),
                 InlineKeyboardButton(text="退出", callback_data="exit"),
             ],
         ]
         await message.reply_text(f"当前还有{count}个作品未审核\n选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard))
         return START_REVIEW
 
-    async def cancel_review(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
+    async def revert_review_change(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
         message = update.effective_message
         callback_query = update.callback_query
         user = update.effective_user
@@ -265,9 +271,11 @@ class ReviewCommand(BaseCommand):
 
         review_id = get_callback_query(callback_query.data)
         review_info = await self.review_service.get_by_review_id(review_id=review_id)
+        if review_info is None:
+            await message.edit_text("该 Review 不存在")
+            return ConversationHandler.END
         review_info.set_wait(user.id)
         review_info = await self.review_service.update_review(review_info)
-        await message.edit_text("已经撤回修改")
 
         keyboard = [
             [
@@ -279,7 +287,7 @@ class ReviewCommand(BaseCommand):
             ],
         ]
 
-        await message.reply_text("选择你要的重写的操作", reply_markup=InlineKeyboardMarkup(keyboard))
+        await message.edit_text("选择你要的重写的操作", reply_markup=InlineKeyboardMarkup(keyboard))
         return SET_REVIEW
 
     @staticmethod
