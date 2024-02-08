@@ -1,9 +1,10 @@
+import asyncio
 import html
 from typing import TYPE_CHECKING, List, Tuple
 
 from telegram import ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from telegram.constants import ParseMode, ChatAction
-from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError
+from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError, RetryAfter as BotRetryAfter
 from telegram.ext import CommandHandler, ConversationHandler, CallbackQueryHandler
 
 from paihub.base import BaseCommand
@@ -215,6 +216,10 @@ class ReviewCommand(BaseCommand):
             except BotNetworkError as exc:
                 await message.reply_text("Review时发生致命错误，详情请查看日志")
                 logger.error("Review时发生致命错误", exc_info=exc)
+                break
+            except BotRetryAfter as exc:
+                await message.reply_text(f"太快啦！\n等待{exc.retry_after}秒后重试")
+                logger.warning("超出洪水控制限制 等待%s秒后重试", exc.retry_after)
                 break
             except Exception as exc:
                 await message.reply_text("Review时发生致命错误，详情请查看日志")

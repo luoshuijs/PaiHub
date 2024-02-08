@@ -173,8 +173,8 @@ class PushCommand(BaseCommand):
                 break
             except BotRetryAfter as exc:
                 await push_context.undo_push()
-                await message.reply_text(f"推送流量控制超出\n等待{exc.retry_after}秒后重试")
-                logger.warning("推送流量控制超出 等待%s秒后重试", exc.retry_after)
+                await message.reply_text(f"推送太快啦！\n等待{exc.retry_after}秒后重试")
+                logger.warning("超出洪水控制限制 等待%s秒后重试", exc.retry_after)
                 await asyncio.sleep(exc.retry_after + 1)
                 continue
             except Exception as exc:
