@@ -47,3 +47,6 @@ class PushCallbackContext:
             status=status,
             create_by=create_by,
         )
+
+    async def undo_push(self) -> int:
+        return await self.push_service.undo_push(self.work_id, self.artwork_id)

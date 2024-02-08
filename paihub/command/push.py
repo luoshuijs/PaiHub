@@ -172,6 +172,7 @@ class PushCommand(BaseCommand):
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
             except BotRetryAfter as exc:
+                await push_context.undo_push()
                 await message.reply_text(f"推送流量控制超出\n等待{exc.retry_after}秒后重试")
                 logger.warning("推送流量控制超出 等待%s秒后重试", exc.retry_after)
                 await asyncio.sleep(exc.retry_after + 1)

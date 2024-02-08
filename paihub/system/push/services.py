@@ -67,3 +67,6 @@ class PushService(BaseService):
         instance.status = status
         instance.update_by = create_by
         await self.push_repository.update(instance)
+
+    async def undo_push(self, work_id: int, review_id: int) -> int:
+        return await self.push_cache.set_pending_push(work_id, [review_id])
