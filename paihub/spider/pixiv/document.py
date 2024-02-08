@@ -51,10 +51,14 @@ class PixivSpiderDocument(BaseService):
 
     async def if_user_not_exist(self, user_id: int) -> bool:
         document = await self.pixiv_spider_author_info.find_one({"user_id": user_id}, {"_id": 0, "not_exist": 1})
+        if document is None:
+            return False
         return document.get("not_exist") is True
 
     async def if_artwork_fetch_status(self, user_id: int) -> bool:
         document = await self.pixiv_spider_author_info.find_one(
             {"user_id": user_id}, {"_id": 0, "artwork_fetch_status": 1}
         )
+        if document is None:
+            return False
         return document.get("artwork_fetch_status") is True
