@@ -69,14 +69,14 @@ class ReviewCommand(BaseCommand):
         await message.edit_text("正在初始化 Review 队列")
         await message.reply_chat_action(ChatAction.TYPING)
         try:
-            count = await self.review_service.initialize_site_review(
+            count = await self.review_service.initialize_review_form_sites(
                 work_id=work_id, create_by=user.id, lines_per_page=10000
             )
         except WorkRuleNotFound:
             await message.edit_text("当前 Work 未配置规则 退出任务")
             return ConversationHandler.END
         logger.info("Site review 已经初始化完毕，目前加入的作品有 %s", count)
-        count = await self.review_service.get_review(work_id=work_id)
+        count = await self.review_service.initialize_review_queue(work_id=work_id)
         logger.info("review 队列已经初始化完毕， 刚刚加入的作品有 %s", count)
         count = await self.review_service.get_review_count(work_id)
         logger.info("review 队列已经初始化完毕， 一共需要 Review %s", count)
@@ -110,7 +110,7 @@ class ReviewCommand(BaseCommand):
             if count == 0:
                 await message.reply_text("当前 Review 队列无任务\n退出 Review")
                 return ConversationHandler.END
-            review_context = await self.review_service.review_next(work_id=work_id)
+            review_context = await self.review_service.retrieve_next_for_review(work_id=work_id)
             if review_context is None:
                 await message.reply_text("当前 Review 队列无任务\n退出 Review")
                 return ConversationHandler.END
