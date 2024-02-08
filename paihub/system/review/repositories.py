@@ -113,7 +113,7 @@ class ReviewRepository(Component):
         work_id: Optional[int] = None,
         site_key: Optional[str] = None,
         artwork_id: Optional[int] = None,
-        status: Optional[StatusStatistics] = None,
+        status: Optional[ReviewStatus] = None,
     ) -> Optional[Review]:
         async with AsyncSession(self.engine) as session:
             statement = select(Review)
