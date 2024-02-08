@@ -12,6 +12,7 @@ from paihub.system.work.repositories import WorkRepository, WorkRuleRepository
 
 class ReviewService(BaseService):
     """审核服务"""
+
     def __init__(
         self,
         work_repository: WorkRepository,
