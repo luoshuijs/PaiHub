@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Mapping, Any
+from typing import Dict, Optional, Mapping, Any, Set
 
 from paihub.base import BaseService
 from paihub.dependence.mongodb import Mongodb
@@ -62,3 +62,9 @@ class PixivSpiderDocument(BaseService):
         if document is None:
             return False
         return document.get("artwork_fetch_status") is True
+
+    async def get_all_artwork_fetch_user(self) -> Set[int]:
+        cursor = self.pixiv_spider_author_info.find({"artwork_fetch_status": True, "not_exist": {"$ne": True}})
+        documents = await cursor.to_list(length=None)
+        user_list: "Set[int]" = {doc["user_id"] for doc in documents if "user_id" in doc}
+        return user_list
