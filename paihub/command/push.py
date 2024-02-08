@@ -163,13 +163,11 @@ class PushCommand(BaseCommand):
                 logger.warning("推送时发生致命错误", exc_info=exc)
                 continue
             except BotBadRequest as exc:
-                await push_context.set_push(status=False, create_by=user.id)
-                await message.reply_text("推送时发生致命错误，详情请查看日志")
+                await message.reply_text("推送时发生致命错误\n%s", exc.message)
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
             except BotNetworkError as exc:
-                await push_context.set_push(status=False, create_by=user.id)
-                await message.reply_text("推送时发生致命错误，详情请查看日志")
+                await message.reply_text("推送时发生致命错误\n%s", exc.message)
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
             except Exception as exc:
