@@ -149,7 +149,8 @@ class PushCommand(BaseCommand):
                     raise RuntimeError
                 count = await self.push_service.get_push_count(work_id)
                 if count == 0:
-                    await message.edit_text("推送完毕")
+                    await message.reply_text("推送完毕")
+                    await message.delete()
                     return ConversationHandler.END
                 await asyncio.sleep(len(artwork_images) * 3)
             except ArtWorkNotFoundError:
