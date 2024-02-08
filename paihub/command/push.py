@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List
 
 from telegram import ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from telegram.constants import ParseMode
-from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError
+from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError, RetryAfter as BotRetryAfter
 from telegram.ext import CommandHandler, ConversationHandler, CallbackQueryHandler
 
 from paihub.base import BaseCommand
@@ -171,6 +171,11 @@ class PushCommand(BaseCommand):
                 await message.reply_text("推送时发生致命错误\n%s", exc.message)
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
+            except BotRetryAfter as exc:
+                await message.reply_text(f"推送流量控制超出\n等待{exc.retry_after}秒后重试")
+                logger.warning("推送流量控制超出 等待%s秒后重试", exc.retry_after)
+                await asyncio.sleep(exc.retry_after + 1)
+                continue
             except Exception as exc:
                 await message.reply_text("推送时发生致命错误，详情请查看日志")
                 logger.error("推送时发生致命错误", exc_info=exc)
