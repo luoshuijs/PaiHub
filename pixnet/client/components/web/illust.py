@@ -1,5 +1,6 @@
-from typing import Optional
 from datetime import date
+from typing import Optional
+
 from pixnet.client.base import BaseClient
 from pixnet.utils.types import JSONDict
 

@@ -18,7 +18,6 @@ from paihub.sites.pixiv.entities import Pixiv as _Pixiv
 from paihub.sites.pixiv.repositories import PixivRepository
 from paihub.spider.pixiv.document import PixivSpiderDocument
 from paihub.system.review.repositories import ReviewRepository
-from pixnet.errors import NotExited
 
 
 class PixivSpider(BaseSpider):

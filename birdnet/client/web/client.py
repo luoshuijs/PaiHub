@@ -11,7 +11,6 @@ from birdnet.client.web.headers import HeadersKeyName, DEFAULT_HEADERS
 from birdnet.client.web.tweet import TweetDetailAPI
 from birdnet.client.web.variables import DEFAULT_VARIABLES
 from birdnet.errors import BadRequest, NetworkError
-from birdnet.utils.types import JSONDict
 
 try:
     import ujson as jsonlib
@@ -19,6 +18,7 @@ except ImportError:
     import json as jsonlib
 
 if TYPE_CHECKING:
+    from birdnet.utils.types import JSONDict
     from httpx._types import TimeoutTypes
 
 

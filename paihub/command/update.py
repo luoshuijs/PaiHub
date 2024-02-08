@@ -2,17 +2,18 @@ import asyncio
 import os
 from typing import TYPE_CHECKING
 
-from telegram import Update, Message
+from aiofiles import open as async_open
+from telegram import Message
 from telegram.error import NetworkError
 from telegram.ext import CommandHandler
-from aiofiles import open as async_open
+
 from paihub.base import BaseCommand
 from paihub.bot.handlers.adminhandler import AdminHandler
 from paihub.log import logger
 from paihub.utils.execute import execute
 
 if TYPE_CHECKING:
-    from telegram import Message
+    from telegram import Update
     from telegram.ext import ContextTypes
 
 try:
