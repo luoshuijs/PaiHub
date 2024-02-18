@@ -11,7 +11,7 @@ httpx = "^0.26.0"
 sqlmodel = "^0.0.14"
 python-dotenv = "^1.0.0"
 colorlog = "^6.8.0"
-python-telegram-bot = { version = "^20.7", extras = ["ext", "rate-limiter"] }
+python-telegram-bot = { version = "^20.8", extras = ["ext", "rate-limiter"] }
 async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv" }
 ujson = "^5.9.0"
 asyncmy = "^0.2.9"
