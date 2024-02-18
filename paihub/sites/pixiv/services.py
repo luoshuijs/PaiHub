@@ -6,7 +6,7 @@ from async_pixiv.model.illust import IllustType
 
 from paihub.base import BaseSiteService
 from paihub.entities.artwork import ImageType
-from paihub.error import BadRequest, ArtWorkNotFoundError
+from paihub.error import BadRequest, ArtWorkNotFoundError, ImagesFormatNotSupported
 from paihub.log import logger
 from paihub.sites.pixiv.api import PixivMobileApi
 from paihub.sites.pixiv.cache import PixivReviewCache, PixivCache
@@ -97,7 +97,12 @@ class PixivSitesService(BaseSiteService):
         # 对于动态图片作品需要 ffmpeg 转换
         artwork = (await self.api.illust.detail(artwork_id)).illust
         if artwork.type == IllustType.ugoira:
-            return await self.api.illust.download_ugoira(artwork_id, type="mp4")
+            result = await self.api.illust.download_ugoira(artwork_id, type="mp4")
+            if isinstance(result, bytes):
+                return [result]
+            if isinstance(result, list):
+                return result
+            raise ImagesFormatNotSupported(message=f"Images Data {result.__class__.__name__} Not Supported")
         if not artwork.meta_pages:
             return [await self.api.client.download(str(artwork.image_urls.large))]
         else:
