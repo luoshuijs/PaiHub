@@ -1,5 +1,14 @@
+from typing import Optional
+
+
 class PaiHubException(Exception):
-    pass
+    message: Optional[str] = None
+
+    def __init__(self, message: Optional[str] = None):
+        if message is not None:
+            self.message = message
+        if self.message is not None:
+            super().__init__(message)
 
 
 class PaiHubSystemExit(PaiHubException):
@@ -11,11 +20,12 @@ class ConnectionTimedOut(PaiHubException):
 
 
 class BadRequest(PaiHubException):
-    message: str
-
-    def __init__(self, message):
-        self.message = message
+    pass
 
 
 class ArtWorkNotFoundError(PaiHubException):
+    message = "ArtWork Not Found"
+
+
+class ImagesFormatNotSupported(PaiHubException):
     pass
