@@ -20,7 +20,7 @@ class AdminHandler(BaseHandler[Update, CCT]):
     def __init__(self, handler: BaseHandler[Update, CCT], application: "Application", need_notify: bool = True) -> None:
         self.handler = handler
         self.application = application
-        self.user_service: Optional["UserAdminService"] = None
+        self._user_service: Optional["UserAdminService"] = None
         self.need_notify = need_notify
         super().__init__(self.handler.callback, self.handler.block)
 
@@ -29,12 +29,14 @@ class AdminHandler(BaseHandler[Update, CCT]):
             return False
         return self.handler.check_update(update)
 
-    async def _get_user_service(self) -> "UserAdminService":
+    @property
+    def user_service(self) -> "UserAdminService":
+        # 考虑到只是对单一变量的读取后写入 并且获取的内容唯一 不考虑加锁
         if self.user_service is not None:
-            return self.user_service
+            return self._user_service
         user_service = self.application.factor.get_component(UserAdminService)
-        self.user_service = user_service
-        return self.user_service
+        self._user_service = user_service
+        return user_service
 
     async def handle_update(
         self,
@@ -43,14 +45,14 @@ class AdminHandler(BaseHandler[Update, CCT]):
         check_result: Any,
         context: "CCT",
     ) -> "RT":
-        user_service = await self._get_user_service()
+        user_service = self.user_service
         user = update.effective_user
         if await user_service.is_admin(user.id):
             return await self.handler.handle_update(update, application, check_result, context)
-        message = update.effective_message
-        callback_query = update.callback_query
-        logger.warning("用户 %s[%s] 触发尝试调用Admin命令但权限不足", user.full_name, user.id)
+        logger.warning("用户 %s[%s] 触发尝试调用 Admin 命令但权限不足", user.full_name, user.id)
         if self.need_notify:
+            message = update.effective_message
+            callback_query = update.callback_query
             if callback_query is not None:
                 await message.edit_text("权限不足")
             else:
