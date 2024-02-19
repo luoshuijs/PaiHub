@@ -32,7 +32,8 @@ class SetBotCommand(BaseCommand):
             AdminHandler(CommandHandler("set_admin_command", self.set_command, block=False), self.application)
         )
         self.bot.add_handler(
-            AdminHandler(CommandHandler("start", self.start_set, block=False), self.application), group=10
+            AdminHandler(CommandHandler("start", self.start_set, block=False), self.application, need_notify=False),
+            group=10,
         )
 
     async def set_command(self, update: "Update", context: "ContextTypes.DEFAULT_TYPE"):
