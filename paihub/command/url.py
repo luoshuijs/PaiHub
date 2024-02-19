@@ -7,6 +7,7 @@ from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetwo
 from telegram.ext import MessageHandler, filters
 
 from paihub.base import BaseCommand
+from paihub.bot.handlers.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.log import logger
@@ -25,8 +26,12 @@ class URLCommand(BaseCommand):
 
     def add_handlers(self):
         self.bot.add_handler(
-            MessageHandler(
-                filters=filters.ChatType.PRIVATE & filters.Regex(URL_REGEX), callback=self.start, block=False
+            AdminHandler(
+                MessageHandler(
+                    filters=filters.ChatType.PRIVATE & filters.Regex(URL_REGEX), callback=self.start, block=False
+                ),
+                self.application,
+                need_notify=False,
             )
         )
 
