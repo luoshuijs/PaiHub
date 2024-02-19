@@ -36,7 +36,7 @@ class Search(BaseCommand):
     def add_handlers(self):
         self.bot.add_handler(
             AdminHandler(
-                MessageHandler(filters=filters.PHOTO, callback=self.photo, block=False),
+                MessageHandler(filters=filters.PHOTO & filters.ChatType.PRIVATE, callback=self.photo, block=False),
                 self.application,
                 need_notify=False,
             )
