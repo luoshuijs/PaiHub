@@ -28,7 +28,7 @@ class ArtWork(BaseModel):
     author: Author
     nsfw: bool = False
     source: Optional[str] = None
-    is_upload: bool = False
+    is_sourced: bool = False
     image_type: ImageType = ImageType.STATIC
 
     def format_tags(self, filter_character_tags: bool = False) -> str:

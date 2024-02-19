@@ -11,7 +11,7 @@ class DanbooruUploader(Author):
 class DanbooruArtWork(ArtWork):
     web_name = "Danbooru"
     author: DanbooruUploader
-    is_upload: bool = True
+    is_sourced: bool = True
 
     @property
     def url(self) -> str:
