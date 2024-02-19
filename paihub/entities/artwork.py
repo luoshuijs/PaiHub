@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timezone
 from enum import IntEnum
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -27,6 +27,8 @@ class ArtWork(BaseModel):
     create_time: datetime
     author: Author
     nsfw: bool = False
+    source: Optional[str] = None
+    is_upload: bool = False
     image_type: ImageType = ImageType.STATIC
 
     def format_tags(self, filter_character_tags: bool = False) -> str:
