@@ -32,7 +32,7 @@ class AdminHandler(BaseHandler[Update, CCT]):
     @property
     def user_service(self) -> "UserAdminService":
         # 考虑到只是对单一变量的读取后写入 并且获取的内容唯一 不考虑加锁
-        if self.user_service is not None:
+        if self._user_service is not None:
             return self._user_service
         user_service = self.application.factor.get_component(UserAdminService)
         self._user_service = user_service
