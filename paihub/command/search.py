@@ -81,7 +81,8 @@ class Search(BaseCommand):
                                     f"Title {html.escape(artwork.title)}\n"
                                     f"Tag {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
                                     f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
-                                    f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
+                                    f"By <a href='{artwork.author.url if not artwork.is_sourced else artwork.source}'>"
+                                    f"{artwork.author.name if not artwork.is_sourced else 'Source'}</a>\n"
                                     f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
                                 )
                                 if len(artwork_images) > 1:
