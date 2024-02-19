@@ -19,6 +19,7 @@ redis = "^5.0.1"
 toml = "^0.10.2"
 motor = "^3.3.2"
 async-lru = "^2.0.4"
+PicImageSearch = { git = "https://github.com/kitUIN/PicImageSearch" }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
