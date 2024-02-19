@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional, List
 
-from async_pixiv.error import PixivError, NotExist
+from async_pixiv.error import PixivError, NotExist, ApiError
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import BaseSiteService
@@ -79,9 +79,14 @@ class PixivSitesService(BaseSiteService):
         try:
             illust_detail = await self.api.illust.detail(artwork_id)
         except NotExist as exc:
-            raise ArtWorkNotFoundError from exc
+            raise ArtWorkNotFoundError("Not Exist") from exc
+        except ApiError as exc:
+            message = exc.__str__()
+            if "尚无此页" in message:
+                raise ArtWorkNotFoundError(message) from exc
+            raise BadRequest(message) from exc
         except PixivError as exc:
-            raise BadRequest from exc
+            raise BadRequest("Pixiv Error") from exc
         auther = PixivAuthor(auther_id=illust_detail.illust.user.id, name=illust_detail.illust.user.name)
         art_work = PixivArtWork(
             artwork_id=artwork_id,
