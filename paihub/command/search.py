@@ -2,7 +2,6 @@ import html
 from io import BytesIO
 from typing import TYPE_CHECKING
 
-import toml
 from PicImageSearch import Network, SauceNAO
 from telegram import InputMediaPhoto
 from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError
@@ -12,6 +11,7 @@ from telegram.ext import MessageHandler, filters
 from paihub.base import BaseCommand
 from paihub.bot.handlers.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
+from paihub.entities.config import TomlConfig
 from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.system.sites.manager import SitesManager
 from paihub.log import logger
@@ -24,8 +24,7 @@ if TYPE_CHECKING:
 class Search(BaseCommand):
     def __init__(self, sites_manager: SitesManager):
         self.config: dict = {}
-        with open("config/search.toml", "r", encoding="utf-8") as f:
-            self.config = toml.load(f)
+        self.config = TomlConfig("config/search.toml",)
         self.network = Network()
         saucenao_config = self.config.get("saucenao", {})
         self.saucenao = SauceNAO(

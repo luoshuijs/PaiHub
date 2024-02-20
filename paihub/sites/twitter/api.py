@@ -2,11 +2,10 @@ import re
 from datetime import datetime
 from typing import List, Dict, Optional, Union
 
-import toml
-
 from birdnet.client.web.client import WebClient
 from birdnet.errors import BadRequest as BirdNetBadRequest, TimedOut as BirdNetTimedOut
 from paihub.base import BaseApi
+from paihub.entities.config import TomlConfig
 from paihub.error import BadRequest, ArtWorkNotFoundError
 from paihub.log import logger
 from paihub.sites.twitter.cache import WebClientCache
@@ -16,9 +15,7 @@ from paihub.sites.twitter.entities import TwitterArtWork, TwitterAuthor
 class WebClientApi(BaseApi):
     def __init__(self, web_cache: WebClientCache):
         self.web_cache = web_cache
-        self.config: dict = {}
-        with open("config/twitter.toml", "r", encoding="utf-8") as f:
-            self.config = toml.load(f)
+        self.config = TomlConfig("config/twitter.toml")
         login = self.config.get("login")
         auth_token = login.get("auth_token")
         self.web = WebClient(auth_token=auth_token)
