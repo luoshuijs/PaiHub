@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 class Search(BaseCommand):
     def __init__(self, sites_manager: SitesManager):
         self.config: dict = {}
-        self.config = TomlConfig("config/search.toml",)
+        self.config = TomlConfig("config/search.toml")
         self.network = Network()
         saucenao_config = self.config.get("saucenao", {})
         self.saucenao = SauceNAO(
