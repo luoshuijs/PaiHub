@@ -28,7 +28,9 @@ class PixivMobileApi(BaseApi):
             retry_sleep=1,  # 默认重复请求间隔秒数
         )
         self.cache = cache
-        self.config = TomlConfig("config/pixiv.toml",)
+        self.config = TomlConfig(
+            "config/pixiv.toml",
+        )
         self.illust = self.client.ILLUST
         self.user = self.client.USER
         self.novel = self.client.NOVEL
@@ -84,7 +86,9 @@ class PixivMobileApi(BaseApi):
 
 class PixivWebAPI(BaseApi):
     def __init__(self):
-        self.config = TomlConfig("config/pixiv.toml",)
+        self.config = TomlConfig(
+            "config/pixiv.toml",
+        )
         login = self.config.get("login")
         cookie = SimpleCookie()
         cookie.load(login.get("cookies"))
