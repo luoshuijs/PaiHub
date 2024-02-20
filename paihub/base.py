@@ -110,7 +110,7 @@ class BaseSpider(BaseComponent, component=False):
         self.application = application
 
     def add_jobs(self) -> None:
-        pass
+        """Add jobs used by this function"""
 
     async def initialize(self) -> None:
         """Initialize resources used by this service"""
