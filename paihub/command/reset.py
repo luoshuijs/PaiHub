@@ -66,8 +66,10 @@ class ResetCommand(BaseCommand):
             for caption_entities in reply_to_message.caption_entities:
                 if caption_entities.type == MessageEntityType.TEXT_LINK:
                     text += caption_entities.url
-            else:
+            if text is None:
                 text = reply_to_message.text
+            else:
+                text += reply_to_message.text
         else:
             text = message.text
 
