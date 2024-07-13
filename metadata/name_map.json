@@ -1,4 +1,23 @@
 {
+    "Aether": {
+        "name": [
+            "Aether",
+            "空"
+        ],
+        "regex": [
+        ]
+    },
+    "Ajaw": {
+        "name": [
+            "Ajaw",
+            "阿乔"
+        ],
+        "regex": [
+            "(?:K'uhul )?Ajaw",
+            "库胡勒阿乔",
+            "(?:クフル・)?アハウ"
+        ]
+    },
     "Albedo": {
         "name": [
             "Albedo",
@@ -119,6 +138,15 @@
             "シャルロット"
         ]
     },
+    "Chasca": {
+        "name": [
+            "Chasca",
+            "恰斯卡"
+        ],
+        "regex": [
+            "チャスカ"
+        ]
+    },
     "Chevreuse": {
         "name": [
             "Chevreuse",
@@ -135,6 +163,15 @@
         ],
         "regex": [
             "千織"
+        ]
+    },
+    "Citlali": {
+        "name": [
+            "Citlali",
+            "茜特菈莉"
+        ],
+        "regex": [
+            "シトラリ"
         ]
     },
     "Chongyun": {
@@ -326,6 +363,15 @@
         "regex": [
         ]
     },
+    "Iansan": {
+        "name": [
+            "Iansan",
+            "伊安珊"
+        ],
+        "regex": [
+            "イアンサ"
+        ]
+    },
     "Itto": {
         "name": [
             "Itto",
@@ -384,6 +430,15 @@
         "regex": [
         ]
     },
+    "Kinich": {
+        "name": [
+            "Kinich",
+            "基尼奇"
+        ],
+        "regex": [
+            "キィニチ"
+        ]
+    },
     "Kirara": {
         "name": [
             "Kirara",
@@ -431,6 +486,15 @@
             "レイラ"
         ]
     },
+    "Lumine": {
+        "name": [
+            "Lumine",
+            "荧"
+        ],
+        "regex": [
+            "蛍"
+        ]
+    },
     "Lynette": {
         "name": [
             "Lynette",
@@ -458,13 +522,13 @@
             "リサ"
         ]
     },
-    "Mona": {
+    "Mavuika": {
         "name": [
-            "Mona",
-            "莫娜"
+            "Mavuika",
+            "玛薇卡"
         ],
         "regex": [
-            "モナ"
+            "マーヴィカ"
         ]
     },
     "Mika": {
@@ -485,6 +549,24 @@
             "神子",
             "Yae.?Miko",
             "Miko.?Yae"
+        ]
+    },
+    "Mona": {
+        "name": [
+            "Mona",
+            "莫娜"
+        ],
+        "regex": [
+            "モナ"
+        ]
+    },
+    "Mualani": {
+        "name": [
+            "Mualani",
+            "玛拉妮"
+        ],
+        "regex": [
+            "ムアラニ"
         ]
     },
     "Nahida": {
@@ -543,6 +625,15 @@
         ],
         "regex": [
             "ノエル"
+        ]
+    },
+    "Ororon": {
+        "name": [
+            "Ororon",
+            "欧洛伦"
+        ],
+        "regex": [
+            "オロルン"
         ]
     },
     "Paimon": {
@@ -699,23 +790,6 @@
             "ティナリ"
         ]
     },
-    "Lumine": {
-        "name": [
-            "Lumine",
-            "荧"
-        ],
-        "regex": [
-            "蛍"
-        ]
-    },
-    "Aether": {
-        "name": [
-            "Aether",
-            "空"
-        ],
-        "regex": [
-        ]
-    },
     "Venti": {
         "name": [
             "Venti",
@@ -760,6 +834,15 @@
             "魈"
         ],
         "regex": [
+        ]
+    },
+    "Xilonen": {
+        "name": [
+            "Xilonen",
+            "希诺宁"
+        ],
+        "regex": [
+            "シロネン"
         ]
     },
     "Xingqiu": {
