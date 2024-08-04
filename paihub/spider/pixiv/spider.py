@@ -170,7 +170,6 @@ class PixivSpider(BaseSpider):
             await asyncio.sleep(30)
 
     async def fetch_user_artwork(self):
-        regex = re.compile(r"(Genshin(Impact)?)|(原神)", re.I)
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
         fetch_user = await self.spider_document.get_all_artwork_fetch_user()
         need_fetch_users = authors_id.difference(fetch_user)
@@ -192,9 +191,6 @@ class PixivSpider(BaseSpider):
                 if count == 0:
                     break
                 for illust in user_illusts.illusts:
-                    tags: List[str] = [tag.name for tag in illust.tags]
-                    if regex.search("#".join(tags)) is None:
-                        continue
                     await self.repository.merge(self.parse_mobile_details_to_database(illust))
                     _logger.info("Pixiv Fetch Artwork 正在保存作品 IllustId[%s]", illust.id)
                 offset += count
@@ -212,6 +208,9 @@ class PixivSpider(BaseSpider):
         while True:
             web_search_result = await self.web_api.client.get_follow_latest(page=page)
             total = web_search_result.get("total")
+            if total is None:
+                logger.warning("get_follow_latest 返回错误 \n%s", web_search_result)
+                break
             illusts: "List[Dict]" = web_search_result.get("thumbnails").get("illust")
             for illust in illusts:
                 create_date = datetime.fromisoformat(illust["createDate"]).replace(tzinfo=None)
