@@ -47,7 +47,9 @@ class PushCommand(BaseCommand):
         for work in works:
             keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_push_work|{work.id}")])
         keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
-        await message.reply_html(f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard))
+        await message.reply_html(
+            f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
         return GET_WORK
 
     async def get_pust(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
@@ -72,7 +74,9 @@ class PushCommand(BaseCommand):
             ],
         ]
 
-        await message.edit_text(f"初始化 Push 完毕，当前一共有 {count} 作品需要 Push", reply_markup=InlineKeyboardMarkup(keyboard))
+        await message.edit_text(
+            f"初始化 Push 完毕，当前一共有 {count} 作品需要 Push", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
         return START_PUSH
 
     async def start_push(self, update: "Update", context: "ContextTypes.DEFAULT_TYPE"):
