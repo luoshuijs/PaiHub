@@ -134,7 +134,12 @@ class PixivSpider(BaseSpider):
             if illusts_count < 35:
                 logger.info("Pixiv Web Search 结束任务")
                 break
-            logger.info("Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
+            logger.info(
+                "Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s",
+                page,
+                count,
+                total - count,
+            )
             await asyncio.sleep(random.randint(10, 30))
             page += 1
 
@@ -224,7 +229,12 @@ class PixivSpider(BaseSpider):
                 break
             if illusts_count < 60:
                 break
-            logger.info("Pixiv Spider User Follow 正在获取列表，当前列表页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
+            logger.info(
+                "Pixiv Spider User Follow 正在获取列表，当前列表页数为 %s，当前已经获取到 %s, 还剩下 %s",
+                page,
+                count,
+                total - count,
+            )
             await asyncio.sleep(random.randint(10, 30))
             page += 1
 
