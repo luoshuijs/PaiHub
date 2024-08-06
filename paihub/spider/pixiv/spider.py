@@ -1,9 +1,8 @@
 import asyncio
 import random
-import re
 import time
 from datetime import datetime, timedelta
-from typing import List, Dict, Set, Any, TYPE_CHECKING
+from typing import List, Dict, Set, Any, TYPE_CHECKING, Optional
 
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -134,7 +133,12 @@ class PixivSpider(BaseSpider):
             if illusts_count < 35:
                 logger.info("Pixiv Web Search 结束任务")
                 break
-            logger.info("Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
+            logger.info(
+                "Pixiv Web Search 正在进行搜索，当前搜索页数为 %s，当前已经获取到 %s, 还剩下 %s",
+                page,
+                count,
+                total - count,
+            )
             await asyncio.sleep(random.randint(10, 30))
             page += 1
 
@@ -170,7 +174,6 @@ class PixivSpider(BaseSpider):
             await asyncio.sleep(30)
 
     async def fetch_user_artwork(self):
-        regex = re.compile(r"(Genshin(Impact)?)|(原神)", re.I)
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
         fetch_user = await self.spider_document.get_all_artwork_fetch_user()
         need_fetch_users = authors_id.difference(fetch_user)
@@ -192,9 +195,6 @@ class PixivSpider(BaseSpider):
                 if count == 0:
                     break
                 for illust in user_illusts.illusts:
-                    tags: List[str] = [tag.name for tag in illust.tags]
-                    if regex.search("#".join(tags)) is None:
-                        continue
                     await self.repository.merge(self.parse_mobile_details_to_database(illust))
                     _logger.info("Pixiv Fetch Artwork 正在保存作品 IllustId[%s]", illust.id)
                 offset += count
@@ -211,7 +211,6 @@ class PixivSpider(BaseSpider):
         page: int = 1
         while True:
             web_search_result = await self.web_api.client.get_follow_latest(page=page)
-            total = web_search_result.get("total")
             illusts: "List[Dict]" = web_search_result.get("thumbnails").get("illust")
             for illust in illusts:
                 create_date = datetime.fromisoformat(illust["createDate"]).replace(tzinfo=None)
@@ -221,16 +220,14 @@ class PixivSpider(BaseSpider):
                 await self.spider_document.set_web_follow_data(illust)
             illusts_count = len(illusts)
             count += illusts_count
-            if count >= total:
-                break
             if illusts_count < 60:
+                logger.info("Pixiv Spider User Follow 结束任务")
                 break
-            logger.info("Pixiv Spider User Follow 正在获取列表，当前列表页数为 %s，当前已经获取到 %s, 还剩下 %s", page, count, total - count)
+            logger.info("Pixiv Spider User Follow 正在获取列表，当前列表页数为 %s，当前已经获取到 %s", page, count)
             await asyncio.sleep(random.randint(10, 30))
             page += 1
 
     async def get_mobile_follow(self):
-        regex = re.compile(r"(Genshin(Impact)?)|(原神)", re.I)
         end_date = datetime.now() - timedelta(days=1)
         offset: int = 0
         add_count: int = 0
@@ -248,10 +245,9 @@ class PixivSpider(BaseSpider):
                 web_follow_tags = await self.spider_document.get_web_follow_tags(illust.id)
                 if web_follow_tags is None:
                     continue
-                tags: List[str] = web_follow_tags.get("tags")
+                tags: Optional[List[str]] = web_follow_tags.get("tags")
                 if tags is None:
-                    continue
-                if regex.search("#".join(tags)) is None:
+                    logger.warning("作品 Pixiv[%s] Tags 为空", illust.id)
                     continue
                 instance = _Pixiv(
                     id=illust.id,
