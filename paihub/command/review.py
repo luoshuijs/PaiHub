@@ -53,7 +53,9 @@ class ReviewCommand(BaseCommand):
         for work in works:
             keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")])
         keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
-        await message.reply_html(f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard))
+        await message.reply_html(
+            f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
         return GET_WORK
 
     async def get_work(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
@@ -167,21 +169,27 @@ class ReviewCommand(BaseCommand):
                         keyboard = [
                             [
                                 InlineKeyboardButton(
-                                    text="撤销该修改", callback_data=f"reset_review_form_command|{review_context.review_id}"
+                                    text="撤销该修改",
+                                    callback_data=f"reset_review_form_command|{review_context.review_id}",
                                 ),
                             ],
                         ]
-                        await message.reply_text("当前作品已经自动通过\n正在获取下一个作品", reply_markup=InlineKeyboardMarkup(keyboard))
+                        await message.reply_text(
+                            "当前作品已经自动通过\n正在获取下一个作品", reply_markup=InlineKeyboardMarkup(keyboard)
+                        )
                     else:
                         keyboard = [
                             [
                                 InlineKeyboardButton(
-                                    text="撤销该修改", callback_data=f"reset_review_form_command|{review_context.review_id}"
+                                    text="撤销该修改",
+                                    callback_data=f"reset_review_form_command|{review_context.review_id}",
                                 ),
                             ],
                         ]
                         await review_context.set_review_status(ReviewStatus.REJECT, auto=True, update_by=user.id)
-                        await message.reply_text("当前作品已经自动拒绝\n正在获取下一个作品", reply_markup=InlineKeyboardMarkup(keyboard))
+                        await message.reply_text(
+                            "当前作品已经自动拒绝\n正在获取下一个作品", reply_markup=InlineKeyboardMarkup(keyboard)
+                        )
                     continue
                 keyboard = [
                     [
@@ -261,7 +269,9 @@ class ReviewCommand(BaseCommand):
                 InlineKeyboardButton(text="退出", callback_data="exit"),
             ],
         ]
-        await message.reply_text(f"当前还有{count}个作品未审核\n选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard))
+        await message.reply_text(
+            f"当前还有{count}个作品未审核\n选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard)
+        )
         return START_REVIEW
 
     async def revert_review_change(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):

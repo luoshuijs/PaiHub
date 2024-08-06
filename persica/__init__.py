@@ -93,7 +93,9 @@ class Factor:
             else:
                 instantiate = self.kwargs.get(parameter.annotation)
             if instantiate is None:
-                raise NoSuchParameterException(f"无法找到 {component.__name__} 组件中 {name} 参数需要的 {annotation.__name__} 类型")
+                raise NoSuchParameterException(
+                    f"无法找到 {component.__name__} 组件中 {name} 参数需要的 {annotation.__name__} 类型"
+                )
             if instantiate == NoneInstantiate:
                 instantiate = self.init_components(parameter.annotation)
             params[name] = instantiate
