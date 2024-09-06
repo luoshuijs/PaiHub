@@ -47,8 +47,8 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(
             self.follow_job, IntervalTrigger(hours=1), next_run_time=datetime.now() + timedelta(hours=1)
         )
-        self.application.scheduler.add_job(self.follow_user_job, CronTrigger(hour=3, minute=0))
-        self.application.scheduler.add_job(self.follow_user_job, CronTrigger(hour=4, minute=0))
+        self.application.scheduler.add_job(self.follow_user_job, CronTrigger(hour=4, minute=0), next_run_time=datetime.now())
+        self.application.scheduler.add_job(self.fetch_artwork, CronTrigger(day=1, hour=0, minute=0), next_run_time=datetime.now())
         # 调试使用 asyncio.create_task(self.fetch_artwork)
 
     async def search_job(self):
@@ -91,6 +91,7 @@ class PixivSpider(BaseSpider):
                     tags = web_search_tags.get("tags")
                     if tags is None:
                         continue
+                    _logger.info("Pixiv Search Artwork 正在保存作品 IllustId[%s] Bookmarks[%s]", illust.id, illust.total_bookmarks)
                     instance = _Pixiv(
                         id=illust.id,
                         title=illust.title,
@@ -156,7 +157,7 @@ class PixivSpider(BaseSpider):
             if len(user_list) < 24:
                 break
             await asyncio.sleep(random.randint(10, 30))
-        authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
+        authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.8)
         need_follows = authors_id.difference(user_follows)
         logger.info("目前需要新添关注 %s 个", len(need_follows))
         for user_id in need_follows:
@@ -174,10 +175,10 @@ class PixivSpider(BaseSpider):
             await asyncio.sleep(30)
 
     async def fetch_user_artwork(self):
-        authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.9)
+        authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.8)
         fetch_user = await self.spider_document.get_all_artwork_fetch_user()
         need_fetch_users = authors_id.difference(fetch_user)
-        for user_id in need_fetch_users:
+        for user_id in list(need_fetch_users)[:2]:
             offset = 0
             while True:
                 try:
@@ -305,14 +306,18 @@ class PixivSpider(BaseSpider):
     def filter_artwork(illust: "Illust"):
         if illust.ai_type == 2:  # 移除 AI 作品
             return False
-        days_hundred_fold = (time.time() - illust.create_date.timestamp()) / 24 / 60 / 60 * 100
-        if 10 <= days_hundred_fold <= 300 and illust.total_bookmarks >= 700:
-            if illust.total_bookmarks < 1000 - days_hundred_fold:
-                return False
+        tags = [tag.name for tag in illust.tags]
+        if "R-18" in tags:
+            if illust.total_bookmarks >= 2000:
+                return True
+            return False
+        if illust.total_bookmarks >= 1000:
+            return True
         else:
-            if illust.total_bookmarks < 1000:
-                return False
-        return True
+            days_hundred_fold = (time.time() - illust.create_date.timestamp()) / 24 / 60 / 60 * 100
+            if 50 < days_hundred_fold < 1000 and illust.total_bookmarks > days_hundred_fold:
+                return True
+        return False
 
     @staticmethod
     def filter_mobile_artwork(data: Dict[str, Any]):
