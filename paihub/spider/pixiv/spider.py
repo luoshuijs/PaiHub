@@ -47,8 +47,12 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(
             self.follow_job, IntervalTrigger(hours=1), next_run_time=datetime.now() + timedelta(hours=1)
         )
-        self.application.scheduler.add_job(self.follow_user_job, CronTrigger(hour=4, minute=0), next_run_time=datetime.now())
-        self.application.scheduler.add_job(self.fetch_artwork, CronTrigger(day=1, hour=0, minute=0), next_run_time=datetime.now())
+        self.application.scheduler.add_job(
+            self.follow_user_job, CronTrigger(hour=4, minute=0), next_run_time=datetime.now()
+        )
+        self.application.scheduler.add_job(
+            self.fetch_artwork, CronTrigger(day=1, hour=0, minute=0), next_run_time=datetime.now()
+        )
         # 调试使用 asyncio.create_task(self.fetch_artwork)
 
     async def search_job(self):
