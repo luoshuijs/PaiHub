@@ -47,8 +47,12 @@ class PixivSpider(BaseSpider):
         self.application.scheduler.add_job(
             self.follow_job, IntervalTrigger(hours=1), next_run_time=datetime.now() + timedelta(hours=1)
         )
-        self.application.scheduler.add_job(self.follow_user_job, CronTrigger(hour=4, minute=0), next_run_time=datetime.now())
-        self.application.scheduler.add_job(self.fetch_artwork, CronTrigger(day=1, hour=0, minute=0), next_run_time=datetime.now())
+        self.application.scheduler.add_job(
+            self.follow_user_job, CronTrigger(hour=4, minute=0), next_run_time=datetime.now()
+        )
+        self.application.scheduler.add_job(
+            self.fetch_artwork, CronTrigger(day=1, hour=0, minute=0), next_run_time=datetime.now()
+        )
         # 调试使用 asyncio.create_task(self.fetch_artwork)
 
     async def search_job(self):
@@ -78,12 +82,12 @@ class PixivSpider(BaseSpider):
         client = self.mobile_api.illust
         while True:
             search_result = await client.search("原神", offset=offset, start_date=start_date, end_date=end_date)
-            count = len(search_result.illusts)
+            count = len(search_result.previews)
             if count == 0:
                 logger.info("Pixiv Mobile Search 结束任务")
                 break
             offset += count
-            for illust in search_result.illusts:
+            for illust in search_result.previews:
                 if self.filter_artwork(illust):
                     web_search_tags = await self.spider_document.get_web_search_tags(illust.id)
                     if web_search_tags is None:
@@ -186,7 +190,8 @@ class PixivSpider(BaseSpider):
             offset = 0
             while True:
                 try:
-                    user_illusts = await self.mobile_api.user.illusts(user_id, type="illust", offset=offset)
+                    user_illusts = await self.mobile_api.user_illusts(user_id, offset=offset)
+                    # Original code : await self.mobile_api.user.illusts(user_id, type="illust", offset=offset)
                 except NotExistError:
                     await self.spider_document.set_not_exist_user(user_id)
                     await asyncio.sleep(3)
@@ -236,9 +241,11 @@ class PixivSpider(BaseSpider):
         end_date = datetime.now() - timedelta(days=1)
         offset: int = 0
         add_count: int = 0
-        client = self.mobile_api.illust
+        client = self.mobile_api
+        # Original code : client = self.mobile_api.illust
         while True:
-            search_result = await client.follow()
+            search_result = await client.illust_follow()
+            # Original code : search_result = await client.follow()
             count = len(search_result.illusts)
             if count == 0:
                 break

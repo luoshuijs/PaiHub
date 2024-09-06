@@ -1,12 +1,16 @@
 from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, Dict, TYPE_CHECKING, Optional, List
 
 from apscheduler.triggers.interval import IntervalTrigger
 from async_pixiv import PixivClient
 from async_pixiv.const import APP_API_HOST
 from async_pixiv.error import LoginError, PixivError
+from async_pixiv.model import Illust, PixivModel
+from async_pixiv.model.other.result import PageResult
+from async_pixiv.utils.context import set_pixiv_client
 from async_pixiv.utils.rate_limiter import RateLimiter
+from pydantic import Field
 
 from paihub.base import BaseApi
 from paihub.entities.config import TomlConfig
@@ -17,8 +21,22 @@ from pixnet.errors import BadRequest as PixNetBadRequest
 
 if TYPE_CHECKING:
     from async_pixiv.client.api._illust import IllustAPI
-    from async_pixiv.client.api._user import UserAPI
+    from async_pixiv.client.api._user import UserAPI, UserPreview
     from async_pixiv.client.api._novel import NovelAPI
+else:
+    from async_pixiv.client.api._user import UserPreview
+
+
+class UserIllustsResult(PageResult[Illust]):
+    illusts: List[Illust]
+
+
+class UserRelatedResult(PixivModel):
+    users: List[UserPreview] = Field(alias="user_previews")
+
+
+class IllustSearchResult(UserIllustsResult):
+    pass
 
 
 class PixivMobileApi(BaseApi):
@@ -57,10 +75,38 @@ class PixivMobileApi(BaseApi):
                 logger.error("[blue]Pixiv[/blue] Login Error", exc_info=exc)
 
     async def user_follow_add(self, user_id: int | str, restrict: str = "public") -> Dict[str, Any]:
-        url = APP_API_HOST / "user/follow/add"
+        url = APP_API_HOST / "v1/user/follow/add"
         data = {"user_id": user_id, "restrict": restrict}
-        r = await self.client.request("POST", url, data=data)
-        return r.json()
+        response = await self.client.request("POST", url, data=data)
+        return response.json()
+
+    async def user_illusts(
+        self,
+        account_id: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> UserIllustsResult:
+        if account_id is None:
+            account_id = self.client.account.id
+        response = await self.client.request_get(
+            APP_API_HOST / "v1/user/illusts",
+            params={
+                "user_id": account_id,
+                "type": "illust",
+                "filter": "for_ios",
+                "offset": offset,
+            },
+        )
+        with set_pixiv_client(self.client):
+            return UserIllustsResult.model_validate(response.json())
+
+    async def illust_follow(self, offset: Optional[int] = None) -> IllustSearchResult:
+        response = await self.client.request_get(
+            APP_API_HOST / "v2/illust/follow",
+            params={"restrict": "public", "offset": offset},
+        )
+
+        with set_pixiv_client(self.client):
+            return IllustSearchResult.model_validate(response.json())
 
 
 class PixivWebAPI(BaseApi):
