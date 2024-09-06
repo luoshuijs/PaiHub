@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
 import dotenv
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 dotenv.load_dotenv()
 
@@ -14,8 +14,7 @@ class DatabaseConfig(BaseSettings):
     password: Optional[str] = None
     database: Optional[str] = None
 
-    class Config(BaseSettings.Config):
-        env_prefix = "db_"
+    model_config = SettingsConfigDict(env_prefix='db_')
 
 
 class RedisConfig(BaseSettings):
@@ -24,8 +23,7 @@ class RedisConfig(BaseSettings):
     database: Union[str, int] = 0
     password: Optional[str] = None
 
-    class Config(BaseSettings.Config):
-        env_prefix = "redis_"
+    model_config = SettingsConfigDict(env_prefix='redis_')
 
 
 class BotConfig(BaseSettings):
@@ -34,8 +32,7 @@ class BotConfig(BaseSettings):
     base_url: Optional[str] = None
     base_file_url: Optional[str] = None
 
-    class Config(BaseSettings.Config):
-        env_prefix = "bot_"
+    model_config = SettingsConfigDict(env_prefix='bot_')
 
 
 class MongodbConfig(BaseSettings):
@@ -43,8 +40,7 @@ class MongodbConfig(BaseSettings):
     port: int = 27017
     default_database: str = "PaiHub"
 
-    class Config(BaseSettings.Config):
-        env_prefix = "mongodb_"
+    model_config = SettingsConfigDict(env_prefix='mongodb_')
 
 
 class Settings(BaseSettings):
