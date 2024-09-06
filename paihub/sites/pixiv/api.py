@@ -40,16 +40,16 @@ class PixivMobileApi(BaseApi):
     async def login(self):
         login_token = await self.cache.get_login_token()
         if login_token is None:
-            raise RuntimeError("The Pixiv Mobile API login has been deprecated.")
+            raise RuntimeError("The [blue]Pixiv[/blue] Mobile API login has been deprecated.")
         else:
             try:
                 user = await self.client.login_with_token(login_token)
                 await self.cache.set_login_token(self.client.refresh_token)
-                logger.info("Pixiv Login with Token Success, Login User [%s]%s", user.id, user.name)
+                logger.success("[blue]Pixiv[/blue] Login with Token Success, Login User [%s]%s", user.id, user.name)
             except LoginError:
-                logger.error("Pixiv Login Error")
+                logger.error("[blue]Pixiv[/blue] Login Error")
             except PixivError as exc:
-                logger.error("Pixiv Login Error", exc_info=exc)
+                logger.error("[blue]Pixiv[/blue] Login Error", exc_info=exc)
 
     async def user_follow_add(self, user_id: int | str, restrict: str = "public") -> Dict[str, Any]:
         url = APP_API_HOST / "user/follow/add"
@@ -73,12 +73,12 @@ class PixivWebAPI(BaseApi):
         try:
             result = await self.client.get_user_status()
             if result["is_logged_in"]:
-                logger.info(
-                    "Pixiv Web API Login with Cookies Success, Login User [%s]%s",
+                logger.success(
+                    "[blue]Pixiv[/blue] Web API Login with Cookies Success, Login User [%s]%s",
                     result["user_id"],
                     result["user_name"],
                 )
             else:
-                logger.warning("Pixiv Web API Cookies Expire")
+                logger.warning("[blue]Pixiv[/blue] Web API Cookies Expire")
         except PixNetBadRequest as exc:
-            logger.error("Pixiv Web API Login Error", exc_info=exc)
+            logger.error("[blue]Pixiv[/blue] Web API Login Error", exc_info=exc)

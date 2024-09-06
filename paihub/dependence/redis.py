@@ -13,17 +13,17 @@ class Redis(BaseDependence):
         self.ttl = 600
 
     async def initialize(self):
-        logger.info("正在尝试建立与 Redis 连接")
+        logger.info("正在尝试建立与 [red]Redis[/red] 连接")
         try:
             await self.client.ping()
         except RedisConnectionError as exc:
-            logger.error("连接 Redis 失败")
+            logger.error("连接 [red]Redis[/red] 失败")
             raise exc
         except RedisTimeoutError as exc:
-            logger.error("连接 Redis 超时")
+            logger.error("连接 [red]Redis[/red] 超时")
             raise exc
         else:
-            logger.info("连接 Redis 成功")
+            logger.success("连接 [red]Redis[/red] 成功")
 
     async def shutdown(self):
         await self.client.close()

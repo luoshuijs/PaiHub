@@ -15,7 +15,7 @@ class Mongodb(BaseDependence):
     async def initialize(self) -> None:
         try:
             await self.client.admin.command("ping")
-            logger.info("Pinged your deployment. You successfully connected to MongoDB!")
+            logger.success("Pinged your deployment. You successfully connected to [green]MongoDB[/green]!")
         except Exception as exc:
             logger.error("Connect MongoDB Failed", exc_info=exc)
             raise exc

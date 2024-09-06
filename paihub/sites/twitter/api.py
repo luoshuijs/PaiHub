@@ -26,14 +26,16 @@ class WebClientApi(BaseApi):
             try:
                 account_settings = await self.web.get_account_settings()
                 screen_name = account_settings.get("screen_name")
-                logger.info("Twitter Web API Login with Auth Token Success, Login User [%s]", screen_name)
+                logger.success(
+                    "[blue]Twitter[/blue] Web API Login with Auth Token Success, Login User [%s]", screen_name
+                )
                 self.login_status = True
             except BirdNetBadRequest as exc:
-                logger.error("Twitter Web Login Error: %s", exc.message)
+                logger.error("[blue]Twitter[/blue] Web Login Error: %s", exc.message)
             except BirdNetTimedOut:
-                logger.error("Twitter Web Login Timed Out")
+                logger.error("[blue]Twitter[/blue] Web Login Timed Out")
         else:
-            logger.warning("Twitter Web API Auth Token Not Found")
+            logger.warning("[blue]Twitter[/blue] Web API Auth Token Not Found")
 
     async def shutdown(self) -> None:
         await self.web.shutdown()

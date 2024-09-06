@@ -39,8 +39,9 @@ class DataBase(BaseDependence):
     def _test_connection(subject: "Connection"):
         inspector = inspect(subject)
         table_names = inspector.get_table_names()
-        logger.info("连接数据库成功")
-        logger.info("当前数据库表 %s", " ".join(f"[{table_name}]" for table_name in table_names))
+        dialect_name = subject.dialect.name
+        logger.success("连接 [yellow]%s[/yellow] 数据库成功", dialect_name)
+        logger.info("当前数据库表 %s", " ".join(f"[white][i]{table_name}[/i][/white]" for table_name in table_names))
 
     async def initialize(self) -> None:
         try:

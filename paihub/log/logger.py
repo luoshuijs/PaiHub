@@ -3,7 +3,15 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-import colorlog
+
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.style import Style
+from rich.theme import Theme
+
+
+SUCCESS_LEVEL_NUM = 25
+logging.addLevelName(SUCCESS_LEVEL_NUM, "SUCCESS")
 
 
 class Logger:
@@ -22,35 +30,24 @@ class Logger:
         self.logger.setLevel(level=level)
 
         if color_log:
-            log_colors_config = {
-                "DEBUG": "cyan",
-                "INFO": "green",
-                "WARNING": "yellow",
-                "ERROR": "red",
-                "CRITICAL": "red",
-            }
-
-            formatter = colorlog.ColoredFormatter(
-                "%(log_color)s[%(asctime)s] [%(levelname)s] - %(message)s",
-                log_colors=log_colors_config,
+            console = self._get_rich_console()
+            rich_handler = RichHandler(
+                console=console, show_time=True, show_level=True, show_path=False, rich_tracebacks=True, markup=True
             )
-            # Console Handler
-            ch = colorlog.StreamHandler()
-            ch.setFormatter(formatter)
-            self.logger.addHandler(ch)
+            self.logger.addHandler(rich_handler)
 
         if filename is not None:
             # File Handler
             log_file_name = os.path.join(log_path, filename)
-            fh = RotatingFileHandler(
+            rotating_file_handler = RotatingFileHandler(
                 filename=log_file_name,
                 maxBytes=1024 * 1024 * 5,
                 backupCount=5,
                 encoding="utf-8",
             )
             formatter_plain = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
-            fh.setFormatter(formatter_plain)
-            self.logger.addHandler(fh)
+            rotating_file_handler.setFormatter(formatter_plain)
+            self.logger.addHandler(rotating_file_handler)
 
     def debug(self, message, *args, exc_info: any = None, **kwargs):
         self.logger.debug(message, *args, exc_info=exc_info, extra=kwargs)
@@ -66,3 +63,16 @@ class Logger:
 
     def critical(self, message, *args, exc_info: any = None, **kwargs):
         self.logger.critical(message, *args, exc_info=exc_info, extra=kwargs)
+
+    def success(self, message, *args, exc_info: any = None, **kwargs):
+        self.logger.log(SUCCESS_LEVEL_NUM, message, *args, exc_info=exc_info, extra=kwargs)
+
+    @staticmethod
+    def _get_rich_console(stderr: bool = False) -> Console:
+        return Console(
+            theme=Theme({"logging.level.success": Style(color="green")}),
+            color_system="auto",
+            force_terminal=None,
+            width=None,
+            stderr=stderr,
+        )
