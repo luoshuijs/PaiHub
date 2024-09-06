@@ -13,6 +13,7 @@ dependencies = [
     "motor>=3.5.1",
     "orjson>=3.10.7",
     "picimagesearch",
+    "pybooru>=4.2.2",
     "pydantic-settings>=2.4.0",
     "python-dotenv>=1.0.1",
     "python-telegram-bot[ext,rate-limiter]>=21.5",
