@@ -34,7 +34,7 @@ class TwitterAuthor(Author):
 
 
 class TwitterArtWork(ArtWork):
-    web_name = "Twitter"
+    web_name: str = "Twitter"
     author: TwitterAuthor
 
     @property

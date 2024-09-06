@@ -32,7 +32,7 @@ class PixivAuthor(Author):
 
 
 class PixivArtWork(ArtWork):
-    web_name = "Pixiv"
+    web_name: str = "Pixiv"
     author: PixivAuthor
 
     @property

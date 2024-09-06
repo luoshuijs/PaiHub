@@ -9,7 +9,7 @@ class DanbooruUploader(Author):
 
 
 class DanbooruArtWork(ArtWork):
-    web_name = "Danbooru"
+    web_name: str = "Danbooru"
     author: DanbooruUploader
     is_sourced: bool = True
 
