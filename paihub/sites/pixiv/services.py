@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional, List
 
-from async_pixiv.error import PixivError, NotExist, ApiError
+from async_pixiv.error import PixivError, NotExistError, ApiError
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import BaseSiteService
@@ -78,7 +78,7 @@ class PixivSitesService(BaseSiteService):
     async def get_artwork(self, artwork_id: int) -> PixivArtWork:
         try:
             illust_detail = await self.api.illust.detail(artwork_id)
-        except NotExist as exc:
+        except NotExistError as exc:
             raise ArtWorkNotFoundError("Not Exist") from exc
         except ApiError as exc:
             message = exc.__str__()

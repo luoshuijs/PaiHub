@@ -6,7 +6,7 @@ from typing import List, Dict, Set, Any, TYPE_CHECKING, Optional
 
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from async_pixiv.error import NotExist, ApiError
+from async_pixiv.error import NotExistError, ApiError
 
 from paihub.base import BaseSpider
 from paihub.log import logger, Logger
@@ -91,7 +91,11 @@ class PixivSpider(BaseSpider):
                     tags = web_search_tags.get("tags")
                     if tags is None:
                         continue
-                    _logger.info("Pixiv Search Artwork 正在保存作品 IllustId[%s] Bookmarks[%s]", illust.id, illust.total_bookmarks)
+                    _logger.info(
+                        "Pixiv Search Artwork 正在保存作品 IllustId[%s] Bookmarks[%s]",
+                        illust.id,
+                        illust.total_bookmarks,
+                    )
                     instance = _Pixiv(
                         id=illust.id,
                         title=illust.title,
@@ -166,7 +170,7 @@ class PixivSpider(BaseSpider):
             try:
                 await self.mobile_api.user_follow_add(user_id)
                 logger.info("Pixiv Spider Follow 添加关注列表 %s", user_id)
-            except NotExist:
+            except NotExistError:
                 logger.info("添加 %s 关注列表失败 用户不存在", user_id)
                 await self.spider_document.set_not_exist_user(user_id)
             except ApiError as exc:
@@ -183,7 +187,7 @@ class PixivSpider(BaseSpider):
             while True:
                 try:
                     user_illusts = await self.mobile_api.user.illusts(user_id, type="illust", offset=offset)
-                except NotExist:
+                except NotExistError:
                     await self.spider_document.set_not_exist_user(user_id)
                     await asyncio.sleep(3)
                     break
