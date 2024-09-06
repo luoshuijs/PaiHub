@@ -4,7 +4,7 @@ from paihub.base import Component
 from paihub.dependence.redis import Redis
 
 try:
-    import ujson as jsonlib
+    import orjson as jsonlib
 except ImportError:
     import json as jsonlib
 

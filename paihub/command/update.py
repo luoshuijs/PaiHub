@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from telegram.ext import ContextTypes
 
 try:
-    import ujson as jsonlib
+    import orjson as jsonlib
 
 except ImportError:
     import json as jsonlib

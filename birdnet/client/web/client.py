@@ -13,7 +13,7 @@ from birdnet.client.web.variables import DEFAULT_VARIABLES
 from birdnet.errors import BadRequest, NetworkError
 
 try:
-    import ujson as jsonlib
+    import orjson as jsonlib
 except ImportError:
     import json as jsonlib
 

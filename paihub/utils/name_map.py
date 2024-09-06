@@ -2,7 +2,7 @@ import re
 from typing import Tuple, Set, Iterable
 
 try:
-    import ujson as jsonlib
+    import orjson as jsonlib
 except ImportError:
     import json as jsonlib
 

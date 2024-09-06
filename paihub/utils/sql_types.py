@@ -5,7 +5,7 @@ from sqlalchemy.engine.interfaces import Dialect
 from sqlalchemy.sql.type_api import TypeEngine
 
 try:
-    import ujson as jsonlib
+    import orjson as jsonlib
 except ImportError:
     import json as jsonlib
 

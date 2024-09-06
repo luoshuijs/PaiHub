@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 from pixnet.errors import BadRequest, TooManyRequest, TimedOut, NetworkError, NotExited
 
 try:
-    import ujson as jsonlib
+    import orjson as jsonlib
 
 except ImportError:
     import json as jsonlib
