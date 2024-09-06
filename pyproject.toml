@@ -39,6 +39,44 @@ include = '\.pyi?$'
 line-length = 120
 target-version = ['py312']
 
+[tool.uv]
+dev-dependencies = [
+    "black>=24.8.0",
+    "ruff>=0.6.4",
+]
+
 [tool.uv.sources]
 picimagesearch = { git = "https://github.com/kitUIN/PicImageSearch" }
 async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv", rev = "v1" }
+
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+line-length = 120
