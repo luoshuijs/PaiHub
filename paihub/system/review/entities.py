@@ -139,7 +139,7 @@ class StatusStatistics(BaseModel):
 class AutoReviewResult(BaseModel):
     status: bool
     statistics: StatusStatistics
-    description: Optional[str]
+    description: Optional[str] = None
 
 
 class ReviewBlackAuthor(SQLModel, table=True):
