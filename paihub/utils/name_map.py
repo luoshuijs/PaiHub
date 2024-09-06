@@ -10,7 +10,7 @@ except ImportError:
 class NameMap:
     def __init__(self, data_file: str):
         with open(data_file, "r", encoding="utf-8") as f:
-            self.name_map = jsonlib.load(f)
+            self.name_map = jsonlib.loads(f.read())
 
         regex_patterns = []
         for key, value in self.name_map.items():
