@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
-from typing import Any, Dict
+from typing import Any, Dict, TYPE_CHECKING
 
 from apscheduler.triggers.interval import IntervalTrigger
 from async_pixiv import PixivClient
@@ -15,6 +15,11 @@ from paihub.sites.pixiv.cache import PixivCache
 from pixnet.client.web import WebClient
 from pixnet.errors import BadRequest as PixNetBadRequest
 
+if TYPE_CHECKING:
+    from async_pixiv.client.api._illust import IllustAPI
+    from async_pixiv.client.api._user import UserAPI
+    from async_pixiv.client.api._novel import NovelAPI
+
 
 class PixivMobileApi(BaseApi):
     def __init__(self, cache: PixivCache):
@@ -27,9 +32,9 @@ class PixivMobileApi(BaseApi):
         )
         self.cache = cache
         self.config = TomlConfig("config/pixiv.toml")
-        self.illust = self.client.ILLUST
-        self.user = self.client.USER
-        self.novel = self.client.NOVEL
+        self.illust: "IllustAPI" = self.client.ILLUST
+        self.user: "UserAPI" = self.client.USER
+        self.novel: "NovelAPI" = self.client.NOVEL
 
     async def initialize(self) -> None:
         await self.login()
