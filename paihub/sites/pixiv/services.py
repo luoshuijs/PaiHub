@@ -102,12 +102,14 @@ class PixivSitesService(BaseSiteService):
         # 对于动态图片作品需要 ffmpeg 转换
         artwork = (await self.api.illust.detail(artwork_id)).illust
         if artwork.type == IllustType.ugoira:
-            result = await self.api.illust.download_ugoira(artwork_id, type="mp4")
-            if isinstance(result, bytes):
-                return [result]
-            if isinstance(result, list):
-                return result
-            raise ImagesFormatNotSupported(message=f"Images Data {result.__class__.__name__} Not Supported")
+            result_ugoira = await artwork.download_ugoira(result_type="mp4")
+            if isinstance(result_ugoira, bytes):
+                return [result_ugoira]
+            if isinstance(result_ugoira, list):
+                return result_ugoira
+            if result_ugoira is None:
+                raise ImagesFormatNotSupported(message=f"Images Data is None")
+            raise ImagesFormatNotSupported(message=f"Images Data {result_ugoira.__class__.__name__} Not Supported")
         if not artwork.meta_pages:
             return [await self.api.client.download(str(artwork.image_urls.large))]
         else:
