@@ -17,7 +17,9 @@ UT = TypeVar("UT")
 
 
 class AdminHandler(BaseHandler[Update, "CCT"]):
-    def __init__(self, handler: BaseHandler[Update, "CCT"], application: "Application", need_notify: bool = True) -> None:
+    def __init__(
+        self, handler: BaseHandler[Update, "CCT"], application: "Application", need_notify: bool = True
+    ) -> None:
         self.handler = handler
         self.application = application
         self._user_service: Optional["UserAdminService"] = None
