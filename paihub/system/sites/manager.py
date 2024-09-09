@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Dict, Iterator
 
 from paihub.base import BaseService, BaseSiteService
@@ -13,7 +12,6 @@ class SitesManager(BaseService):
             site_key = s.site_key
             self.sites_services.setdefault(site_key, s)
 
-    @lru_cache(maxsize=128)  # noqa: B019
     def get_site_by_site_key(self, key_name: str) -> BaseSiteService:
         result = self.sites_services.get(key_name)
         if result is None:
