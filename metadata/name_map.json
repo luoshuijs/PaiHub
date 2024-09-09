@@ -392,6 +392,15 @@
             "ジン"
         ]
     },
+    "Kachina": {
+        "name": [
+            "Kachina",
+            "卡齐娜"
+        ],
+        "regex": [
+            "カチーナ"
+        ]
+    },
     "Kaeya": {
         "name": [
             "Kaeya",
