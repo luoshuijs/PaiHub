@@ -2,15 +2,16 @@ import asyncio
 import platform
 import signal
 import warnings
-from typing import Sequence, Optional, NoReturn
+from typing import NoReturn, Optional, Sequence
 
 import pytz
 from apscheduler.events import EVENT_JOB_ERROR, JobExecutionEvent
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from telegram.ext import ApplicationBuilder as BotApplicationBuilder, Defaults
+from telegram.ext import ApplicationBuilder as BotApplicationBuilder
+from telegram.ext import Defaults
 from telegram.warnings import PTBUserWarning
 
-from paihub.base import BaseDependence, BaseService, BaseCommand, BaseSiteService, BaseApi, BaseSpider
+from paihub.base import BaseApi, BaseCommand, BaseDependence, BaseService, BaseSiteService, BaseSpider
 from paihub.config import Settings
 from paihub.log import logger
 from persica import Factor

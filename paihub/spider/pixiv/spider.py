@@ -2,14 +2,14 @@ import asyncio
 import random
 import time
 from datetime import datetime, timedelta
-from typing import List, Dict, Set, Any, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
 
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from async_pixiv.error import NotExistError, ApiError
+from async_pixiv.error import ApiError, NotExistError
 
 from paihub.base import BaseSpider
-from paihub.log import logger, Logger
+from paihub.log import Logger, logger
 from paihub.sites.pixiv.api import PixivMobileApi, PixivWebAPI
 from paihub.sites.pixiv.cache import PixivCache
 from paihub.sites.pixiv.entities import Pixiv as _Pixiv

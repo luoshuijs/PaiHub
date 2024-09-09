@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
-from typing import Any, Dict, TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from apscheduler.triggers.interval import IntervalTrigger
 from async_pixiv import PixivClient
@@ -21,8 +21,8 @@ from pixnet.errors import BadRequest as PixNetBadRequest
 
 if TYPE_CHECKING:
     from async_pixiv.client.api._illust import IllustAPI
-    from async_pixiv.client.api._user import UserAPI, UserPreview
     from async_pixiv.client.api._novel import NovelAPI
+    from async_pixiv.client.api._user import UserAPI, UserPreview
 else:
     from async_pixiv.client.api._user import UserPreview
 

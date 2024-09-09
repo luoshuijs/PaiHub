@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Mapping, Any, Set
+from typing import Any, Dict, Mapping, Optional, Set
 
 from paihub.base import BaseService
 from paihub.dependence.mongodb import Mongodb

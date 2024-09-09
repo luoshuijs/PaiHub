@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from paihub.base import BaseSiteService
 from paihub.sites.twitter.api import WebClientApi

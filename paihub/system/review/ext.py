@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, List, Optional
 
 if TYPE_CHECKING:
-    from paihub.entities.artwork import ArtWork
     from paihub.base import BaseSiteService
-    from paihub.system.review.entities import Review, AutoReviewResult, ReviewStatus
+    from paihub.entities.artwork import ArtWork
+    from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
     from paihub.system.review.services import ReviewService
 
 

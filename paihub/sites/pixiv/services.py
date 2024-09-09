@@ -1,15 +1,15 @@
 import asyncio
-from typing import Optional, List
+from typing import List, Optional
 
-from async_pixiv.error import PixivError, NotExistError, ApiError
+from async_pixiv.error import ApiError, NotExistError, PixivError
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import BaseSiteService
 from paihub.entities.artwork import ImageType
-from paihub.error import BadRequest, ArtWorkNotFoundError, ImagesFormatNotSupported
+from paihub.error import ArtWorkNotFoundError, BadRequest, ImagesFormatNotSupported
 from paihub.log import logger
 from paihub.sites.pixiv.api import PixivMobileApi
-from paihub.sites.pixiv.cache import PixivReviewCache, PixivCache
+from paihub.sites.pixiv.cache import PixivCache, PixivReviewCache
 from paihub.sites.pixiv.entities import PixivArtWork, PixivAuthor
 from paihub.sites.pixiv.repositories import PixivRepository
 from paihub.sites.pixiv.utils import compiled_patterns
@@ -108,7 +108,7 @@ class PixivSitesService(BaseSiteService):
             if isinstance(result_ugoira, list):
                 return result_ugoira
             if result_ugoira is None:
-                raise ImagesFormatNotSupported(message=f"Images Data is None")
+                raise ImagesFormatNotSupported(message="Images Data is None")
             raise ImagesFormatNotSupported(message=f"Images Data {result_ugoira.__class__.__name__} Not Supported")
         if not artwork.meta_pages:
             return [await self.api.client.download(str(artwork.image_urls.large))]

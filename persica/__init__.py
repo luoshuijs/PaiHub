@@ -1,10 +1,9 @@
-import logging
 import inspect
+import logging
 import os
 from importlib import import_module
 from pathlib import Path
-from typing import Iterable, Type, List, Dict, TypeVar, TypedDict, Optional, Union, ClassVar, Iterator, TYPE_CHECKING
-
+from typing import ClassVar, Dict, Iterable, Iterator, List, Optional, Type, TypedDict, TypeVar, Union
 
 logger = logging.Logger("persica")
 
@@ -24,7 +23,7 @@ class BaseComponent:
     __is_component__: ClassVar[bool] = True
 
     def __init_subclass__(cls, **kwargs):
-        setattr(cls, "__is_component__", kwargs.get("component", True))
+        cls.__is_component__ = kwargs.get("component", True)
 
 
 COMPONENT = TypeVar("COMPONENT", bound=BaseComponent)

@@ -1,4 +1,4 @@
-from typing import TypeVar, TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
 from telegram import Update
 from telegram.ext import ApplicationHandlerStop, BaseHandler
@@ -7,16 +7,16 @@ from paihub.log import logger
 from paihub.system.user.services import UserAdminService
 
 if TYPE_CHECKING:
-    from paihub.application import Application
     from telegram.ext import Application as TelegramApplication
+    from telegram.ext._utils.types import CCT
+
+    from paihub.application import Application
 
 RT = TypeVar("RT")
 UT = TypeVar("UT")
 
-CCT = TypeVar("CCT", bound="CallbackContext[Any, Any, Any, Any]")
 
-
-class AdminHandler(BaseHandler[Update, CCT]):
+class AdminHandler(BaseHandler[Update, "CCT"]):
     def __init__(self, handler: BaseHandler[Update, CCT], application: "Application", need_notify: bool = True) -> None:
         self.handler = handler
         self.application = application

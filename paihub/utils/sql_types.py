@@ -1,6 +1,6 @@
-from typing import List, Optional, Any, cast, Dict
+from typing import Any, Dict, List, Optional, cast
 
-from sqlalchemy import VARCHAR, TypeDecorator, String
+from sqlalchemy import VARCHAR, String, TypeDecorator
 from sqlalchemy.engine.interfaces import Dialect
 from sqlalchemy.sql.type_api import TypeEngine
 
@@ -48,7 +48,7 @@ class JSON(TypeDecorator):
     def process_bind_param(self, value: Optional[Dict], dialect) -> Optional[str]:
         if value is None:
             return None
-        return jsonlib.dumps(value)
+        return jsonlib.dumps(value).decode("utf-8")
 
     def process_result_value(self, value: Optional[str], dialect) -> Optional[Dict]:
         if value is None:

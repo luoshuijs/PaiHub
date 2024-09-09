@@ -4,8 +4,9 @@ from typing import TYPE_CHECKING
 
 from PicImageSearch import Network, SauceNAO
 from telegram import InputMediaPhoto
-from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError
 from telegram.constants import ChatAction, ParseMode
+from telegram.error import BadRequest as BotBadRequest
+from telegram.error import NetworkError as BotNetworkError
 from telegram.ext import MessageHandler, filters
 
 from paihub.base import BaseCommand
@@ -13,8 +14,8 @@ from paihub.bot.handlers.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.entities.config import TomlConfig
 from paihub.error import ArtWorkNotFoundError, BadRequest
-from paihub.system.sites.manager import SitesManager
 from paihub.log import logger
+from paihub.system.sites.manager import SitesManager
 
 if TYPE_CHECKING:
     from telegram import Update

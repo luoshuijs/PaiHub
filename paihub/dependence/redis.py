@@ -1,7 +1,7 @@
 from paihub.base import BaseDependence
 from paihub.config import RedisConfig
 from paihub.log import logger
-from paihub.utils.aioredis import aioredis, RedisTimeoutError, RedisConnectionError
+from paihub.utils.aioredis import RedisConnectionError, RedisTimeoutError, aioredis
 
 
 class Redis(BaseDependence):
