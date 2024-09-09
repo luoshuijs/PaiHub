@@ -32,7 +32,7 @@ class WebClient(BaseClient):
         if self.auth_token is not None:
             headers[HeadersKeyName.AUTH_TYPE] = "OAuth2Session"
             cookies["auth_token"] = auth_token
-        self.default_features_json = jsonlib.dumps(DEFAULT_FEATURES)
+        self.default_features_json: str = jsonlib.dumps(DEFAULT_FEATURES).decode("utf-8")
         super().__init__(cookies=cookies, headers=headers, timeout=timeout)
 
     async def tweet_detail(self, tweet_id: str):
@@ -45,7 +45,7 @@ class WebClient(BaseClient):
         variables = DEFAULT_VARIABLES.copy()
         variables.update({"focalTweetId": tweet_id})
         params = {
-            "variables": jsonlib.dumps(variables),
+            "variables": jsonlib.dumps(variables).decode("utf-8"),
             "features": self.default_features_json,
         }
         await self._require_auth()
@@ -56,7 +56,7 @@ class WebClient(BaseClient):
         variables = DEFAULT_VARIABLES.copy()
         variables.update({"tweetId": tweet_id})
         params = {
-            "variables": jsonlib.dumps(variables),
+            "variables": jsonlib.dumps(variables).decode("utf-8"),
             "features": self.default_features_json,
         }
         headers = {HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN}
