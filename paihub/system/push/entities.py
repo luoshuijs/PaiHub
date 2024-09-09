@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import func
-from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime
+from sqlmodel import BigInteger, Column, DateTime, Field, Integer, SQLModel
 
 from paihub.utils.sql_types import JSON
 

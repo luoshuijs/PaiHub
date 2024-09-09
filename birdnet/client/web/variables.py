@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 DEFAULT_VARIABLES: Dict[str, Any] = {
     "with_rux_injections": False,

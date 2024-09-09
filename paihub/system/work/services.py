@@ -1,8 +1,8 @@
 from typing import List, Optional
 
 from paihub.base import BaseService
-from paihub.system.work.entities import Work, WorkRule, WorkChannel
-from paihub.system.work.repositories import WorkRepository, WorkRuleRepository, WorkChannelRepository
+from paihub.system.work.entities import Work, WorkChannel, WorkRule
+from paihub.system.work.repositories import WorkChannelRepository, WorkRepository, WorkRuleRepository
 
 
 class WorkService(BaseService):

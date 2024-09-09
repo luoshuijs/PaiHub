@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from sqlalchemy import func
-from sqlmodel import SQLModel, Column, Field, BigInteger, DateTime
+from sqlmodel import BigInteger, Column, DateTime, Field, SQLModel
 
 from paihub.entities.artwork import ArtWork
 from paihub.entities.author import Author

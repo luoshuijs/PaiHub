@@ -1,15 +1,16 @@
 import html
-from typing import TYPE_CHECKING, List, Tuple, Optional
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
-from telegram import ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
-from telegram.constants import ParseMode, ChatAction
-from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError
-from telegram.ext import CommandHandler, ConversationHandler, CallbackQueryHandler, MessageHandler, filters
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, ReplyKeyboardRemove
+from telegram.constants import ChatAction, ParseMode
+from telegram.error import BadRequest as BotBadRequest
+from telegram.error import NetworkError as BotNetworkError
+from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, MessageHandler, filters
 
 from paihub.base import BaseCommand
 from paihub.bot.handlers.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
-from paihub.error import BadRequest, ArtWorkNotFoundError
+from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.log import logger
 from paihub.system.push.services import PushService
 from paihub.system.review.services import ReviewService
@@ -17,7 +18,7 @@ from paihub.system.sites.manager import SitesManager
 from paihub.system.work.services import WorkService
 
 if TYPE_CHECKING:
-    from telegram import Update, Message
+    from telegram import Message, Update
     from telegram.ext import ContextTypes
 
 GET_INFO, GET_WORK, SEND, _ = range(4)

@@ -7,7 +7,7 @@ from birdnet.client.base import BaseClient
 from birdnet.client.web.authorization import AuthorizationToken
 from birdnet.client.web.error import error_message_by_reason
 from birdnet.client.web.features import DEFAULT_FEATURES
-from birdnet.client.web.headers import HeadersKeyName, DEFAULT_HEADERS
+from birdnet.client.web.headers import DEFAULT_HEADERS, HeadersKeyName
 from birdnet.client.web.tweet import TweetDetailAPI
 from birdnet.client.web.variables import DEFAULT_VARIABLES
 from birdnet.errors import BadRequest, NetworkError
@@ -18,8 +18,9 @@ except ImportError:
     import json as jsonlib
 
 if TYPE_CHECKING:
-    from birdnet.utils.types import JSONDict
     from httpx._types import TimeoutTypes
+
+    from birdnet.utils.types import JSONDict
 
 
 class WebClient(BaseClient):

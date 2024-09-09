@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, List, Optional
 
 from persica import BaseComponent
 
 if TYPE_CHECKING:
     from telegram.ext import Application as BotApplication
+
     from paihub.application import Application
     from paihub.entities.artwork import ArtWork
 

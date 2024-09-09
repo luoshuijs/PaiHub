@@ -1,5 +1,5 @@
 import re
-from typing import Tuple, Set, Iterable
+from typing import Iterable, Set, Tuple
 
 try:
     import orjson as jsonlib

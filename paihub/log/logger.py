@@ -1,14 +1,12 @@
-from typing import Optional
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-
+from typing import Optional
 
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.style import Style
 from rich.theme import Theme
-
 
 SUCCESS_LEVEL_NUM = 25
 logging.addLevelName(SUCCESS_LEVEL_NUM, "SUCCESS")

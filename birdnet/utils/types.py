@@ -1,3 +1,3 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 JSONDict = Dict[str, Any]

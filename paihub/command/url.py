@@ -2,8 +2,9 @@ import html
 from typing import TYPE_CHECKING
 
 from telegram import InputMediaPhoto
-from telegram.constants import ParseMode, ChatAction
-from telegram.error import BadRequest as BotBadRequest, NetworkError as BotNetworkError
+from telegram.constants import ChatAction, ParseMode
+from telegram.error import BadRequest as BotBadRequest
+from telegram.error import NetworkError as BotNetworkError
 from telegram.ext import MessageHandler, filters
 
 from paihub.base import BaseCommand

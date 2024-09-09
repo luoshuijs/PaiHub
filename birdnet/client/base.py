@@ -1,17 +1,17 @@
 from datetime import datetime
 from types import TracebackType
-from typing import AsyncContextManager, Type, Optional, Any, TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, AsyncContextManager, Optional, Type, TypeVar
 
-from httpx import AsyncClient, TimeoutException, HTTPError, Timeout, Headers
+from httpx import AsyncClient, Headers, HTTPError, Timeout, TimeoutException
 
 from birdnet.client.web.headers import HeadersKeyName
 from birdnet.utils.types import JSONDict
 
 if TYPE_CHECKING:
     from httpx import Response
-    from httpx._types import RequestData, URLTypes, QueryParamTypes, HeaderTypes, CookieTypes, TimeoutTypes
+    from httpx._types import CookieTypes, HeaderTypes, QueryParamTypes, RequestData, TimeoutTypes, URLTypes
 
-from birdnet.errors import BadRequest, TimedOut, NetworkError
+from birdnet.errors import BadRequest, NetworkError, TimedOut
 
 __all__ = ("BaseClient",)
 

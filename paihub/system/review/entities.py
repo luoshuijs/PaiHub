@@ -1,13 +1,12 @@
 from datetime import datetime
 from enum import IntEnum
-from typing import Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel
-from sqlalchemy import func, Enum
-from sqlmodel import SQLModel, Field, Column, BigInteger, Integer, DateTime
+from sqlalchemy import Enum, func
+from sqlmodel import BigInteger, Column, DateTime, Field, Integer, SQLModel
 
-from paihub.utils.sql_types import SiteKey, JSON
+from paihub.utils.sql_types import JSON, SiteKey
 
 if TYPE_CHECKING:
     from sqlalchemy import Result

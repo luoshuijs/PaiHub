@@ -49,7 +49,6 @@ dev-dependencies = [
 picimagesearch = { git = "https://github.com/kitUIN/PicImageSearch" }
 async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv", rev = "v1" }
 
-
 [tool.ruff]
 exclude = [
     ".bzr",
@@ -80,3 +79,19 @@ exclude = [
     "venv",
 ]
 line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "W191", # indentation contains tabs
+]
