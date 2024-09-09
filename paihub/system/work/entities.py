@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from sqlmodel import SQLModel, Field, Column, BigInteger, Relationship
+from sqlmodel import BigInteger, Column, Field, Relationship, SQLModel
 
 
 class Work(SQLModel, table=True):

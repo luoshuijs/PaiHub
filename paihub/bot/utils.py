@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from telegram import ChatMemberUpdated, ChatMember
+from telegram import ChatMember, ChatMemberUpdated
 
 
 def extract_status_change(chat_member_update: ChatMemberUpdated) -> Optional[Tuple[bool, bool]]:

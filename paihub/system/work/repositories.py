@@ -1,11 +1,11 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import Component
 from paihub.dependence.database import DataBase
-from paihub.system.work.entities import Work, WorkRule, WorkChannel
+from paihub.system.work.entities import Work, WorkChannel, WorkRule
 
 __all__ = ("WorkRepository", "WorkRuleRepository", "WorkChannelRepository")
 

@@ -1,7 +1,7 @@
 import os
 import time
 import traceback
-from typing import cast, Optional
+from typing import Optional, cast
 
 import aiofiles
 from telegram import Update

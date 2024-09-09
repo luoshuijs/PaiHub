@@ -1,8 +1,8 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from paihub.base import BaseService
 from paihub.system.review.cache import ReviewCache
-from paihub.system.review.entities import Review, ReviewStatus, AutoReviewResult
+from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
 from paihub.system.review.ext import ReviewCallbackContext
 from paihub.system.review.repositories import ReviewRepository
 from paihub.system.sites.manager import SitesManager

@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING, List, Optional
 
-
 if TYPE_CHECKING:
-    from paihub.system.push.services import PushService
-    from paihub.entities.artwork import ArtWork
     from paihub.base import BaseSiteService
+    from paihub.entities.artwork import ArtWork
+    from paihub.system.push.services import PushService
 
 
 class PushCallbackContext:
