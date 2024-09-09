@@ -113,6 +113,9 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         if not response.is_error:
             data = response.json()
             return data
+        if "application/json" in response.headers.get("Content-Type", ""):
+            data = response.json()
+            return data
         if response.status_code == 401:
             raise BadRequest(
                 message="Tweet result is empty, maybe it's a sensitive tweet "
