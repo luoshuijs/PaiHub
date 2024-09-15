@@ -26,6 +26,9 @@ dependencies = [
 uvloop = [
     "uvloop>=0.20.0",
 ]
+playwright = [
+    "playwright>=1.47.0",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
