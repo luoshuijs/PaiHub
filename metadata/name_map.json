@@ -486,6 +486,15 @@
             "Kujou.?Sara"
         ]
     },
+    "LanYan": {
+        "name": [
+            "LanYan",
+            "蓝砚"
+        ],
+        "regex": [
+            "藍硯"
+        ]
+    },
     "Layla": {
         "name": [
             "Layla",
