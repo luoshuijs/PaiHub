@@ -1,17 +1,15 @@
-from typing import Optional
-
 from pixnet.client.base import BaseClient
 from pixnet.utils.types import JSONDict
 
 
 class User(BaseClient):
-    async def get_user_status(self, lang: Optional[str] = None) -> JSONDict:
+    async def get_user_status(self, lang: str | None = None) -> JSONDict:
         params = {"lang": self.lang or lang}
         result = await self.request_api("GET", "https://www.pixiv.net/touch/ajax/user/self/status", params=params)
         return result["user_status"]
 
     async def get_user_following(
-        self, user_id: Optional[int] = None, offset: int = 0, limit: int = 24, lang: Optional[str] = None
+        self, user_id: int | None = None, offset: int = 0, limit: int = 24, lang: str | None = None
     ) -> JSONDict:
         user_id = user_id or self.user_id
         if user_id is None:

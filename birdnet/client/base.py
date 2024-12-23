@@ -1,6 +1,7 @@
+from contextlib import AbstractAsyncContextManager
 from datetime import datetime
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, AsyncContextManager, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from httpx import AsyncClient, Headers, HTTPError, Timeout, TimeoutException
 
@@ -18,12 +19,12 @@ __all__ = ("BaseClient",)
 RT = TypeVar("RT", bound="BaseClient")
 
 
-class BaseClient(AsyncContextManager["BaseClient"]):
+class BaseClient(AbstractAsyncContextManager["BaseClient"]):
     def __init__(
         self,
-        cookies: "Optional[CookieTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
-        timeout: "Optional[TimeoutTypes]" = None,
+        cookies: "CookieTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
+        timeout: "TimeoutTypes | None" = None,
     ) -> None:
         """Initialize the client with the given parameters."""
         if timeout is None:
@@ -41,16 +42,17 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         """Enter the async context manager and initialize the client."""
         try:
             await self.initialize()
-            return self
-        except Exception as exc:
+        except Exception:
             await self.shutdown()
-            raise exc
+            raise
+        else:
+            return self
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         """Exit the async context manager and shutdown the client."""
         await self.shutdown()
@@ -76,10 +78,10 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         self,
         method: str,
         url: "URLTypes",
-        data: "Optional[RequestData]" = None,
-        json: Optional[Any] = None,
-        params: "Optional[QueryParamTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
+        data: "RequestData | None" = None,
+        json: Any | None = None,
+        params: "QueryParamTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
     ) -> "Response":
         try:
             return await self.client.request(
@@ -99,9 +101,9 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         self,
         method: str,
         url: "URLTypes",
-        json: Optional[Any] = None,
-        params: "Optional[QueryParamTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
+        json: Any | None = None,
+        params: "QueryParamTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
     ) -> JSONDict:
         response = await self.request(
             method,
@@ -111,11 +113,9 @@ class BaseClient(AsyncContextManager["BaseClient"]):
             headers=headers,
         )
         if not response.is_error:
-            data = response.json()
-            return data
+            return response.json()
         if "application/json" in response.headers.get("Content-Type", ""):
-            data = response.json()
-            return data
+            return response.json()
         if response.status_code == 401:
             raise BadRequest(
                 message="Tweet result is empty, maybe it's a sensitive tweet "
@@ -136,9 +136,9 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         self,
         method: str,
         url: "URLTypes",
-        data: Optional[Any] = None,
-        params: "Optional[QueryParamTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
+        data: Any | None = None,
+        params: "QueryParamTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
     ) -> JSONDict:
         result = await self.request_json(method, url, json=data, params=params, headers=headers)
         errors = result.get("errors")
@@ -146,7 +146,7 @@ class BaseClient(AsyncContextManager["BaseClient"]):
             raise BadRequest(message="\n".join([error["message"] for error in errors]))
         return result["data"]
 
-    async def download(self, url: "URLTypes", chunk_size: Optional[int] = None) -> bytes:
+    async def download(self, url: "URLTypes", chunk_size: int | None = None) -> bytes:
         data = b""
         async with self.client.stream("GET", url) as response:
             async for chunk in response.aiter_bytes(chunk_size):

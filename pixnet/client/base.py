@@ -1,5 +1,6 @@
+from contextlib import AbstractAsyncContextManager
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, AsyncContextManager, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from httpx import AsyncClient, Headers, HTTPError, Timeout, TimeoutException
 
@@ -23,14 +24,14 @@ __all__ = ("BaseClient",)
 RT = TypeVar("RT", bound="BaseClient")
 
 
-class BaseClient(AsyncContextManager["BaseClient"]):
+class BaseClient(AbstractAsyncContextManager["BaseClient"]):
     def __init__(
         self,
-        user_id: Optional[int] = None,
-        cookies: "Optional[CookieTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
-        timeout: "Optional[TimeoutTypes]" = None,
-        lang: Optional[str] = None,
+        user_id: int | None = None,
+        cookies: "CookieTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
+        timeout: "TimeoutTypes | None" = None,
+        lang: str | None = None,
     ) -> None:
         """Initialize the client with the given parameters."""
         if timeout is None:
@@ -52,16 +53,17 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         """Enter the async context manager and initialize the client."""
         try:
             await self.initialize()
-            return self
-        except Exception as exc:
+        except Exception:
             await self.shutdown()
-            raise exc
+            raise
+        else:
+            return self
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         """Exit the async context manager and shutdown the client."""
         await self.shutdown()
@@ -87,10 +89,10 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         self,
         method: str,
         url: "URLTypes",
-        data: "Optional[RequestData]" = None,
-        json: Optional[Any] = None,
-        params: "Optional[QueryParamTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
+        data: "RequestData | None" = None,
+        json: Any | None = None,
+        params: "QueryParamTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
     ) -> "Response":
         try:
             return await self.client.request(
@@ -110,9 +112,9 @@ class BaseClient(AsyncContextManager["BaseClient"]):
         self,
         method: str,
         url: "URLTypes",
-        json: Optional[Any] = None,
-        params: "Optional[QueryParamTypes]" = None,
-        headers: "Optional[HeaderTypes]" = None,
+        json: Any | None = None,
+        params: "QueryParamTypes | None" = None,
+        headers: "HeaderTypes | None" = None,
     ) -> JSONDict:
         response = await self.request(
             method,

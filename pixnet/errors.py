@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 
 class PixNetException(Exception):
@@ -27,9 +27,9 @@ class BadRequest(PixNetException):
 
     def __init__(
         self,
-        response: Optional[Dict[str, Any]] = None,
-        message: Optional[str] = None,
-        status_code: Optional[int] = None,
+        response: dict[str, Any] | None = None,
+        message: str | None = None,
+        status_code: int | None = None,
     ) -> None:
         if status_code is not None:
             self.status_code = status_code
@@ -52,7 +52,7 @@ class BadRequest(PixNetException):
         return f"{type(self).__name__}({repr(response)})"
 
     @property
-    def response(self) -> Dict[str, Union[str, Any, None]]:
+    def response(self) -> dict[str, str | Any | None]:
         return {"message": self.original}
 
 

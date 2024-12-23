@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 
 class BirdNetException(Exception):
@@ -27,8 +27,8 @@ class BadRequest(BirdNetException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
-        status_code: Optional[int] = None,
+        message: str | None = None,
+        status_code: int | None = None,
     ) -> None:
         if status_code is not None:
             self.status_code = status_code
@@ -45,5 +45,5 @@ class BadRequest(BirdNetException):
         return f"{type(self).__name__}({repr(response)})"
 
     @property
-    def response(self) -> Dict[str, Union[str, Any, None]]:
+    def response(self) -> dict[str, str | Any | None]:
         return {"message": self.original}

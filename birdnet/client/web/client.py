@@ -1,5 +1,5 @@
 import secrets
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from async_lru import alru_cache
 
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class WebClient(BaseClient):
-    def __init__(self, auth_token: Optional[str] = None, timeout: "Optional[TimeoutTypes]" = None):
+    def __init__(self, auth_token: str | None = None, timeout: "TimeoutTypes | None" = None):
         self.auth_token = auth_token
         csrf_token = secrets.token_hex(16)
         cookies = {"ct0": csrf_token}
@@ -63,7 +63,7 @@ class WebClient(BaseClient):
         headers = {HeadersKeyName.AUTHORIZATION: AuthorizationToken.LOGGED_IN}
         await self._require_auth()
         response = await self.request_json("GET", api, params=params, headers=headers)
-        result: "JSONDict" = response["data"]["tweetResult"]["result"]
+        result: JSONDict = response["data"]["tweetResult"]["result"]
         if result.get("__typename") == "TweetUnavailable":
             reason = error_message_by_reason(result.get("reason"))
             raise BadRequest(message=f"Tweet is unavailable, reason: {reason}.")

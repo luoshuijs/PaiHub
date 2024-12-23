@@ -1,6 +1,6 @@
-from typing import Any, Dict
+from typing import Any
 
-DEFAULT_VARIABLES: Dict[str, Any] = {
+DEFAULT_VARIABLES: dict[str, Any] = {
     "with_rux_injections": False,
     "includePromotedContent": False,
     "withCommunity": True,
