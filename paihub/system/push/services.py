@@ -1,4 +1,4 @@
-from paihub.base import BaseService
+from paihub.base import Service
 from paihub.system.push.cache import PushCache
 from paihub.system.push.entities import Push
 from paihub.system.push.ext import PushCallbackContext
@@ -8,7 +8,7 @@ from paihub.system.sites.manager import SitesManager
 from paihub.system.work.repositories import WorkChannelRepository
 
 
-class PushService(BaseService):
+class PushService(Service):
     def __init__(
         self,
         sites_manager: SitesManager,

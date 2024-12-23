@@ -1,11 +1,11 @@
 from collections.abc import Mapping
 from typing import Any
 
-from paihub.base import BaseService
+from paihub.base import Service
 from paihub.dependence.mongodb import Mongodb
 
 
-class PixivSpiderDocument(BaseService):
+class PixivSpiderDocument(Service):
     def __init__(self, mogo: Mongodb):
         self.web_search = mogo.db["pixiv_spider_web_search_data"]
         self.web_follow = mogo.db["pixiv_spider_web_follow"]

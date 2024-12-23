@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from paihub.base import BaseSiteService
+    from paihub.base import SiteService
     from paihub.entities.artwork import ArtWork
     from paihub.system.push.services import PushService
 
@@ -22,7 +22,7 @@ class PushCallbackContext:
         channel_id: int,
         artwork_id: int,
         review_id: int,
-        site_service: "BaseSiteService",
+        site_service: "SiteService",
         push_service: "PushService",
     ):
         self.artwork_id = artwork_id

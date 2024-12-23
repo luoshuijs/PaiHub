@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from telegram import Chat
 from telegram.ext import ChatMemberHandler
 
-from paihub.base import BaseCommand
+from paihub.base import Command
 from paihub.bot.utils import extract_status_change
 from paihub.log import logger
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from telegram.ext import ContextTypes
 
 
-class ChatMember(BaseCommand):
+class ChatMember(Command):
     owner_id: int
 
     def add_handlers(self):

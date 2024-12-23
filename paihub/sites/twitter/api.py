@@ -4,7 +4,7 @@ from datetime import datetime
 from birdnet.client.web.client import WebClient
 from birdnet.errors import BadRequest as BirdNetBadRequest
 from birdnet.errors import TimedOut as BirdNetTimedOut
-from paihub.base import BaseApi
+from paihub.base import ApiService
 from paihub.entities.config import TomlConfig
 from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.log import logger
@@ -12,7 +12,7 @@ from paihub.sites.twitter.cache import WebClientCache
 from paihub.sites.twitter.entities import TwitterArtWork, TwitterAuthor
 
 
-class WebClientApi(BaseApi):
+class WebClientApi(ApiService):
     def __init__(self, web_cache: WebClientCache):
         self.web_cache = web_cache
         self.config = TomlConfig("config/twitter.toml")

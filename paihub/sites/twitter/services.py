@@ -1,10 +1,10 @@
-from paihub.base import BaseSiteService
+from paihub.base import SiteService
 from paihub.sites.twitter.api import WebClientApi
 from paihub.sites.twitter.entities import TwitterArtWork
 from paihub.sites.twitter.utils import compiled_patterns
 
 
-class TwitterSitesService(BaseSiteService):
+class TwitterSitesService(SiteService):
     site_name = "Twitter"
     site_key = "twitter"
 

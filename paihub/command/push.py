@@ -9,8 +9,8 @@ from telegram.error import NetworkError as BotNetworkError
 from telegram.error import RetryAfter as BotRetryAfter
 from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler
 
-from paihub.base import BaseCommand
-from paihub.bot.handlers.adminhandler import AdminHandler
+from paihub.base import Command
+from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.log import logger
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 GET_WORK, START_PUSH, _, _ = range(4)
 
 
-class PushCommand(BaseCommand):
+class PushCommand(Command):
     def __init__(self, work_service: WorkService, push_service: PushService):
         self.work_service = work_service
         self.push_service = push_service

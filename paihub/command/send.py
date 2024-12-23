@@ -7,8 +7,8 @@ from telegram.error import BadRequest as BotBadRequest
 from telegram.error import NetworkError as BotNetworkError
 from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, MessageHandler, filters
 
-from paihub.base import BaseCommand
-from paihub.bot.handlers.adminhandler import AdminHandler
+from paihub.base import Command
+from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.log import logger
@@ -26,7 +26,7 @@ GET_INFO, GET_WORK, SEND, _ = range(4)
 URL_REGEX = r"(http|https):\/\/([\w\-\.]+)(:[0-9]+)?(\/[\w\-\.\/]*)?(\?[a-zA-Z0-9&%_\./-~-]*)?"
 
 
-class SendCommand(BaseCommand):
+class SendCommand(Command):
     def __init__(
         self,
         sites_manager: SitesManager,

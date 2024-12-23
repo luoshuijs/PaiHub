@@ -3,7 +3,7 @@ import asyncio
 from async_pixiv.error import ApiError, NotExistError, PixivError
 from async_pixiv.model.illust import IllustType
 
-from paihub.base import BaseSiteService
+from paihub.base import SiteService
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest, ImagesFormatNotSupported
 from paihub.log import logger
@@ -15,7 +15,7 @@ from paihub.sites.pixiv.utils import compiled_patterns
 from paihub.system.review.repositories import ReviewRepository
 
 
-class PixivSitesService(BaseSiteService):
+class PixivSitesService(SiteService):
     site_name = "Pixiv"
     site_key = "pixiv"
 

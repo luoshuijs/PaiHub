@@ -36,7 +36,9 @@ class AdminHandler(BaseHandler[Update, "CCT"]):
         # 考虑到只是对单一变量的读取后写入 并且获取的内容唯一 不考虑加锁
         if self._user_service is not None:
             return self._user_service
-        user_service = self.application.factor.get_component(UserAdminService)
+        user_service = self.application.factory.get_object(UserAdminService)
+        if user_service is None:
+            raise RuntimeError("UserAdmin service not found")
         self._user_service = user_service
         return user_service
 

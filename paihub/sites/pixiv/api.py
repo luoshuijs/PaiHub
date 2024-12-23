@@ -16,7 +16,7 @@ from async_pixiv.utils.context import set_pixiv_client
 from async_pixiv.utils.rate_limiter import RateLimiter
 from pydantic import Field
 
-from paihub.base import BaseApi
+from paihub.base import ApiService
 from paihub.entities.config import TomlConfig
 from paihub.log import logger
 from paihub.sites.pixiv.cache import PixivCache
@@ -57,7 +57,7 @@ class IllustSearchResult(UserIllustsResult):
     pass
 
 
-class PixivMobileApi(BaseApi):
+class PixivMobileApi(ApiService):
     def __init__(self, cache: PixivCache):
         limiter = RateLimiter(max_rate=100, time_period=60)
         self.client = PixivClient(
@@ -238,7 +238,7 @@ class PixivMobileApi(BaseApi):
         return self.client.account
 
 
-class PixivWebAPI(BaseApi):
+class PixivWebAPI(ApiService):
     def __init__(self):
         self.config = TomlConfig(
             "config/pixiv.toml",

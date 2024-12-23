@@ -1,10 +1,10 @@
-from paihub.base import BaseSiteService
+from paihub.base import SiteService
 from paihub.sites.danbooru.api import DanbooruApi
 from paihub.sites.danbooru.entities import DanbooruArtWork
 from paihub.sites.danbooru.utils import compiled_patterns
 
 
-class DanbooruSitesService(BaseSiteService):
+class DanbooruSitesService(SiteService):
     site_name = "Danbooru"
     site_key = "danbooru"
 

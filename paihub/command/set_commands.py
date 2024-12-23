@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 from telegram import BotCommand, BotCommandScopeChat
 from telegram.ext import CommandHandler
 
-from paihub.base import BaseCommand
-from paihub.bot.handlers.adminhandler import AdminHandler
+from paihub.base import Command
+from paihub.bot.adminhandler import AdminHandler
 from paihub.log import logger
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from telegram.ext import ContextTypes
 
 
-class SetBotCommand(BaseCommand):
+class SetBotCommand(Command):
     user = [
         BotCommand("start", "Start！"),
     ]

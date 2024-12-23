@@ -9,8 +9,8 @@ from telegram.error import BadRequest as BotBadRequest
 from telegram.error import NetworkError as BotNetworkError
 from telegram.ext import MessageHandler, filters
 
-from paihub.base import BaseCommand
-from paihub.bot.handlers.adminhandler import AdminHandler
+from paihub.base import Command
+from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.entities.config import TomlConfig
 from paihub.error import ArtWorkNotFoundError, BadRequest
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from telegram.ext import ContextTypes
 
 
-class Search(BaseCommand):
+class Search(Command):
     def __init__(self, sites_manager: SitesManager):
         self.config: dict = {}
         self.config = TomlConfig("config/search.toml")

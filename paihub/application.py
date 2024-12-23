@@ -1,21 +1,16 @@
 import asyncio
-import platform
-import signal
 import warnings
-from collections.abc import Sequence
-from typing import NoReturn
 
 import pytz
 from apscheduler.events import EVENT_JOB_ERROR, JobExecutionEvent
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from persica.application import Application as _Application
 from telegram.ext import ApplicationBuilder as BotApplicationBuilder
 from telegram.ext import Defaults
 from telegram.warnings import PTBUserWarning
 
-from paihub.base import BaseApi, BaseCommand, BaseDependence, BaseService, BaseSiteService, BaseSpider
 from paihub.config import Settings
 from paihub.log import logger
-from persica import Factor
 
 warnings.filterwarnings("ignore", category=PTBUserWarning)
 
@@ -23,14 +18,10 @@ warnings.filterwarnings("ignore", category=PTBUserWarning)
 __all__ = ("Application",)
 
 
-class Application:
-    def __init__(self):
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+class Application(_Application):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.settings = Settings()
-        self.factor = Factor(
-            paths=["paihub.dependence", "paihub.system", "paihub.sites", "paihub.command", "paihub.spider"]
-        )
         build_bot = BotApplicationBuilder()
         build_bot.defaults(Defaults(tzinfo=pytz.timezone("Asia/Shanghai")))
         build_bot.token(self.settings.bot.token)
@@ -45,71 +36,8 @@ class Application:
     def scheduler_error_listener(self, event: JobExecutionEvent):
         asyncio.create_task(self.bot.process_error(update=None, error=event.exception))
 
-    def run(self, stop_signals: Sequence[int] | None = None):
-        logger.info("正在初始化 Factor")
-        self.factor.install()
-        logger.info("Component 构造完毕")
-        if platform.system() != "Windows":
-            stop_signals = (signal.SIGINT, signal.SIGTERM, signal.SIGABRT)
-        if stop_signals is not None:
-            for sig in stop_signals or []:
-                self.loop.add_signal_handler(sig, self._raise_system_exit)
-        try:
-            self.loop.run_until_complete(self.initialize())
-            self.loop.run_forever()
-        except (KeyboardInterrupt, SystemExit):
-            logger.info("Application received stop signal. Shutting down.")
-        except Exception:
-            logger.error("Application received exception. Shutting down.")
-            raise
-        finally:
-            self.loop.run_until_complete(self.shutdown())
-
     async def initialize(self) -> None:
-        for d in self.factor.get_components(BaseDependence):
-            try:
-                await d.initialize()
-            except Exception:
-                logger.error("%s 初始化失败", d.__class__.__name__)
-                raise
-        for s in self.factor.get_components(BaseService):
-            try:
-                s.set_application(self)
-                await s.initialize()
-            except Exception:
-                logger.error("%s 初始化失败", s.__class__.__name__)
-                raise
-        for s in self.factor.get_components(BaseApi):
-            try:
-                s.set_application(self)
-                await s.initialize()
-            except Exception:
-                logger.error("%s 初始化失败", s.__class__.__name__)
-                raise
-        for s in self.factor.get_components(BaseSiteService):
-            try:
-                s.set_application(self)
-                await s.initialize()
-            except Exception:
-                logger.error("%s 初始化失败", s.__class__.__name__)
-                raise
-        for c in self.factor.get_components(BaseCommand):
-            try:
-                c.set_application(self)
-                await c.initialize()
-                c.add_handlers()
-            except Exception:
-                logger.error("%s 初始化失败", c.__class__.__name__)
-                raise
-        for s in self.factor.get_components(BaseSpider):
-            try:
-                s.set_application(self)
-                await s.initialize()
-                s.add_jobs()
-            except Exception:
-                logger.error("%s 初始化失败", s.__class__.__name__)
-                raise
-
+        await self.context.initialize()
         try:
             self.scheduler.start()
         except Exception:
@@ -148,7 +76,4 @@ class Application:
                 await self.bot.post_shutdown(self.bot)
         except Exception as exc:
             logger.error("关闭Bot时出现错误", exc_info=exc)
-
-    @staticmethod
-    def _raise_system_exit() -> NoReturn:
-        raise SystemExit
+        await self.context.shutdown()

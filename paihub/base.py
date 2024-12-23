@@ -1,6 +1,9 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar, get_args
 
-from persica import BaseComponent
+from persica.factory.component import AsyncInitializingComponent
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import SQLModel, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 if TYPE_CHECKING:
     from telegram.ext import Application as BotApplication
@@ -9,36 +12,87 @@ if TYPE_CHECKING:
     from paihub.entities.artwork import ArtWork
 
 
-class Component(BaseComponent, component=False):
-    pass
+T = TypeVar("T", bound=SQLModel)
 
 
-class BaseDependence(BaseComponent, component=False):
-    async def initialize(self) -> None:
-        """Initialize resources used by this dependence"""
-
-    async def shutdown(self) -> None:
-        """Stop & clear resources used by this dependence"""
+class Component(AsyncInitializingComponent):
+    __order__ = 0
 
 
-class BaseRepository(BaseComponent, component=False):
-    pass
+class BaseDependence(AsyncInitializingComponent):
+    __order__ = -1
 
 
-class BaseService(BaseComponent, component=False):
+class Repository(Generic[T], AsyncInitializingComponent):
+    __order__ = -2
+    entity_class: T
+    engine: AsyncEngine
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        # 尝试从泛型类型参数中获取 entity_class
+        orig_bases = getattr(cls, "__orig_bases__", ())
+        for base in orig_bases:
+            if hasattr(base, "__origin__"):
+                type_args = get_args(base)
+                if type_args:
+                    cls.entity_class = type_args[0]
+                    break
+        else:
+            # 如果无法从泛型类型参数获取，就检查是否手动定义了 entity_class
+            if not hasattr(cls, "entity_class") or cls.entity_class is None:
+                raise NotImplementedError(
+                    f"{cls.__name__} must specify a generic type parameter or define 'entity_class'"
+                )
+
+    def set_engine(self, engine: "AsyncEngine"):
+        self.engine = engine
+
+    async def get(self, key_id: int) -> T | None:
+        async with AsyncSession(self.engine) as session:
+            statement = select(self.entity_class).where(self.entity_class.id == key_id)
+            results = await session.exec(statement)
+            return results.first()
+
+    async def add(self, instance: T):
+        async with AsyncSession(self.engine) as session:
+            session.add(instance)
+            await session.commit()
+
+    async def update(self, instance: T) -> T:
+        async with AsyncSession(self.engine) as session:
+            session.add(instance)
+            await session.commit()
+            await session.refresh(instance)
+            return instance
+
+    async def remove(self, instance: T):
+        async with AsyncSession(self.engine) as session:
+            await session.delete(instance)
+            await session.commit()
+
+    async def merge(self, value: T):
+        async with AsyncSession(self.engine) as session:
+            await session.merge(value)
+            await session.commit()
+
+    async def get_all(self) -> list[T]:
+        async with AsyncSession(self.engine) as session:
+            statement = select(self.entity_class)
+            results = await session.exec(statement)
+            return results.all()
+
+
+class Service(AsyncInitializingComponent):
+    __order__ = -3
     application: "Application"
 
     def set_application(self, application: "Application"):
         self.application = application
 
-    async def initialize(self) -> None:
-        """Initialize resources used by this service"""
 
-    async def shutdown(self) -> None:
-        """Stop & clear resources used by this service"""
-
-
-class BaseCommand(BaseComponent, component=False):
+class Command(AsyncInitializingComponent):
+    __order__ = -5
     application: "Application"
     bot: "BotApplication"
 
@@ -49,26 +103,15 @@ class BaseCommand(BaseComponent, component=False):
     def add_handlers(self):
         """Add bot handlers used by this function"""
 
-    async def initialize(self) -> None:
-        """Initialize resources used by this service"""
 
-    async def shutdown(self) -> None:
-        """Stop & clear resources used by this service"""
-
-
-class BaseSiteService(BaseComponent, component=False):
+class SiteService(AsyncInitializingComponent):
+    __order__ = -5
     site_name: str  # 网站名称
     site_key: str  # 网站关键标识符 最大长度不超过16
     application: "Application"
 
     def set_application(self, application: "Application"):
         self.application = application
-
-    async def initialize(self) -> None:
-        """Initialize resources used by this service"""
-
-    async def shutdown(self) -> None:
-        """Stop & clear resources used by this service"""
 
     async def get_artwork(self, artwork_id: int) -> "ArtWork":
         pass
@@ -91,30 +134,21 @@ class BaseSiteService(BaseComponent, component=False):
         return None
 
 
-class BaseApi(BaseComponent, component=False):
+class ApiService(AsyncInitializingComponent):
+    __order__ = -3
     application: "Application"
 
     def set_application(self, application: "Application"):
         self.application = application
 
-    async def initialize(self) -> None:
-        """Initialize resources used by this service"""
 
-    async def shutdown(self) -> None:
-        """Stop & clear resources used by this service"""
-
-
-class BaseSpider(BaseComponent, component=False):
+class Spider(AsyncInitializingComponent):
+    __order__ = -6
     application: "Application"
 
     def set_application(self, application: "Application"):
         self.application = application
+        self.add_jobs()
 
     def add_jobs(self) -> None:
         """Add jobs used by this function"""
-
-    async def initialize(self) -> None:
-        """Initialize resources used by this service"""
-
-    async def shutdown(self) -> None:
-        """Stop & clear resources used by this service"""

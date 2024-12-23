@@ -4,8 +4,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRe
 from telegram.constants import MessageEntityType
 from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, MessageHandler, filters
 
-from paihub.base import BaseCommand
-from paihub.bot.handlers.adminhandler import AdminHandler
+from paihub.base import Command
+from paihub.bot.adminhandler import AdminHandler
 from paihub.log import logger
 from paihub.system.review.services import ReviewService
 from paihub.system.sites.manager import SitesManager
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 GET_REVIEW, GET_STATUS, SET_STATUS, MOVE_REVIEW = range(4)
 
 
-class ResetCommand(BaseCommand):
+class ResetCommand(Command):
     def __init__(self, work_service: WorkService, review_service: ReviewService, sites_manager: SitesManager):
         self.sites_manager = sites_manager
         self.work_service = work_service

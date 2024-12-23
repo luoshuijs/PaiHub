@@ -3,38 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from paihub.base import Component
-from paihub.dependence.database import DataBase
+from paihub.base import Repository
 from paihub.system.review.entities import Review, ReviewStatus, StatusStatistics
 
 
-class ReviewRepository(Component):
-    def __init__(self, database: DataBase):
-        self.engine = database.engine
-
-    async def get(self, key_id: int) -> Review | None:
-        async with AsyncSession(self.engine) as session:
-            statement = select(Review).where(Review.id == key_id)
-            results = await session.exec(statement)
-            return results.first()
-
-    async def add(self, instance: Review):
-        async with AsyncSession(self.engine) as session:
-            session.add(instance)
-            await session.commit()
-
-    async def update(self, instance: Review) -> Review:
-        async with AsyncSession(self.engine) as session:
-            session.add(instance)
-            await session.commit()
-            await session.refresh(instance)
-            return instance
-
-    async def remove(self, instance: Review):
-        async with AsyncSession(self.engine) as session:
-            await session.delete(instance)
-            await session.commit()
-
+class ReviewRepository(Repository[Review]):
     async def get_artwork_id_by_work_and_web(
         self, work_id: int, site_key: str, page_number: int, lines_per_page: int = 10000
     ) -> list[int]:

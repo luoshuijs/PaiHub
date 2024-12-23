@@ -1,11 +1,11 @@
-from paihub.base import BaseService
+from paihub.base import Service
 from paihub.log import logger
 from paihub.system.user.cache import UserAdminCache
 from paihub.system.user.entities import PermissionsEnum, User
 from paihub.system.user.repositories import UserRepository
 
 
-class UserAdminService(BaseService):
+class UserAdminService(Service):
     def __init__(self, user_repository: UserRepository, cache: UserAdminCache):
         self.user_repository = user_repository
         self._cache = cache

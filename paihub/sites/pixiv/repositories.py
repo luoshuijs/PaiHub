@@ -2,20 +2,14 @@ from datetime import datetime
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
-from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from paihub.base import Component
-from paihub.dependence.database import DataBase
+from paihub.base import Repository
 from paihub.sites.pixiv.entities import Pixiv
 
 __all__ = ("PixivRepository",)
 
 
-class PixivRepository(Component):
-    def __init__(self, database: DataBase):
-        self.engine = database.engine
-
+class PixivRepository(Repository[Pixiv]):
     async def get_artworks_by_tags(
         self, search_text: str, is_pattern: bool, page_number: int, lines_per_page: int = 10000
     ) -> list[int]:
@@ -47,32 +41,4 @@ class PixivRepository(Component):
                 "create_time": create_time,
             }
             await session.execute(statement, params)
-            await session.commit()
-
-    async def get(self, artwork_id: int) -> Pixiv | None:
-        async with AsyncSession(self.engine) as session:
-            statement = select(Pixiv).where(Pixiv.id == artwork_id)
-            results = await session.exec(statement)
-            return results.first()
-
-    async def add(self, value: Pixiv):
-        async with AsyncSession(self.engine) as session:
-            session.add(value)
-            await session.commit()
-
-    async def merge(self, value: Pixiv):
-        async with AsyncSession(self.engine) as session:
-            await session.merge(value)
-            await session.commit()
-
-    async def update(self, value: Pixiv) -> Pixiv:
-        async with AsyncSession(self.engine) as session:
-            session.add(value)
-            await session.commit()
-            await session.refresh(value)
-            return value
-
-    async def remove(self, value: Pixiv):
-        async with AsyncSession(self.engine) as session:
-            await session.delete(value)
             await session.commit()

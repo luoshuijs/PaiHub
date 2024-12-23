@@ -5,14 +5,14 @@ from typing import Any
 from httpx import AsyncClient
 from pybooru import Danbooru, PybooruHTTPError
 
-from paihub.base import BaseApi
+from paihub.base import ApiService
 from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.sites.danbooru.cache import DanbooruCache
 from paihub.sites.danbooru.entities import DanbooruArtWork, DanbooruUploader
 from paihub.utils.functools import async_wrap
 
 
-class DanbooruApi(BaseApi):
+class DanbooruApi(ApiService):
     def __init__(self, cache: DanbooruCache):
         self.api = Danbooru("danbooru")
         executor = ThreadPoolExecutor(max_workers=2)

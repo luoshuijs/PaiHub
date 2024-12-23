@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from telegram.ext import CommandHandler
 from telegram.helpers import escape_markdown
 
-from paihub.base import BaseCommand
+from paihub.base import Command
 from paihub.log import logger
 
 if TYPE_CHECKING:
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from telegram.ext import ContextTypes
 
 
-class StartCommand(BaseCommand):
+class StartCommand(Command):
     def add_handlers(self):
         self.bot.add_handler(CommandHandler("start", self.start, block=False))
         self.bot.add_handler(CommandHandler("ping", self.ping, block=False))

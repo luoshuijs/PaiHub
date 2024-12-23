@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from paihub.base import BaseSiteService
+    from paihub.base import SiteService
     from paihub.entities.artwork import ArtWork
     from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
     from paihub.system.review.services import ReviewService
@@ -14,7 +14,7 @@ class ReviewCallbackContext:
         "review",
     )
 
-    def __init__(self, review: "Review", site_service: "BaseSiteService", review_service: "ReviewService"):
+    def __init__(self, review: "Review", site_service: "SiteService", review_service: "ReviewService"):
         self.review = review
         self.site_service = site_service
         self.review_service = review_service

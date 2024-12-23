@@ -8,7 +8,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from async_pixiv.error import ApiError, NotExistError
 
-from paihub.base import BaseSpider
+from paihub.base import Spider
 from paihub.log import Logger, logger
 from paihub.sites.pixiv.api import PixivMobileApi, PixivWebAPI
 from paihub.sites.pixiv.cache import PixivCache
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 _logger = Logger("Pixiv Spider", filename="pixiv_spider.log")
 
 
-class PixivSpider(BaseSpider):
+class PixivSpider(Spider):
     def __init__(
         self,
         cache: PixivCache,

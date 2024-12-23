@@ -1,9 +1,9 @@
-from paihub.base import BaseService
+from paihub.base import Service
 from paihub.system.work.entities import Work, WorkChannel, WorkRule
 from paihub.system.work.repositories import WorkChannelRepository, WorkRepository, WorkRuleRepository
 
 
-class WorkService(BaseService):
+class WorkService(Service):
     def __init__(
         self,
         work_repository: WorkRepository,

@@ -7,8 +7,8 @@ from telegram import Message
 from telegram.error import NetworkError
 from telegram.ext import CommandHandler
 
-from paihub.base import BaseCommand
-from paihub.bot.handlers.adminhandler import AdminHandler
+from paihub.base import Command
+from paihub.bot.adminhandler import AdminHandler
 from paihub.log import logger
 from paihub.utils.execute import execute
 
@@ -25,7 +25,7 @@ except ImportError:
 UPDATE_DATA = os.path.join(os.getcwd(), "update.json")
 
 
-class UpdateCommand(BaseCommand):
+class UpdateCommand(Command):
     lock = asyncio.Lock()
 
     def add_handlers(self):

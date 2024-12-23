@@ -9,11 +9,11 @@ from telegram import Update
 from telegram.error import BadRequest, NetworkError
 from telegram.ext import CallbackContext
 
-from paihub.base import BaseCommand
+from paihub.base import Command
 from paihub.log import logger
 
 
-class ErrorHandler(BaseCommand):
+class ErrorHandler(Command):
     error_chat_id: int | None = None
 
     def __init__(self):

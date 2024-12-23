@@ -1,4 +1,4 @@
-from paihub.base import BaseService
+from paihub.base import Service
 from paihub.system.review.cache import ReviewCache
 from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
 from paihub.system.review.ext import ReviewCallbackContext
@@ -8,7 +8,7 @@ from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.repositories import WorkRepository, WorkRuleRepository
 
 
-class ReviewService(BaseService):
+class ReviewService(Service):
     """审核服务"""
 
     def __init__(
