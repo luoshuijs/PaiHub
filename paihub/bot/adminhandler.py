@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING
 
 from telegram import Update
 from telegram.ext import ApplicationHandlerStop, BaseHandler
@@ -8,18 +8,12 @@ from paihub.system.user.services import UserAdminService
 
 if TYPE_CHECKING:
     from telegram.ext import Application as TelegramApplication
-    from telegram.ext._utils.types import CCT
 
     from paihub.application import Application
 
-RT = TypeVar("RT")
-UT = TypeVar("UT")
 
-
-class AdminHandler(BaseHandler[Update, "CCT"]):
-    def __init__(
-        self, handler: BaseHandler[Update, "CCT"], application: "Application", need_notify: bool = True
-    ) -> None:
+class AdminHandler(BaseHandler):
+    def __init__(self, handler: BaseHandler, application: "Application", need_notify: bool = True) -> None:
         self.handler = handler
         self.application = application
         self._user_service: UserAdminService | None = None
@@ -43,12 +37,8 @@ class AdminHandler(BaseHandler[Update, "CCT"]):
         return user_service
 
     async def handle_update(
-        self,
-        update: "UT",
-        application: "TelegramApplication[Any, CCT, Any, Any, Any, Any]",
-        check_result: Any,
-        context: "CCT",
-    ) -> "RT":
+        self, update: "Update", application: "TelegramApplication", check_result, context
+    ) -> object | None:
         user_service = self.user_service
         user = update.effective_user
         if await user_service.is_admin(user.id):
