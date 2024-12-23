@@ -68,6 +68,7 @@ class ErrorHandler(Command):
                 await context.bot.send_document(
                     chat_id=self.error_chat_id,
                     document=document,
+                    filename=file_name,
                     caption=f'Error: "{context.error.__class__.__name__}"',
                 )
         except BadRequest as exc:
