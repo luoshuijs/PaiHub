@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from paihub.base import BaseSiteService
 from paihub.sites.twitter.api import WebClientApi
 from paihub.sites.twitter.entities import TwitterArtWork
@@ -16,11 +14,11 @@ class TwitterSitesService(BaseSiteService):
     async def get_artwork(self, artwork_id: int) -> TwitterArtWork:
         return await self.web_api.get_artwork(artwork_id)
 
-    async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
+    async def get_artwork_images(self, artwork_id: int) -> list[bytes]:
         return await self.web_api.get_artwork_images(artwork_id)
 
     @staticmethod
-    def extract(text: str) -> Optional[int]:
+    def extract(text: str) -> int | None:
         for pattern in compiled_patterns:
             match = pattern.search(text)
             if match:

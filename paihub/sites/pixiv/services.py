@@ -1,5 +1,4 @@
 import asyncio
-from typing import List, Optional
 
 from async_pixiv.error import ApiError, NotExistError, PixivError
 from async_pixiv.model.illust import IllustType
@@ -41,7 +40,7 @@ class PixivSitesService(BaseSiteService):
         search_text: str,
         is_pattern: bool,
         lines_per_page: int = 10000,
-        create_by: Optional[int] = None,
+        create_by: int | None = None,
     ) -> int:
         count = 0
         page_number = 1
@@ -88,7 +87,7 @@ class PixivSitesService(BaseSiteService):
         except PixivError as exc:
             raise BadRequest("Pixiv Error") from exc
         auther = PixivAuthor(auther_id=illust_detail.illust.user.id, name=illust_detail.illust.user.name)
-        art_work = PixivArtWork(
+        return PixivArtWork(
             artwork_id=artwork_id,
             title=illust_detail.illust.title,
             create_time=illust_detail.illust.create_date,
@@ -96,9 +95,8 @@ class PixivSitesService(BaseSiteService):
             tags=[i.name for i in illust_detail.illust.tags],
             image_type=ImageType.DYNAMIC if illust_detail.illust.type == IllustType.ugoira else ImageType.STATIC,
         )
-        return art_work
 
-    async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
+    async def get_artwork_images(self, artwork_id: int) -> list[bytes]:
         # 对于动态图片作品需要 ffmpeg 转换
         artwork = (await self.api.illust.detail(artwork_id)).illust
         if artwork.type == IllustType.ugoira:
@@ -112,14 +110,10 @@ class PixivSitesService(BaseSiteService):
             raise ImagesFormatNotSupported(message=f"Images Data {result_ugoira.__class__.__name__} Not Supported")
         if not artwork.meta_pages:
             return [await self.api.client.download(str(artwork.image_urls.large))]
-        else:
-            result: List[bytes] = []
-            for meta_page in artwork.meta_pages:
-                result.append(await self.api.client.download(str(meta_page.image_urls.large)))
-            return result
+        return [await self.api.client.download(str(meta_page.image_urls.large)) for meta_page in artwork.meta_pages]
 
     @staticmethod
-    def extract(text: str) -> Optional[int]:
+    def extract(text: str) -> int | None:
         for pattern in compiled_patterns:
             match = pattern.search(text)
             if match:

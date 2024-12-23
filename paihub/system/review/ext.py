@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from paihub.base import BaseSiteService
@@ -23,7 +23,7 @@ class ReviewCallbackContext:
         """获取作品"""
         return await self.site_service.get_artwork(self.review.artwork_id)
 
-    async def get_artwork_images(self) -> List[bytes]:
+    async def get_artwork_images(self) -> list[bytes]:
         """获取作品图片"""
         return await self.site_service.get_artwork_images(self.review.artwork_id)
 
@@ -34,7 +34,7 @@ class ReviewCallbackContext:
         )
 
     async def set_review_status(
-        self, status: "ReviewStatus", auto: bool = False, update_by: Optional[int] = None
+        self, status: "ReviewStatus", auto: bool = False, update_by: int | None = None
     ) -> "Review":
         """设置审核作品"""
         self.review.status = status

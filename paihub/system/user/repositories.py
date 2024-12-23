@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -14,7 +12,7 @@ class UserRepository(Component):
     def __init__(self, database: DataBase):
         self.engine = database.engine
 
-    async def get_by_user_id(self, user_id: int) -> Optional[User]:
+    async def get_by_user_id(self, user_id: int) -> User | None:
         async with AsyncSession(self.engine) as session:
             statement = select(User).where(User.user_id == user_id)
             results = await session.exec(statement)
@@ -37,7 +35,7 @@ class UserRepository(Component):
             await session.delete(user)
             await session.commit()
 
-    async def get_all(self) -> List[User]:
+    async def get_all(self) -> list[User]:
         async with AsyncSession(self.engine) as session:
             statement = select(User)
             results = await session.exec(statement)

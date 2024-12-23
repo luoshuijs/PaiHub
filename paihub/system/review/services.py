@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from paihub.base import BaseService
 from paihub.system.review.cache import ReviewCache
 from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
@@ -33,7 +31,7 @@ class ReviewService(BaseService):
         return self.review_repository
 
     async def initialize_review_form_sites(
-        self, work_id: int, lines_per_page: int = 10000, create_by: Optional[int] = None
+        self, work_id: int, lines_per_page: int = 10000, create_by: int | None = None
     ) -> int:
         """通知网站初始化审核队列
         :param work_id: 工作OD
@@ -72,7 +70,7 @@ class ReviewService(BaseService):
             page_number += 1
         return count
 
-    async def retrieve_next_for_review(self, work_id: int) -> Optional[ReviewCallbackContext]:
+    async def retrieve_next_for_review(self, work_id: int) -> ReviewCallbackContext | None:
         """从审核队列获取下一个作品
         :param work_id: 工作ID
         :return: ReviewCallbackContext
@@ -91,7 +89,7 @@ class ReviewService(BaseService):
         """
         return await self.review_cache.get_review_count(work_id)
 
-    async def get_by_review_id(self, review_id: int) -> Optional[Review]:
+    async def get_by_review_id(self, review_id: int) -> Review | None:
         """通过 review_id 从数据库中获取 Review
         :param review_id: ReviewID
         :return: Review
@@ -131,7 +129,7 @@ class ReviewService(BaseService):
         await self.review_repository.add(move)
         await self.review_repository.update(review)
 
-    async def try_auto_review(self, work_id: int, site_key: str, author_id: int) -> Optional[AutoReviewResult]:
+    async def try_auto_review(self, work_id: int, site_key: str, author_id: int) -> AutoReviewResult | None:
         """尝试自动审核
         :param work_id: 当前 Work id
         :param site_key: 网站唯一标识符
@@ -147,7 +145,7 @@ class ReviewService(BaseService):
             return AutoReviewResult(status=False, statistics=statistics)
         return None
 
-    async def get_review_by_artwork_id(self, artwork_id: int) -> List[Review]:
+    async def get_review_by_artwork_id(self, artwork_id: int) -> list[Review]:
         """从根据 artwork_id获取数据库中的审核信息
         :param artwork_id: 作品ID
         :return: List[Review] 审核信息列表

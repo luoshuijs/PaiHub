@@ -1,5 +1,3 @@
-from typing import List
-
 from paihub.base import Component
 from paihub.dependence.redis import Redis
 
@@ -12,7 +10,7 @@ class UserAdminCache(Component):
     async def ismember(self, user_id: int) -> bool:
         return await self.client.sismember(self.qname, user_id)
 
-    async def get_all(self) -> List[int]:
+    async def get_all(self) -> list[int]:
         return [int(str_data) for str_data in await self.client.smembers(self.qname)]
 
     async def set(self, user_id: int) -> bool:

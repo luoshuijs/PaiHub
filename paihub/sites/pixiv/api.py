@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 from http.cookies import SimpleCookie
 from secrets import token_urlsafe
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from apscheduler.triggers.interval import IntervalTrigger
@@ -40,17 +40,17 @@ else:
 _REDIRECT_URI = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"
 _LOGIN_URL = "https://app-api.pixiv.net/web/v1/login"
 _LOGIN_VERIFY = "https://accounts.pixiv.net/ajax/login"
-_AUTH_TOKEN_URL = "https://oauth.secure.pixiv.net/auth/token"
+_AUTH_TOKEN_URL = "https://oauth.secure.pixiv.net/auth/token"  # noqa: S105
 PIXIV_APP_CLIENT_ID = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
-PIXIV_APP_CLIENT_SECRET = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
+PIXIV_APP_CLIENT_SECRET = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"  # noqa: S105
 
 
 class UserIllustsResult(PageResult[Illust]):
-    illusts: List[Illust]
+    illusts: list[Illust]
 
 
 class UserRelatedResult(PixivModel):
-    users: List[UserPreview] = Field(alias="user_previews")
+    users: list[UserPreview] = Field(alias="user_previews")
 
 
 class IllustSearchResult(UserIllustsResult):
@@ -68,9 +68,9 @@ class PixivMobileApi(BaseApi):
         )
         self.cache = cache
         self.config = TomlConfig("config/pixiv.toml")
-        self.illust: "IllustAPI" = self.client.ILLUST
-        self.user: "UserAPI" = self.client.USER
-        self.novel: "NovelAPI" = self.client.NOVEL
+        self.illust: IllustAPI = self.client.ILLUST
+        self.user: UserAPI = self.client.USER
+        self.novel: NovelAPI = self.client.NOVEL
 
     async def initialize(self) -> None:
         await self.login()
@@ -82,7 +82,7 @@ class PixivMobileApi(BaseApi):
         login_token = await self.cache.get_login_token()
         if login_token is None:
             try:
-                login: "dict" = self.config.get("login")
+                login: dict = self.config.get("login")
                 username = login.get("username")
                 password = login.get("password")
                 headless = login.get("headless", True)
@@ -98,7 +98,7 @@ class PixivMobileApi(BaseApi):
                     logger.error("Please run the following command to download new browsers:")
                     logger.error("playwright install")
                 else:
-                    raise exc
+                    raise
             except Exception as exc:
                 logger.error("Pixiv Login with Password Error", exc_info=exc)
             else:
@@ -113,7 +113,7 @@ class PixivMobileApi(BaseApi):
             except PixivError as exc:
                 logger.error("[blue]Pixiv[/blue] Login Error", exc_info=exc)
 
-    async def user_follow_add(self, user_id: int | str, restrict: str = "public") -> Dict[str, Any]:
+    async def user_follow_add(self, user_id: int | str, restrict: str = "public") -> dict[str, Any]:
         url = APP_API_HOST / "v1/user/follow/add"
         data = {"user_id": user_id, "restrict": restrict}
         response = await self.client.request("POST", url, data=data)
@@ -121,8 +121,8 @@ class PixivMobileApi(BaseApi):
 
     async def user_illusts(
         self,
-        account_id: Optional[int] = None,
-        offset: Optional[int] = None,
+        account_id: int | None = None,
+        offset: int | None = None,
     ) -> UserIllustsResult:
         if account_id is None:
             account_id = self.client.account.id
@@ -138,7 +138,7 @@ class PixivMobileApi(BaseApi):
         with set_pixiv_client(self.client):
             return UserIllustsResult.model_validate(response.json())
 
-    async def illust_follow(self, offset: Optional[int] = None) -> IllustSearchResult:
+    async def illust_follow(self, offset: int | None = None) -> IllustSearchResult:
         response = await self.client.request_get(
             APP_API_HOST / "v2/illust/follow",
             params={"restrict": "public", "offset": offset},
@@ -148,13 +148,13 @@ class PixivMobileApi(BaseApi):
             return IllustSearchResult.model_validate(response.json())
 
     @staticmethod
-    def oauth_pkce() -> Tuple[str, str]:
+    def oauth_pkce() -> tuple[str, str]:
         verifier = token_urlsafe(32)
         challenge = urlsafe_b64encode(sha256(verifier.encode("ascii")).digest()).rstrip(b"=").decode("ascii")
         return verifier, challenge
 
     async def login_with_pwd(
-        self, username: str, password: str, proxy: Optional[str] = None, headless: Optional[bool] = None
+        self, username: str, password: str, proxy: str | None = None, headless: bool | None = None
     ) -> User:
         if async_playwright is None:
             raise RuntimeError("Please install 'playwright'.")

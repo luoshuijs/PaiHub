@@ -2,7 +2,7 @@ import asyncio
 import os
 from typing import TYPE_CHECKING
 
-from aiofiles import open as async_open
+import anyio
 from telegram import Message
 from telegram.error import NetworkError
 from telegram.ext import CommandHandler
@@ -33,7 +33,7 @@ class UpdateCommand(BaseCommand):
 
     async def initialize(self) -> None:
         if os.path.exists(UPDATE_DATA):
-            async with async_open(UPDATE_DATA) as file:
+            async with await anyio.open_file(UPDATE_DATA) as file:
                 data = jsonlib.loads(await file.read())
             try:
                 reply_text = Message.de_json(data, self.application.bot.bot)
@@ -62,6 +62,6 @@ class UpdateCommand(BaseCommand):
             await execute("git pull --all")
             logger.info("更新成功 正在重启")
             await reply_text.edit_text("更新成功 正在重启")
-            async with async_open(UPDATE_DATA, mode="w", encoding="utf-8") as file:
+            async with anyio.open_file(UPDATE_DATA, mode="w", encoding="utf-8") as file:
                 await file.write(reply_text.to_json())
         raise SystemExit

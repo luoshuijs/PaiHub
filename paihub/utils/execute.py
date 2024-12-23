@@ -1,8 +1,7 @@
 from asyncio import create_subprocess_shell
-from typing import Union
 
 
-async def execute(command: Union[str, bytes], pass_error: bool = True) -> str:
+async def execute(command: str | bytes, pass_error: bool = True) -> str:
     """Executes command and returns output, with the option of enabling stderr."""
     from asyncio import subprocess
 

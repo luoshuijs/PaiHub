@@ -1,6 +1,5 @@
 import enum
 from datetime import datetime
-from typing import Optional
 
 from sqlmodel import BigInteger, Column, DateTime, Enum, Field, Integer, SQLModel
 
@@ -16,10 +15,10 @@ class PermissionsEnum(enum.IntEnum):
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id: Optional[int] = Field(default=None, sa_column=Column(Integer(), primary_key=True, autoincrement=True))
+    id: int | None = Field(default=None, sa_column=Column(Integer(), primary_key=True, autoincrement=True))
     user_id: int = Field(sa_column=Column(BigInteger(), unique=True))
-    permissions: Optional[PermissionsEnum] = Field(sa_column=Column(Enum(PermissionsEnum)))
-    locale: Optional[str] = Field()
-    ban_end_time: Optional[datetime] = Field(sa_column=Column(DateTime(timezone=True)))
-    ban_start_time: Optional[datetime] = Field(sa_column=Column(DateTime(timezone=True)))
-    is_banned: Optional[int] = Field()
+    permissions: PermissionsEnum | None = Field(sa_column=Column(Enum(PermissionsEnum)))
+    locale: str | None = Field()
+    ban_end_time: datetime | None = Field(sa_column=Column(DateTime(timezone=True)))
+    ban_start_time: datetime | None = Field(sa_column=Column(DateTime(timezone=True)))
+    is_banned: int | None = Field()

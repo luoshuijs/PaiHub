@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 from telegram.constants import MessageEntityType
@@ -60,7 +60,7 @@ class ResetCommand(BaseCommand):
         message = update.effective_message
         reply_to_message = message.reply_to_message
 
-        text: Optional[str] = None
+        text: str | None = None
 
         if reply_to_message is not None:
             for caption_entities in reply_to_message.caption_entities:
@@ -73,7 +73,7 @@ class ResetCommand(BaseCommand):
         else:
             text = message.text
 
-        rows: List[InlineKeyboardButton] = []
+        rows: list[InlineKeyboardButton] = []
 
         reply_text = "请选择你要修改的 Review\n"
 
@@ -104,7 +104,7 @@ class ResetCommand(BaseCommand):
             await message.reply_text("找不到 URL 或 Review 信息")
             return ConversationHandler.END
 
-        keyboard: List[List[InlineKeyboardButton]] = [rows[i : i + 2] for i in range(0, len(rows), 2)]
+        keyboard: list[list[InlineKeyboardButton]] = [rows[i : i + 2] for i in range(0, len(rows), 2)]
 
         await message.reply_text(reply_text, reply_markup=InlineKeyboardMarkup(keyboard))
 
@@ -115,7 +115,7 @@ class ResetCommand(BaseCommand):
         callback_query = update.callback_query
         user = update.effective_user
 
-        def get_callback_query(callback_query_data: str) -> Tuple[int, bool]:
+        def get_callback_query(callback_query_data: str) -> tuple[int, bool]:
             _data = callback_query_data.split("|")
             _review_id = int(_data[1])
             _form_command = "form_command" in _data[0]
@@ -153,7 +153,7 @@ class ResetCommand(BaseCommand):
         callback_query = update.callback_query
         user = update.effective_user
 
-        def get_callback_query(callback_query_data: str) -> Tuple[int, int]:
+        def get_callback_query(callback_query_data: str) -> tuple[int, int]:
             _data = callback_query_data.split("|")
             _review_id = int(_data[1])
             _status = int(_data[2])
@@ -174,9 +174,9 @@ class ResetCommand(BaseCommand):
             await message.edit_text("已经删除该审核信息")
         elif status == -2:
             works = await self.work_service.get_all()
-            keyboard: List[List[InlineKeyboardButton]] = []
-            for work in works:
-                keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"reset_review_move|{work.id}")])
+            keyboard: list[list[InlineKeyboardButton]] = [
+                [InlineKeyboardButton(text=work.name, callback_data=f"reset_review_move|{work.id}")] for work in works
+            ]
             keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
             await message.edit_text("请选择要修改的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
             return MOVE_REVIEW
@@ -189,7 +189,7 @@ class ResetCommand(BaseCommand):
         callback_query = update.callback_query
         user = update.effective_user
 
-        def get_callback_query(callback_query_data: str) -> Tuple[int, int]:
+        def get_callback_query(callback_query_data: str) -> tuple[int, int]:
             _data = callback_query_data.split("|")
             _review_id = int(_data[1])
             _work_id = int(_data[2])

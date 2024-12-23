@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -8,11 +6,11 @@ dotenv.load_dotenv()
 
 class DatabaseConfig(BaseSettings):
     driver_name: str = "mysql+asyncmy"
-    host: Optional[str] = None
-    port: Optional[int] = None
-    username: Optional[str] = None
-    password: Optional[str] = None
-    database: Optional[str] = None
+    host: str | None = None
+    port: int | None = None
+    username: str | None = None
+    password: str | None = None
+    database: str | None = None
 
     model_config = SettingsConfigDict(env_prefix="db_")
 
@@ -20,8 +18,8 @@ class DatabaseConfig(BaseSettings):
 class RedisConfig(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 6379
-    database: Union[str, int] = 0
-    password: Optional[str] = None
+    database: str | int = 0
+    password: str | None = None
 
     model_config = SettingsConfigDict(env_prefix="redis_")
 
@@ -29,8 +27,8 @@ class RedisConfig(BaseSettings):
 class BotConfig(BaseSettings):
     token: str
     owner: int
-    base_url: Optional[str] = None
-    base_file_url: Optional[str] = None
+    base_url: str | None = None
+    base_file_url: str | None = None
 
     model_config = SettingsConfigDict(env_prefix="bot_")
 

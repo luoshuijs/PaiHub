@@ -1,5 +1,5 @@
 import html
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, ReplyKeyboardRemove
 from telegram.constants import ChatAction, ParseMode
@@ -50,9 +50,9 @@ class ReviewCommand(BaseCommand):
         message = update.effective_message
         logger.info("用户 %s[%s] 发出 review 命令", user.full_name, user.id)
         works = await self.work_service.get_all()
-        keyboard: List[List[InlineKeyboardButton]] = []
-        for work in works:
-            keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")])
+        keyboard: list[list[InlineKeyboardButton]] = [
+            [InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")] for work in works
+        ]
         keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
         await message.reply_html(
             f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard)
@@ -66,8 +66,7 @@ class ReviewCommand(BaseCommand):
 
         def get_callback_query(callback_query_data: str) -> int:
             _data = callback_query_data.split("|")
-            _work_id = int(_data[1])
-            return _work_id
+            return int(_data[1])
 
         work_id = get_callback_query(callback_query.data)
         await message.edit_text("正在初始化 Review 队列")
@@ -103,8 +102,7 @@ class ReviewCommand(BaseCommand):
 
         def get_callback_query(callback_query_data: str) -> int:
             _data = callback_query_data.split("|")
-            _work_id = int(_data[1])
-            return _work_id
+            return int(_data[1])
 
         await message.edit_text("正在获取图片")
         await message.reply_chat_action(ChatAction.TYPING)
@@ -130,8 +128,7 @@ class ReviewCommand(BaseCommand):
                 )
                 if len(artwork_images) > 1:
                     media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
-                    for data in artwork_images[1:]:
-                        media.append(InputMediaPhoto(media=data))
+                    media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
                     media = media[:10]
                     await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
                     await message.reply_media_group(
@@ -162,7 +159,7 @@ class ReviewCommand(BaseCommand):
                             write_timeout=30,
                         )
                 else:
-                    raise RuntimeError
+                    raise RuntimeError  # noqa: TRY301
                 auto_review = await review_context.try_auto_review()
                 if auto_review is not None:
                     if auto_review.status:
@@ -207,7 +204,6 @@ class ReviewCommand(BaseCommand):
                 ]
                 await message.reply_text("选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard))
                 await message.delete()
-                return SET_REVIEW
             except ArtWorkNotFoundError:
                 await review_context.set_review_status(ReviewStatus.NOT_FOUND, update_by=user.id)
                 await message.reply_text(f"[{review_context.site_key}]{review_context.artwork_id} 作品不存在 自动跳过")
@@ -231,9 +227,12 @@ class ReviewCommand(BaseCommand):
                 logger.warning("超出洪水控制限制 等待%s秒后重试", exc.retry_after)
                 break
             except Exception as exc:
+                await review_context.set_review_status(ReviewStatus.ERROR, update_by=user.id)
                 await message.reply_text("Review时发生致命错误，详情请查看日志")
                 logger.error("Review时发生致命错误", exc_info=exc)
                 break
+            else:
+                return SET_REVIEW
 
         return ConversationHandler.END
 
@@ -242,7 +241,7 @@ class ReviewCommand(BaseCommand):
         callback_query = update.callback_query
         user = update.effective_user
 
-        def get_callback_query(callback_query_data: str) -> Tuple[int, int]:
+        def get_callback_query(callback_query_data: str) -> tuple[int, int]:
             _data = callback_query_data.split("|")
             _review_id = int(_data[1])
             _status = int(_data[2])
@@ -282,8 +281,7 @@ class ReviewCommand(BaseCommand):
 
         def get_callback_query(callback_query_data: str) -> int:
             _data = callback_query_data.split("|")
-            _review_id = int(_data[1])
-            return _review_id
+            return int(_data[1])
 
         review_id = get_callback_query(callback_query.data)
         review_info = await self.review_service.get_by_review_id(review_id=review_id)

@@ -18,7 +18,7 @@ class Mongodb(BaseDependence):
             logger.success("Pinged your deployment. You successfully connected to [green]MongoDB[/green]!")
         except Exception as exc:
             logger.error("Connect MongoDB Failed", exc_info=exc)
-            raise exc
+            raise
 
     @property
     def db(self) -> AgnosticDatabase:

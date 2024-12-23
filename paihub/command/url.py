@@ -36,7 +36,7 @@ class URLCommand(BaseCommand):
             )
         )
 
-    async def start(self, update: "Update", context: "ContextTypes.DEFAULT_TYPE"):
+    async def start(self, update: "Update", context: "ContextTypes.DEFAULT_TYPE"):  # noqa: PLR0912
         user = update.effective_user
         message = update.effective_message
         logger.info("用户 %s[%s] 尝试获取图片", user.full_name, user.id)
@@ -61,8 +61,7 @@ class URLCommand(BaseCommand):
                             media = [
                                 InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)
                             ]
-                            for data in artwork_images[1:]:
-                                media.append(InputMediaPhoto(media=data))
+                            media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
                             media = media[:10]
                             await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
                             await message.reply_media_group(

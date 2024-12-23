@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import IntEnum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 from sqlalchemy import Enum, func
@@ -53,20 +53,18 @@ class Review(SQLModel, table=True):
 
     __tablename__ = "review"
 
-    id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    work_id: Optional[int] = Field(default=None, sa_type=BigInteger, foreign_key="work.id")
-    site_key: Optional[str] = Field(default=None, sa_type=SiteKey)
-    artwork_id: Optional[int] = Field(default=None, sa_type=BigInteger)
-    author_id: Optional[int] = Field(default=None, sa_type=BigInteger)
-    status: Optional[ReviewStatus] = Field(default=ReviewStatus.WAIT, sa_column=Column("status", Enum(ReviewStatus)))
-    auto: Optional[bool] = Field(default=False, sa_column=Column("auto", Integer))
-    ext: Optional[dict] = Field(default=None, sa_column=Column("ext", JSON))
-    create_by: Optional[int] = Field(default=None, sa_column=Column("create_by", Integer))
-    create_time: Optional[datetime] = Field(default=None, sa_column=Column("create_time", DateTime, default=func.now()))
-    update_by: Optional[int] = Field(default=None, sa_column=Column("update_by", Integer))
-    update_time: Optional[datetime] = Field(
-        default=None, sa_column=Column("update_time", DateTime, onupdate=func.now())
-    )
+    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+    work_id: int | None = Field(default=None, sa_type=BigInteger, foreign_key="work.id")
+    site_key: str | None = Field(default=None, sa_type=SiteKey)
+    artwork_id: int | None = Field(default=None, sa_type=BigInteger)
+    author_id: int | None = Field(default=None, sa_type=BigInteger)
+    status: ReviewStatus | None = Field(default=ReviewStatus.WAIT, sa_column=Column("status", Enum(ReviewStatus)))
+    auto: bool | None = Field(default=False, sa_column=Column("auto", Integer))
+    ext: dict | None = Field(default=None, sa_column=Column("ext", JSON))
+    create_by: int | None = Field(default=None, sa_column=Column("create_by", Integer))
+    create_time: datetime | None = Field(default=None, sa_column=Column("create_time", DateTime, default=func.now()))
+    update_by: int | None = Field(default=None, sa_column=Column("update_by", Integer))
+    update_time: datetime | None = Field(default=None, sa_column=Column("update_time", DateTime, onupdate=func.now()))
 
     def set_reject(self, update_by: int):
         """设置审核状态为拒绝
@@ -92,7 +90,7 @@ class Review(SQLModel, table=True):
         self.status = ReviewStatus.WAIT
         self.update_by = update_by
 
-    def set_move(self, update_by: int, move_work_id: Optional[int] = None):
+    def set_move(self, update_by: int, move_work_id: int | None = None):
         """设置审核状态为已经移动
         :param update_by: 更新的用户ID
         :param move_work_id: 设置移动打的 work
@@ -138,23 +136,23 @@ class StatusStatistics(BaseModel):
 class AutoReviewResult(BaseModel):
     status: bool
     statistics: StatusStatistics
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class ReviewBlackAuthor(SQLModel, table=True):
     __tablename__ = "review_black_author"
 
-    id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    site_key: Optional[str] = Field(default=None, sa_type=SiteKey)
-    author_id: Optional[int] = Field(default=None, sa_type=BigInteger)
+    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+    site_key: str | None = Field(default=None, sa_type=SiteKey)
+    author_id: int | None = Field(default=None, sa_type=BigInteger)
 
 
 class ReviewWhiteAuthor(SQLModel, table=True):
     __tablename__ = "review_white_author"
 
-    id: Optional[int] = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    site_key: Optional[str] = Field(default=None, sa_type=SiteKey)
-    author_id: Optional[int] = Field(default=None, sa_type=BigInteger)
+    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+    site_key: str | None = Field(default=None, sa_type=SiteKey)
+    author_id: int | None = Field(default=None, sa_type=BigInteger)
 
 
 # class AutoReviewRule(SQLModel):

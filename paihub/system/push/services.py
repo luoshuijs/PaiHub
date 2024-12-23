@@ -1,5 +1,3 @@
-from typing import Optional
-
 from paihub.base import BaseService
 from paihub.system.push.cache import PushCache
 from paihub.system.push.entities import Push
@@ -32,7 +30,7 @@ class PushService(BaseService):
     async def get_push_count(self, work_id: int) -> int:
         return await self.push_cache.get_push_count(work_id)
 
-    async def get_next_push(self, work_id: int) -> Optional[PushCallbackContext]:
+    async def get_next_push(self, work_id: int) -> PushCallbackContext | None:
         review_id = await self.push_cache.get_pending_push(work_id)
         if review_id is None:
             return None

@@ -1,4 +1,4 @@
-from typing import Iterable, List, Optional
+from collections.abc import Iterable
 
 from paihub.base import Component
 from paihub.dependence.redis import Redis
@@ -23,7 +23,7 @@ class PixivReviewCache(Component):
     async def set_already_review_artwork_ids(self, values: Iterable[int]) -> int:
         return await self.client.sadd("pixiv:review:already", *values)
 
-    async def get_ready_review_artwork_ids(self) -> List[int]:
+    async def get_ready_review_artwork_ids(self) -> list[int]:
         return await self.client.sdiff("pixiv:review:database", "pixiv:review:already")
 
 
@@ -35,10 +35,10 @@ class PixivCache(Component):
     async def set_login_token(self, token: str):
         await self.client.set("pixiv:login:token", token)
 
-    async def get_login_token(self) -> Optional[str]:
+    async def get_login_token(self) -> str | None:
         return await self.client.get("pixiv:login:token")
 
-    async def get_illust_detail(self, artwork_id: int) -> Optional[dict]:
+    async def get_illust_detail(self, artwork_id: int) -> dict | None:
         data = await self.client.get(f"pixiv:illust:detail:{artwork_id}")
         return jsonlib.loads(data)
 

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from persica import BaseComponent
 
@@ -73,21 +73,21 @@ class BaseSiteService(BaseComponent, component=False):
     async def get_artwork(self, artwork_id: int) -> "ArtWork":
         pass
 
-    async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
+    async def get_artwork_images(self, artwork_id: int) -> list[bytes]:
         pass
 
     async def initialize_review(
         self,
-        work_id: int,
-        search_text: str,
-        is_pattern: bool,
-        lines_per_page: int = 1000,
-        create_by: Optional[int] = None,
+        work_id: int,  # noqa: ARG002
+        search_text: str,  # noqa: ARG002
+        is_pattern: bool,  # noqa: ARG002
+        lines_per_page: int = 1000,  # noqa: ARG002
+        create_by: int | None = None,  # noqa: ARG002
     ) -> int:
         return 0
 
     @staticmethod
-    def extract(text: str) -> Optional[int]:
+    def extract(text: str) -> int | None:  # noqa: ARG004
         return None
 
 

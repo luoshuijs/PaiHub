@@ -1,5 +1,3 @@
-from typing import Optional
-
 from paihub.base import Component
 from paihub.dependence.redis import Redis
 
@@ -14,7 +12,7 @@ class DanbooruCache(Component):
         self.client = redis.client
         self.ttl = 60 * 60
 
-    async def get_result(self, post_id: int) -> Optional[dict]:
+    async def get_result(self, post_id: int) -> dict | None:
         data = await self.client.get(f"danbooru:web:{post_id}")
         if data is None:
             return None

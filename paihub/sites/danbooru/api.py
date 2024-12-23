@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from httpx import AsyncClient
 from pybooru import Danbooru, PybooruHTTPError
@@ -21,7 +21,7 @@ class DanbooruApi(BaseApi):
         self.cache = cache
         self.download_client = AsyncClient()
 
-    async def get_post(self, post_id: Optional[int] = None, md5: Optional[str] = None) -> Dict[str, Any]:
+    async def get_post(self, post_id: int | None = None, md5: str | None = None) -> dict[str, Any]:
         try:
             if post_id:
                 post = await self.post_show(post_id)
@@ -36,7 +36,7 @@ class DanbooruApi(BaseApi):
             raise BadRequest("You may need a gold account to view this post\nSource: " + post["source"])
         return post
 
-    async def get_artwork_info(self, post_id: Optional[int] = None) -> DanbooruArtWork:
+    async def get_artwork_info(self, post_id: int | None = None) -> DanbooruArtWork:
         post = await self.cache.get_result(post_id)
         if post is None:
             post = await self.get_post(post_id)
@@ -55,7 +55,7 @@ class DanbooruApi(BaseApi):
             source=source,
         )
 
-    async def get_artwork_images(self, post_id: Optional[int] = None) -> List[bytes]:
+    async def get_artwork_images(self, post_id: int | None = None) -> list[bytes]:
         post = await self.cache.get_result(post_id)
         if post is None:
             post = await self.get_post(post_id)

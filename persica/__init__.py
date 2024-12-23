@@ -1,9 +1,10 @@
 import inspect
 import logging
 import os
+from collections.abc import Iterable, Iterator
 from importlib import import_module
 from pathlib import Path
-from typing import ClassVar, Dict, Iterable, Iterator, List, Optional, Type, TypedDict, TypeVar, Union
+from typing import ClassVar, Dict, List, Optional, Type, TypedDict, TypeVar, Union
 
 logger = logging.Logger("persica")
 
@@ -35,17 +36,17 @@ class NoSuchParameterException(Exception):
 
 
 class Factor:
-    def __init__(self, paths: Iterable[str], root: Optional[str] = None, kwargs: Optional[Iterable[object]] = None):
+    def __init__(self, paths: Iterable[str], root: str | None = None, kwargs: Iterable[object] | None = None):
         if root is None:
             self.root = os.getcwd()
         else:
             self.root = root
         self.paths = paths
-        self.components: Dict[Type[BaseComponent], Union[Type[NoneInstantiate], BaseComponent]] = {}
-        self.kwargs: Dict[Type[object], object] = {}
+        self.components: dict[type[BaseComponent], type[NoneInstantiate] | BaseComponent] = {}
+        self.kwargs: dict[type[object], object] = {}
         if kwargs is not None:
             for k in kwargs:
-                original_class: "Type[object]" = k.__class__
+                original_class: type[object] = k.__class__
                 self.kwargs[original_class] = k
 
     def gen_pkg(self, root, path: Path) -> Iterator[str]:
@@ -68,7 +69,7 @@ class Factor:
                     logger.info("import module error %s", pkg)
                     raise e
 
-    def init_components(self, component: Type[BaseComponent]) -> BaseComponent:
+    def init_components(self, component: type[BaseComponent]) -> BaseComponent:
         logger.info("init component %s", component.__name__)
         params = {}
         try:
@@ -102,7 +103,7 @@ class Factor:
         self.components[component] = component_instantiate
         return component_instantiate
 
-    def get_all_components(self, cls: Type[BaseComponent] = BaseComponent) -> List[Type[BaseComponent]]:
+    def get_all_components(self, cls: type[BaseComponent] = BaseComponent) -> list[type[BaseComponent]]:
         sub_classes = cls.__subclasses__()
         all_sub_classes = sub_classes.copy()
         for subclass in sub_classes:
@@ -110,7 +111,7 @@ class Factor:
         return all_sub_classes
 
     @staticmethod
-    def get_all_sub_config() -> List[Type[BaseConfig]]:
+    def get_all_sub_config() -> list[type[BaseConfig]]:
         return BaseConfig.__subclasses__()
 
     def install(self):
@@ -124,16 +125,16 @@ class Factor:
                 self.init_components(key)
 
     def add_kwargs(self, k: object):
-        original_class: "Type[object]" = k.__class__
+        original_class: type[object] = k.__class__
         self.kwargs[original_class] = k
 
-    def get_component(self, key: Type[COMPONENT]) -> COMPONENT:
+    def get_component(self, key: type[COMPONENT]) -> COMPONENT:
         result = self.components.get(key)
         if isinstance(result, BaseComponent):
             return result
         raise KeyError(f"can not found {key.__name__}")
 
-    def get_components(self, key: Type[COMPONENT]) -> Iterator[COMPONENT]:
+    def get_components(self, key: type[COMPONENT]) -> Iterator[COMPONENT]:
         for _, value in self.components.items():
             if isinstance(value, key):
                 yield value

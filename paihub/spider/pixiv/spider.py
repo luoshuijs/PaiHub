@@ -2,7 +2,7 @@ import asyncio
 import random
 import time
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
+from typing import TYPE_CHECKING, Any
 
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -116,7 +116,7 @@ class PixivSpider(BaseSpider):
             if offset > 5000:
                 logger.info("Pixiv Mobile Search 结束任务")
                 break
-            await asyncio.sleep(random.randint(10, 30))
+            await asyncio.sleep(random.randint(10, 30))  # noqa: S311
 
     async def web_search(self):
         current_time = datetime.now()
@@ -129,7 +129,7 @@ class PixivSpider(BaseSpider):
                 word="原神", start_date=start_date, end_date=end_date, page=page
             )
             total = web_search_result.get("total")
-            illusts: "List[Dict]" = web_search_result.get("illusts")
+            illusts: list[dict] = web_search_result.get("illusts")
             for illust in illusts:
                 if illust.get("ai_type") == 2:
                     continue
@@ -148,14 +148,14 @@ class PixivSpider(BaseSpider):
                 count,
                 total - count,
             )
-            await asyncio.sleep(random.randint(10, 30))
+            await asyncio.sleep(random.randint(10, 30))  # noqa: S311
             page += 1
 
     async def follow_user(self):
         logger.info("正在获取关注列表")
         user_status = await self.web_api.client.get_user_status()
         offset: int = 0
-        user_follows: Set[int] = set()
+        user_follows: set[int] = set()
         while True:
             user_following = await self.web_api.client.get_user_following(user_status["user_id"], offset=offset)
             user_list = {int(user["userId"]) for user in user_following["users"]}
@@ -164,7 +164,7 @@ class PixivSpider(BaseSpider):
             logger.info("已经获取到关注列表第 %s 个", offset)
             if len(user_list) < 24:
                 break
-            await asyncio.sleep(random.randint(10, 30))
+            await asyncio.sleep(random.randint(10, 30))  # noqa: S311
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.8)
         need_follows = authors_id.difference(user_follows)
         logger.info("目前需要新添关注 %s 个", len(need_follows))
@@ -206,12 +206,12 @@ class PixivSpider(BaseSpider):
                     break
                 for illust in user_illusts.illusts:
                     await self.repository.merge(self.parse_mobile_details_to_database(illust))
-                    _logger.info("Pixiv Fetch Artwork 正在保存作品 IllustId[%s]", illust.id)
+                    _logger.info("Pixiv Fetch Artwork 正在保存作品 Id[%s]", illust.id)
                 offset += count
                 _logger.info("Pixiv Fetch Artwork 正在搜索用户 UserId[%s] 当前搜索 Offset[%s]", user_id, offset)
                 if user_illusts.next_url is None:
                     break
-                await asyncio.sleep(random.randint(10, 30))
+                await asyncio.sleep(random.randint(10, 30))  # noqa: S311
             await self.spider_document.set_artwork_fetch_status(user_id)
 
     async def get_web_follow(self):
@@ -221,7 +221,7 @@ class PixivSpider(BaseSpider):
         page: int = 1
         while True:
             web_search_result = await self.web_api.client.get_follow_latest(page=page)
-            illusts: "List[Dict]" = web_search_result.get("thumbnails").get("illust")
+            illusts: list[dict] = web_search_result.get("thumbnails").get("illust")
             for illust in illusts:
                 create_date = datetime.fromisoformat(illust["createDate"]).replace(tzinfo=None)
                 if create_date < end_date:
@@ -234,7 +234,7 @@ class PixivSpider(BaseSpider):
                 logger.info("Pixiv Spider User Follow 结束任务")
                 break
             logger.info("Pixiv Spider User Follow 正在获取列表，当前列表页数为 %s，当前已经获取到 %s", page, count)
-            await asyncio.sleep(random.randint(10, 30))
+            await asyncio.sleep(random.randint(10, 30))  # noqa: S311
             page += 1
 
     async def get_mobile_follow(self):
@@ -257,7 +257,7 @@ class PixivSpider(BaseSpider):
                 web_follow_tags = await self.spider_document.get_web_follow_tags(illust.id)
                 if web_follow_tags is None:
                     continue
-                tags: Optional[List[str]] = web_follow_tags.get("tags")
+                tags: list[str] | None = web_follow_tags.get("tags")
                 if tags is None:
                     logger.warning("作品 Pixiv[%s] Tags 为空", illust.id)
                     continue
@@ -276,7 +276,7 @@ class PixivSpider(BaseSpider):
             logger.info("当前已经获取到 %s 张作品 已经添加 %s 张作品到数据库", offset, add_count)
             if offset > 1000:
                 break
-            await asyncio.sleep(random.randint(10, 30))
+            await asyncio.sleep(random.randint(10, 30))  # noqa: S311
 
     @staticmethod
     def parse_mobile_details_to_database(illust: "Illust"):
@@ -292,10 +292,10 @@ class PixivSpider(BaseSpider):
         )
 
     @staticmethod
-    def parse_web_details_to_database(data: Dict[str, Any]):
-        illust_details: "Dict[str, Any]" = data["illust_details"]
-        tags: "List[str]" = illust_details.get("tags")
-        alt: "str" = illust_details.get("alt")
+    def parse_web_details_to_database(data: dict[str, Any]):
+        illust_details: dict[str, Any] = data["illust_details"]
+        tags: list[str] = illust_details.get("tags")
+        alt: str = illust_details.get("alt")
         artwork_id = int(illust_details.get("id"))
         user_id = int(illust_details.get("user_id"))
         rating_view = illust_details.get("rating_view", 0)
@@ -319,20 +319,15 @@ class PixivSpider(BaseSpider):
             return False
         tags = [tag.name for tag in illust.tags]
         if "R-18" in tags:
-            if illust.total_bookmarks >= 2000:
-                return True
             return False
         if illust.total_bookmarks >= 1000:
             return True
-        else:
-            days_hundred_fold = (time.time() - illust.create_date.timestamp()) / 24 / 60 / 60 * 100
-            if 50 < days_hundred_fold < 1000 and illust.total_bookmarks > days_hundred_fold:
-                return True
-        return False
+        days_hundred_fold = (time.time() - illust.create_date.timestamp()) / 24 / 60 / 60 * 100
+        return 50 < days_hundred_fold < 1000 and illust.total_bookmarks > days_hundred_fold
 
     @staticmethod
-    def filter_mobile_artwork(data: Dict[str, Any]):
-        illust_details: "Dict[str, Any]" = data["illust_details"]
+    def filter_mobile_artwork(data: dict[str, Any]):
+        illust_details: dict[str, Any] = data["illust_details"]
         upload_timestamp = illust_details.get("upload_timestamp")
         bookmark_user_total = illust_details.get("bookmark_user_total", 0)
         ai_type = illust_details.get("ai_type", 0)
@@ -342,7 +337,6 @@ class PixivSpider(BaseSpider):
         if 10 <= days_hundred_fold <= 300 and bookmark_user_total >= 700:
             if bookmark_user_total < 1000 - days_hundred_fold:
                 return False
-        else:
-            if bookmark_user_total < 1000:
-                return False
+        elif bookmark_user_total < 1000:
+            return False
         return True

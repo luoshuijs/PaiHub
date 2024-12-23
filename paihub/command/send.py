@@ -1,5 +1,5 @@
 import html
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, ReplyKeyboardRemove
 from telegram.constants import ChatAction, ParseMode
@@ -83,8 +83,7 @@ class SendCommand(BaseCommand):
                             media = [
                                 InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)
                             ]
-                            for data in artwork_images[1:]:
-                                media.append(InputMediaPhoto(media=data))
+                            media.extend([InputMediaPhoto(media=data) for data in artwork_images[1:]])
                             media = media[:10]
                             await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
                             await message.reply_media_group(
@@ -115,19 +114,17 @@ class SendCommand(BaseCommand):
                                     write_timeout=30,
                                 )
                         works = await self.work_service.get_all()
-                        keyboard: List[List[InlineKeyboardButton]] = []
-                        for work in works:
-                            keyboard.append(
-                                [
-                                    InlineKeyboardButton(
-                                        text=work.name,
-                                        callback_data=f"send_work|{work.id}|{site.site_key}|{artwork_id}",
-                                    )
-                                ]
-                            )
+                        keyboard: list[list[InlineKeyboardButton]] = [
+                            [
+                                InlineKeyboardButton(
+                                    text=work.name,
+                                    callback_data=f"send_work|{work.id}|{site.site_key}|{artwork_id}",
+                                )
+                            ]
+                            for work in works
+                        ]
                         keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
                         await message.reply_text("请选择要推送的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
-                        return GET_WORK
                     except ArtWorkNotFoundError:
                         await message.reply_text("作品不存在")
                     except BadRequest as exc:
@@ -142,6 +139,8 @@ class SendCommand(BaseCommand):
                     except Exception as exc:
                         await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
+                    else:
+                        return GET_WORK
 
         await message.reply_text("找不到 URL 或 Review 信息")
         return ConversationHandler.END
@@ -151,7 +150,7 @@ class SendCommand(BaseCommand):
         callback_query = update.callback_query
         bot = context.bot
 
-        def get_callback_query(callback_query_data: str) -> Tuple[int, str, int]:
+        def get_callback_query(callback_query_data: str) -> tuple[int, str, int]:
             _data = callback_query_data.split("|")
             _work_id = int(_data[1])
             _site_key = _data[2]
@@ -194,7 +193,7 @@ class SendCommand(BaseCommand):
         callback_query = update.callback_query
         bot = context.bot
 
-        def get_callback_query(callback_query_data: str) -> Tuple[int, str, int]:
+        def get_callback_query(callback_query_data: str) -> tuple[int, str, int]:
             _data = callback_query_data.split("|")
             _work_id = int(_data[1])
             _site_key = _data[2]
@@ -212,7 +211,7 @@ class SendCommand(BaseCommand):
         if work_channel is None:
             await message.delete()
             return ConversationHandler.END
-        send_message: Optional["Message"] = None
+        send_message: Message | None = None
 
         try:
             artwork = await site.get_artwork(artwork_id)
@@ -226,8 +225,7 @@ class SendCommand(BaseCommand):
             )
             if len(artwork_images) > 1:
                 media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
-                for data in artwork_images[1:]:
-                    media.append(InputMediaPhoto(media=data))
+                media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
                 media = media[:10]
                 send_message = await bot.send_media_group(
                     chat_id=work_channel.channel_id,
@@ -258,7 +256,7 @@ class SendCommand(BaseCommand):
                         write_timeout=30,
                     )
             else:
-                raise RuntimeError
+                raise RuntimeError  # noqa: TRY301
         except ArtWorkNotFoundError:
             await message.reply_text("作品不存在")
             return ConversationHandler.END

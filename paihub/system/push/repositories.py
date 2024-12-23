@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
 from sqlmodel import select
@@ -14,13 +12,13 @@ class PushRepository(Component):
     def __init__(self, database: DataBase):
         self.engine = database.engine
 
-    async def get(self, key_id: int) -> Optional[Push]:
+    async def get(self, key_id: int) -> Push | None:
         async with AsyncSession(self.engine) as session:
             statement = select(Push).where(Push.id == key_id)
             results = await session.exec(statement)
             return results.first()
 
-    async def get_push(self, review_id: Optional[int] = None) -> Optional[Push]:
+    async def get_push(self, review_id: int | None = None) -> Push | None:
         async with AsyncSession(self.engine) as session:
             statement = select(Push)
             if review_id is not None:
@@ -45,7 +43,7 @@ class PushRepository(Component):
             await session.delete(instance)
             await session.commit()
 
-    async def get_review_id_by_push(self, work_id: int) -> List[int]:
+    async def get_review_id_by_push(self, work_id: int) -> list[int]:
         async with _AsyncSession(self.engine) as session:
             statement = text(
                 "SELECT review.id "

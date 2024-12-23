@@ -2,7 +2,8 @@ import asyncio
 import platform
 import signal
 import warnings
-from typing import NoReturn, Optional, Sequence
+from collections.abc import Sequence
+from typing import NoReturn
 
 import pytz
 from apscheduler.events import EVENT_JOB_ERROR, JobExecutionEvent
@@ -44,7 +45,7 @@ class Application:
     def scheduler_error_listener(self, event: JobExecutionEvent):
         asyncio.create_task(self.bot.process_error(update=None, error=event.exception))
 
-    def run(self, stop_signals: Optional[Sequence[int]] = None):
+    def run(self, stop_signals: Sequence[int] | None = None):
         logger.info("正在初始化 Factor")
         self.factor.install()
         logger.info("Component 构造完毕")
@@ -58,9 +59,9 @@ class Application:
             self.loop.run_forever()
         except (KeyboardInterrupt, SystemExit):
             logger.info("Application received stop signal. Shutting down.")
-        except Exception as exc:
+        except Exception:
             logger.error("Application received exception. Shutting down.")
-            raise exc
+            raise
         finally:
             self.loop.run_until_complete(self.shutdown())
 
@@ -68,52 +69,52 @@ class Application:
         for d in self.factor.get_components(BaseDependence):
             try:
                 await d.initialize()
-            except Exception as exc:
+            except Exception:
                 logger.error("%s 初始化失败", d.__class__.__name__)
-                raise exc
+                raise
         for s in self.factor.get_components(BaseService):
             try:
                 s.set_application(self)
                 await s.initialize()
-            except Exception as exc:
+            except Exception:
                 logger.error("%s 初始化失败", s.__class__.__name__)
-                raise exc
+                raise
         for s in self.factor.get_components(BaseApi):
             try:
                 s.set_application(self)
                 await s.initialize()
-            except Exception as exc:
+            except Exception:
                 logger.error("%s 初始化失败", s.__class__.__name__)
-                raise exc
+                raise
         for s in self.factor.get_components(BaseSiteService):
             try:
                 s.set_application(self)
                 await s.initialize()
-            except Exception as exc:
+            except Exception:
                 logger.error("%s 初始化失败", s.__class__.__name__)
-                raise exc
+                raise
         for c in self.factor.get_components(BaseCommand):
             try:
                 c.set_application(self)
                 await c.initialize()
                 c.add_handlers()
-            except Exception as exc:
+            except Exception:
                 logger.error("%s 初始化失败", c.__class__.__name__)
-                raise exc
+                raise
         for s in self.factor.get_components(BaseSpider):
             try:
                 s.set_application(self)
                 await s.initialize()
                 s.add_jobs()
-            except Exception as exc:
+            except Exception:
                 logger.error("%s 初始化失败", s.__class__.__name__)
-                raise exc
+                raise
 
         try:
             self.scheduler.start()
-        except Exception as exc:
+        except Exception:
             logger.error("Scheduler 初始化时出现错误")
-            raise exc
+            raise
 
         def error_callback(error) -> None:
             self.bot.create_task(self.bot.process_error(error=error, update=None))
@@ -124,9 +125,9 @@ class Application:
                 await self.bot.post_init(self.bot)
             await self.bot.updater.start_polling(error_callback=error_callback)
             await self.bot.start()
-        except Exception as exc:
+        except Exception:
             logger.error("初始化Bot失败")
-            raise exc
+            raise
 
     async def shutdown(self) -> None:
         logger.info("PaiHub Application 正在退出")

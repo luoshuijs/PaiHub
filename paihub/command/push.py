@@ -1,6 +1,6 @@
 import asyncio
 import html
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, ReplyKeyboardRemove
 from telegram.constants import ParseMode
@@ -45,9 +45,9 @@ class PushCommand(BaseCommand):
         message = update.effective_message
         logger.info("用户 %s[%s] 发出 push 命令", user.full_name, user.id)
         works = await self.work_service.get_all()
-        keyboard: List[List[InlineKeyboardButton]] = []
-        for work in works:
-            keyboard.append([InlineKeyboardButton(text=work.name, callback_data=f"set_push_work|{work.id}")])
+        keyboard: list[list[InlineKeyboardButton]] = [
+            [InlineKeyboardButton(text=work.name, callback_data=f"set_push_work|{work.id}")] for work in works
+        ]
         keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
         await message.reply_html(
             f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard)
@@ -60,8 +60,7 @@ class PushCommand(BaseCommand):
 
         def get_callback_query(callback_query_data: str) -> int:
             _data = callback_query_data.split("|")
-            _work_id = int(_data[1])
-            return _work_id
+            return int(_data[1])
 
         work_id = get_callback_query(callback_query.data)
         await message.edit_text("正在初始化 Push 队列")
@@ -89,8 +88,7 @@ class PushCommand(BaseCommand):
 
         def get_callback_query(callback_query_data: str) -> int:
             _data = callback_query_data.split("|")
-            _work_id = int(_data[1])
-            return _work_id
+            return int(_data[1])
 
         work_id = get_callback_query(callback_query.data)
         await message.edit_text("正在推送")
@@ -117,8 +115,7 @@ class PushCommand(BaseCommand):
                 )
                 if len(artwork_images) > 1:
                     media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
-                    for data in artwork_images[1:]:
-                        media.append(InputMediaPhoto(media=data))
+                    media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
                     media = media[:10]
                     send_media_group_message = await bot.send_media_group(
                         chat_id=push_context.channel_id,
@@ -152,7 +149,7 @@ class PushCommand(BaseCommand):
                         )
                         await push_context.set_push(message_id=send_video_message.id, create_by=user.id)
                 else:
-                    raise RuntimeError
+                    raise RuntimeError  # noqa: TRY301
                 count = await self.push_service.get_push_count(work_id)
                 if count == 0:
                     await message.reply_text("推送完毕")

@@ -1,7 +1,6 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-from typing import Optional
 
 from rich.console import Console
 from rich.logging import RichHandler
@@ -15,10 +14,10 @@ logging.addLevelName(SUCCESS_LEVEL_NUM, "SUCCESS")
 class Logger:
     def __init__(
         self,
-        name: Optional[str] = None,
+        name: str | None = None,
         level: int = logging.INFO,
-        filename: Optional[str] = None,
-        color_log: Optional[bool] = None,
+        filename: str | None = None,
+        color_log: bool | None = None,
     ):
         log_path = os.path.join(os.getcwd(), "logs")
         if not os.path.exists(log_path):

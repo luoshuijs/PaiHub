@@ -1,7 +1,8 @@
 import asyncio
+from collections.abc import Callable, Coroutine
 from concurrent.futures import Executor
 from functools import partial, wraps
-from typing import Any, Callable, Coroutine, Optional, ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -9,8 +10,8 @@ P = ParamSpec("P")
 
 def async_wrap(
     func: Callable[P, T],
-    loop: Optional[asyncio.AbstractEventLoop] = None,
-    executor: Optional[Executor] = None,
+    loop: asyncio.AbstractEventLoop | None = None,
+    executor: Executor | None = None,
 ) -> Callable[P, Coroutine[Any, Any, T]]:
     """Transform a synchronous function to an asynchronous one with type hints."""
 

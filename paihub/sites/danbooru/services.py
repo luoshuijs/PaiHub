@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from paihub.base import BaseSiteService
 from paihub.sites.danbooru.api import DanbooruApi
 from paihub.sites.danbooru.entities import DanbooruArtWork
@@ -16,11 +14,11 @@ class DanbooruSitesService(BaseSiteService):
     async def get_artwork(self, artwork_id: int) -> DanbooruArtWork:
         return await self.api.get_artwork_info(artwork_id)
 
-    async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
+    async def get_artwork_images(self, artwork_id: int) -> list[bytes]:
         return await self.api.get_artwork_images(artwork_id)
 
     @staticmethod
-    def extract(text: str) -> Optional[int]:
+    def extract(text: str) -> int | None:
         for pattern in compiled_patterns:
             match = pattern.search(text)
             if match:

@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from typing import Dict, List, Optional, Union
 
 from birdnet.client.web.client import WebClient
 from birdnet.errors import BadRequest as BirdNetBadRequest
@@ -46,7 +45,7 @@ class WebClientApi(BaseApi):
             return await self.get_tweet_detail(artwork_id)
         return await self.get_tweet_result_by_rest_id(artwork_id)
 
-    async def get_artwork_images(self, artwork_id: int) -> List[bytes]:
+    async def get_artwork_images(self, artwork_id: int) -> list[bytes]:
         if self.login_status:
             return await self.get_tweet_detail_images(artwork_id)
         return await self.get_tweet_images_result_by_rest_id(artwork_id)
@@ -66,7 +65,7 @@ class WebClientApi(BaseApi):
 
         return self.get_artwork_from_tweet(tweet, tweet_id)
 
-    async def get_tweet_detail_images(self, tweet_id: int) -> List[bytes]:
+    async def get_tweet_detail_images(self, tweet_id: int) -> list[bytes]:
         response = await self.web_cache.get_tweet_detail(tweet_id)
         if response is None:
             try:
@@ -78,11 +77,8 @@ class WebClientApi(BaseApi):
             await self.web_cache.set_tweet_detail(tweet_id, response)
 
         tweet = self.get_tweet_from_tweet_detail(response, tweet_id)
-        result: List[bytes] = []
-        medias: "List[Dict]" = tweet["legacy"]["extended_entities"]["media"]
-        for media in medias:
-            result.append(await self.web.download(media["media_url_https"]))
-        return result
+        medias: list[dict] = tweet["legacy"]["extended_entities"]["media"]
+        return [await self.web.download(media["media_url_https"]) for media in medias]
 
     async def get_tweet_result_by_rest_id(self, tweet_id: int) -> TwitterArtWork:
         data = await self.web_cache.get_tweet_result_by_rest_id(tweet_id)
@@ -97,7 +93,7 @@ class WebClientApi(BaseApi):
 
         return self.get_artwork_from_tweet(data, tweet_id)
 
-    async def get_tweet_images_result_by_rest_id(self, tweet_id: int) -> List[bytes]:
+    async def get_tweet_images_result_by_rest_id(self, tweet_id: int) -> list[bytes]:
         data = await self.web_cache.get_tweet_result_by_rest_id(tweet_id)
         if data is None:
             try:
@@ -107,14 +103,11 @@ class WebClientApi(BaseApi):
                     raise ArtWorkNotFoundError from exc
                 raise BadRequest from exc
             await self.web_cache.set_tweet_result_by_rest_id(tweet_id, data)
-        result: List[bytes] = []
-        medias: "List[Dict]" = data["legacy"]["extended_entities"]["media"]
-        for media in medias:
-            result.append(await self.web.download(media["media_url_https"]))
-        return result
+        medias: list[dict] = data["legacy"]["extended_entities"]["media"]
+        return [await self.web.download(media["media_url_https"]) for media in medias]
 
     @staticmethod
-    def get_artwork_from_tweet(tweet: Dict, tweet_id: int):
+    def get_artwork_from_tweet(tweet: dict, tweet_id: int):
         author = TwitterAuthor(
             auther_id=int(tweet["legacy"]["user_id_str"]),
             name=tweet["core"]["user_results"]["result"]["legacy"]["name"],
@@ -128,14 +121,14 @@ class WebClientApi(BaseApi):
         return TwitterArtWork(artwork_id=tweet_id, author=author, title=title, create_time=create_time, tags=tags)
 
     @staticmethod
-    def get_tweet_from_tweet_detail(data: Dict, tweet_id: Union[str, int]):
+    def get_tweet_from_tweet_detail(data: dict, tweet_id: str | int):
         instructions = data["threaded_conversation_with_injections_v2"]["instructions"]
-        entries: "List[Dict]" = []
+        entries: list[dict] = []
         for instruction in instructions:
             if instruction.get("type") == "TimelineAddEntries":
                 entries = instruction["entries"]
                 break
-        tweet: "Optional[Dict]" = None
+        tweet: dict | None = None
         for entry in entries:
             if entry["entryId"] == f"tweet-{tweet_id}":
                 tweet_results = entry["content"]["itemContent"]["tweet_results"]

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
@@ -19,7 +18,7 @@ class PixivRepository(Component):
 
     async def get_artworks_by_tags(
         self, search_text: str, is_pattern: bool, page_number: int, lines_per_page: int = 10000
-    ) -> List[int]:
+    ) -> list[int]:
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             if is_pattern:
@@ -32,7 +31,7 @@ class PixivRepository(Component):
             )
             return result.scalars().all()
 
-    async def add_review_form_pixiv(self, work_id: int, artwork_id: int, create_by: Optional[int] = None):
+    async def add_review_form_pixiv(self, work_id: int, artwork_id: int, create_by: int | None = None):
         create_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         async with _AsyncSession(self.engine) as session:
             statement = text(
@@ -50,7 +49,7 @@ class PixivRepository(Component):
             await session.execute(statement, params)
             await session.commit()
 
-    async def get(self, artwork_id: int) -> Optional[Pixiv]:
+    async def get(self, artwork_id: int) -> Pixiv | None:
         async with AsyncSession(self.engine) as session:
             statement = select(Pixiv).where(Pixiv.id == artwork_id)
             results = await session.exec(statement)

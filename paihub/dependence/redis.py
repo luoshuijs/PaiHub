@@ -16,12 +16,12 @@ class Redis(BaseDependence):
         logger.info("正在尝试建立与 [red]Redis[/red] 连接")
         try:
             await self.client.ping()
-        except RedisConnectionError as exc:
+        except RedisConnectionError:
             logger.error("连接 [red]Redis[/red] 失败")
-            raise exc
-        except RedisTimeoutError as exc:
+            raise
+        except RedisTimeoutError:
             logger.error("连接 [red]Redis[/red] 超时")
-            raise exc
+            raise
         else:
             logger.success("连接 [red]Redis[/red] 成功")
 

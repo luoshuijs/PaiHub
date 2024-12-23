@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from paihub.base import BaseSiteService
@@ -35,10 +35,10 @@ class PushCallbackContext:
     async def get_artwork(self) -> "ArtWork":
         return await self.site_service.get_artwork(self.artwork_id)
 
-    async def get_artwork_images(self) -> List[bytes]:
+    async def get_artwork_images(self) -> list[bytes]:
         return await self.site_service.get_artwork_images(self.artwork_id)
 
-    async def set_push(self, message_id: Optional[int] = None, create_by: Optional[int] = None, status: bool = True):
+    async def set_push(self, message_id: int | None = None, create_by: int | None = None, status: bool = True):
         await self.push_service.add_push(
             review_id=self.review_id,
             channel_id=self.channel_id,

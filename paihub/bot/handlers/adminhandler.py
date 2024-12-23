@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from telegram import Update
 from telegram.ext import ApplicationHandlerStop, BaseHandler
@@ -22,7 +22,7 @@ class AdminHandler(BaseHandler[Update, "CCT"]):
     ) -> None:
         self.handler = handler
         self.application = application
-        self._user_service: Optional["UserAdminService"] = None
+        self._user_service: UserAdminService | None = None
         self.need_notify = need_notify
         super().__init__(self.handler.callback, self.handler.block)
 

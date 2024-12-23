@@ -1,5 +1,3 @@
-from typing import List, Optional, Set
-
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
 from sqlmodel import select
@@ -14,7 +12,7 @@ class ReviewRepository(Component):
     def __init__(self, database: DataBase):
         self.engine = database.engine
 
-    async def get(self, key_id: int) -> Optional[Review]:
+    async def get(self, key_id: int) -> Review | None:
         async with AsyncSession(self.engine) as session:
             statement = select(Review).where(Review.id == key_id)
             results = await session.exec(statement)
@@ -39,7 +37,7 @@ class ReviewRepository(Component):
 
     async def get_artwork_id_by_work_and_web(
         self, work_id: int, site_key: str, page_number: int, lines_per_page: int = 10000
-    ) -> List[int]:
+    ) -> list[int]:
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             statement = text(
@@ -54,7 +52,7 @@ class ReviewRepository(Component):
 
     async def get_by_status(
         self, work_id: int, status: ReviewStatus, page_number: int, lines_per_page: int = 1000
-    ) -> List[int]:
+    ) -> list[int]:
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             statement = text(
@@ -81,7 +79,7 @@ class ReviewRepository(Component):
 
     async def get_filtered_status_counts(
         self, site_key: str, min_total_count: int = 10, pass_ratio_threshold: float = 0.8
-    ) -> Set[int]:
+    ) -> set[int]:
         async with _AsyncSession(self.engine) as session:
             statement = text(
                 "SELECT "
@@ -102,7 +100,7 @@ class ReviewRepository(Component):
             result = await session.execute(statement, params)
             return {row[0] for row in result}
 
-    async def get_review_by_artwork_id(self, artwork_id: int) -> List[Review]:
+    async def get_review_by_artwork_id(self, artwork_id: int) -> list[Review]:
         async with AsyncSession(self.engine) as session:
             statement = select(Review).where(Review.artwork_id == artwork_id)
             results = await session.exec(statement)
@@ -110,11 +108,11 @@ class ReviewRepository(Component):
 
     async def get_review(
         self,
-        work_id: Optional[int] = None,
-        site_key: Optional[str] = None,
-        artwork_id: Optional[int] = None,
-        status: Optional[ReviewStatus] = None,
-    ) -> Optional[Review]:
+        work_id: int | None = None,
+        site_key: str | None = None,
+        artwork_id: int | None = None,
+        status: ReviewStatus | None = None,
+    ) -> Review | None:
         async with AsyncSession(self.engine) as session:
             statement = select(Review)
             if work_id is not None:

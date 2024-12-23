@@ -48,9 +48,9 @@ class DataBase(BaseDependence):
             async with self._engine.begin() as _conn:
                 conn = cast(AsyncConnection, _conn)
                 await conn.run_sync(self._test_connection)
-        except Exception as exc:
+        except Exception:
             logger.error("连接数据库失败")
-            raise exc
+            raise
 
     @property
     def engine(self) -> AsyncEngine:
@@ -61,12 +61,12 @@ class DataBase(BaseDependence):
 
     @asynccontextmanager
     async def session(self) -> "AsyncSession":
-        session: "AsyncSession" = self._session_factory()
+        session: AsyncSession = self._session_factory()
         try:
             yield session
         except Exception as exc:
             logger.exception("Session rollback because of exception", exc_info=exc)
             await session.rollback()
-            raise exc
+            raise
         finally:
             await session.close()

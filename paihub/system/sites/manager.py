@@ -1,11 +1,11 @@
-from typing import Dict, Iterator
+from collections.abc import Iterator
 
 from paihub.base import BaseService, BaseSiteService
 
 
 class SitesManager(BaseService):
     def __init__(self):
-        self.sites_services: Dict[str, BaseSiteService] = {}
+        self.sites_services: dict[str, BaseSiteService] = {}
 
     async def initialize(self):
         for s in self.application.factor.get_components(BaseSiteService):
@@ -19,5 +19,4 @@ class SitesManager(BaseService):
         return result
 
     def get_all_sites(self) -> Iterator[BaseSiteService]:
-        for _, value in self.sites_services.items():
-            yield value
+        yield from self.sites_services.values()

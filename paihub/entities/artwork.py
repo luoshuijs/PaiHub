@@ -1,7 +1,6 @@
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import IntEnum
-from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -23,11 +22,11 @@ class ArtWork(BaseModel):
     web_name: str
     artwork_id: int
     title: str
-    tags: List[str] = []
+    tags: list[str] = []
     create_time: datetime
     author: Author
     nsfw: bool = False
-    source: Optional[str] = None
+    source: str | None = None
     is_sourced: bool = False
     image_type: ImageType = ImageType.STATIC
 
@@ -37,7 +36,7 @@ class ArtWork(BaseModel):
         return " ".join(f"#{tag}" for tag in self.tags)
 
     def get_create_time_timestamp(self) -> int:
-        return int(self.create_time.replace(tzinfo=timezone.utc).timestamp())
+        return int(self.create_time.replace(tzinfo=UTC).timestamp())
 
     @property
     def url(self) -> str:

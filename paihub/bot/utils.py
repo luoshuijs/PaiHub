@@ -1,9 +1,7 @@
-from typing import Optional, Tuple
-
 from telegram import ChatMember, ChatMemberUpdated
 
 
-def extract_status_change(chat_member_update: ChatMemberUpdated) -> Optional[Tuple[bool, bool]]:
+def extract_status_change(chat_member_update: ChatMemberUpdated) -> tuple[bool, bool] | None:
     """Takes a ChatMemberUpdated instance and extracts whether the 'old_chat_member' was a member
     of the chat and whether the 'new_chat_member' is a member of the chat. Returns None, if
     the status didn't change.

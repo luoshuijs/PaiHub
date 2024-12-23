@@ -1,9 +1,10 @@
+import json as jsonlib
 import os
 import time
 import traceback
-from typing import Optional, cast
+from typing import cast
 
-import aiofiles
+import anyio
 from telegram import Update
 from telegram.error import BadRequest, NetworkError
 from telegram.ext import CallbackContext
@@ -11,15 +12,9 @@ from telegram.ext import CallbackContext
 from paihub.base import BaseCommand
 from paihub.log import logger
 
-try:
-    import orjson as jsonlib
-
-except ImportError:
-    import json as jsonlib
-
 
 class ErrorHandler(BaseCommand):
-    error_chat_id: Optional[int] = None
+    error_chat_id: int | None = None
 
     def __init__(self):
         current_dir = os.getcwd()
@@ -62,17 +57,19 @@ class ErrorHandler(BaseCommand):
         log_file = os.path.join(self.report_dir, file_name)
 
         try:
-            async with aiofiles.open(log_file, mode="w+", encoding="utf-8") as f:
+            async with await anyio.open_file(log_file, mode="w+", encoding="utf-8") as f:
                 await f.write(error_text)
         except Exception as exc:  # pylint: disable=W0703
             logger.error("保存日记失败", exc_info=exc)
 
         try:
-            await context.bot.send_document(
-                chat_id=self.error_chat_id,
-                document=open(log_file, "rb"),
-                caption=f'Error: "{context.error.__class__.__name__}"',
-            )
+            async with await anyio.open_file(log_file, "rb") as f:
+                document = await f.read()
+                await context.bot.send_document(
+                    chat_id=self.error_chat_id,
+                    document=document,
+                    caption=f'Error: "{context.error.__class__.__name__}"',
+                )
         except BadRequest as exc:
             logger.error("发送日记失败", exc_info=exc)
         except NetworkError as exc:

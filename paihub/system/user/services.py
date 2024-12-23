@@ -1,5 +1,3 @@
-from typing import List
-
 from paihub.base import BaseService
 from paihub.log import logger
 from paihub.system.user.cache import UserAdminCache
@@ -35,7 +33,7 @@ class UserAdminService(BaseService):
     async def is_admin(self, user_id: int) -> bool:
         return await self._cache.ismember(user_id)
 
-    async def get_admin_list(self) -> List[int]:
+    async def get_admin_list(self) -> list[int]:
         return await self._cache.get_all()
 
     async def add_admin(self, user_id: int) -> bool:

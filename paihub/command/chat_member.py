@@ -42,8 +42,7 @@ class ChatMember(BaseCommand):
                     await chat.leave()
             elif was_member and not is_member:
                 logger.info("用户 %s[%s] 从 %s[%s] 群移除Bot", user.full_name, user.id, chat.title, chat.id)
-        else:
-            if not was_member and is_member:
-                logger.info("用户 %s[%s] 邀请BOT进入频道 %s[%s]", user.full_name, user.id, chat.title, chat.id)
-            elif was_member and not is_member:
-                logger.info("用户 %s[%s] 从 %s[%s] 频道移除Bot", user.full_name, user.id, chat.title, chat.id)
+        elif not was_member and is_member:
+            logger.info("用户 %s[%s] 邀请BOT进入频道 %s[%s]", user.full_name, user.id, chat.title, chat.id)
+        elif was_member and not is_member:
+            logger.info("用户 %s[%s] 从 %s[%s] 频道移除Bot", user.full_name, user.id, chat.title, chat.id)
