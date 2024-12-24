@@ -25,7 +25,7 @@ class BaseDependence(AsyncInitializingComponent):
 
 class Repository(Generic[T], AsyncInitializingComponent):
     __order__ = -2
-    entity_class: T
+    entity_class: type[T]
     engine: AsyncEngine
 
     def __init_subclass__(cls, **kwargs):
@@ -48,7 +48,7 @@ class Repository(Generic[T], AsyncInitializingComponent):
     def set_engine(self, engine: "AsyncEngine"):
         self.engine = engine
 
-    async def get(self, key_id: int) -> T | None:
+    async def get_by_id(self, key_id: int) -> T | None:
         async with AsyncSession(self.engine) as session:
             statement = select(self.entity_class).where(self.entity_class.id == key_id)
             results = await session.exec(statement)

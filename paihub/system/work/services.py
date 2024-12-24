@@ -20,8 +20,8 @@ class WorkService(Service):
     async def get_work_rule_by_work_id(self, work_id: int) -> WorkRule | None:
         return await self.work_rule_repository.get_by_work_id(work_id)
 
-    async def get_by_work_id(self, work_id: int) -> Work | None:
-        return await self.work_repository.get_by_work_id(work_id)
+    async def get_work_by_id(self, work_id: int) -> Work | None:
+        return await self.work_repository.get_by_id(work_id)
 
     async def get_work_channel_by_work_id(self, work_id: int) -> WorkChannel | None:
         return await self.work_channel_repository.get_by_work_id(work_id)

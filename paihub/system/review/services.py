@@ -78,7 +78,7 @@ class ReviewService(Service):
         review_id = await self.review_cache.get_pending_review(work_id)
         if review_id is None:
             return None
-        review_data = await self.review_repository.get(int(review_id))
+        review_data = await self.review_repository.get_by_id(int(review_id))
         site_service = self.sites_manager.get_site_by_site_key(review_data.site_key)
         return ReviewCallbackContext(review=review_data, site_service=site_service, review_service=self)
 
@@ -94,7 +94,7 @@ class ReviewService(Service):
         :param review_id: ReviewID
         :return: Review
         """
-        return await self.review_repository.get(review_id)
+        return await self.review_repository.get_by_id(review_id)
 
     async def update_review(self, review: Review) -> Review:
         """更新审核信息到数据库并返回最新信息
@@ -119,7 +119,7 @@ class ReviewService(Service):
         """
         review.set_move(update_by, target_work_id)
         review = await self.review_repository.update(review)
-        move = review.copy()
+        move = review.model_copy()
         move.work_id = target_work_id
         move.id = None
         move.create_by = update_by

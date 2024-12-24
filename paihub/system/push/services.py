@@ -34,7 +34,7 @@ class PushService(Service):
         review_id = await self.push_cache.get_pending_push(work_id)
         if review_id is None:
             return None
-        review_data = await self.review_repository.get(int(review_id))
+        review_data = await self.review_repository.get_by_id(int(review_id))
         site_service = self.sites_manager.get_site_by_site_key(review_data.site_key)
         work_channel = await self.work_channel_repository.get_by_work_id(work_id)
         return PushCallbackContext(

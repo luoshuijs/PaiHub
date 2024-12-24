@@ -84,7 +84,7 @@ class ResetCommand(Command):
                 if len(reviews) == 0:
                     continue
                 for review in reviews:
-                    work = await self.work_service.get_by_work_id(review.work_id)
+                    work = await self.work_service.get_work_by_id(review.work_id)
                     if work is None:
                         logger.warning("WorkId[%s] 不存在！", review.work_id)
                         continue

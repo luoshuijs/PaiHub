@@ -161,7 +161,7 @@ class SendCommand(Command):
         review_info = await self.review_service.repository.get_review(work_id, site_key, artwork_id)
         if review_info is not None:
             await message.reply_text("警告！当前 Work 中审核已经存在该作品，继续会覆盖该审核信息！")
-        work = await self.work_service.get_by_work_id(work_id)
+        work = await self.work_service.get_work_by_id(work_id)
         if work is None:
             await message.delete()
             return ConversationHandler.END
@@ -202,7 +202,7 @@ class SendCommand(Command):
 
         work_id, site_key, artwork_id = get_callback_query(callback_query.data)
         site = self.sites_manager.get_site_by_site_key(site_key)
-        work = await self.work_service.get_by_work_id(work_id)
+        work = await self.work_service.get_work_by_id(work_id)
 
         if work is None:
             await message.delete()
