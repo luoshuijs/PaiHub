@@ -62,6 +62,6 @@ class UpdateCommand(Command):
             await execute("git pull --all")
             logger.info("更新成功 正在重启")
             await reply_text.edit_text("更新成功 正在重启")
-            async with anyio.open_file(UPDATE_DATA, mode="w", encoding="utf-8") as file:
+            async with await anyio.open_file(UPDATE_DATA, mode="w", encoding="utf-8") as file:
                 await file.write(reply_text.to_json())
         raise SystemExit
