@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "async-lru>=2.0.4",
-    "async-pixiv",
+    "async-pixiv>=1.0.1",
     "asyncmy>=0.2.10",
     "httpx>=0.28.0",
     "motor>=3.6.0",
@@ -52,7 +52,7 @@ dev-dependencies = [
 
 [tool.uv.sources]
 picimagesearch = { git = "https://github.com/kitUIN/PicImageSearch" }
-async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv", rev = "v1" }
+# async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv"}
 persica = { git = "https://github.com/luoshuijs/Persica"}
 
 [tool.ruff]
