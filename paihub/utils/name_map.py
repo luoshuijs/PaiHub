@@ -1,5 +1,7 @@
 import re
 from collections.abc import Iterable
+from os import PathLike
+from pathlib import Path
 
 try:
     import orjson as jsonlib
@@ -8,8 +10,15 @@ except ImportError:
 
 
 class NameMap:
-    def __init__(self, data_file: str):
-        with open(data_file, encoding="utf-8") as f:
+    def __init__(self, data_file: str | PathLike[str]):
+        self.data_file = Path(data_file)
+        self.name_map: dict = {}
+        self.tag_regex: re.Pattern[str] | None = None
+        self.regex_str: str = ""
+        self.load()
+
+    def load(self):
+        with open(self.data_file, encoding="utf-8") as f:
             self.name_map = jsonlib.loads(f.read())
 
         regex_patterns = []
