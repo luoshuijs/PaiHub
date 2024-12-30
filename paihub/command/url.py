@@ -33,7 +33,8 @@ class URLCommand(Command):
                 ),
                 self.application,
                 need_notify=False,
-            )
+            ),
+            group=10,
         )
 
     async def start(self, update: "Update", context: "ContextTypes.DEFAULT_TYPE"):  # noqa: PLR0912
