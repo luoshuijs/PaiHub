@@ -159,10 +159,13 @@ class PixivSpider(Spider):
         while True:
             user_following = await self.web_api.client.get_user_following(user_status["user_id"], offset=offset)
             user_list = {int(user["userId"]) for user in user_following["users"]}
+            total = user_following.get("total", -1)
             user_follows.update(user_list)
             offset += len(user_list)
             logger.info("已经获取到关注列表第 %s 个", offset)
-            if len(user_list) < 24:
+            if total == -1 and len(user_list) < 24:
+                break
+            if offset >= total:
                 break
             await asyncio.sleep(random.randint(10, 30))  # noqa: S311
         authors_id = await self.review_repository.get_filtered_status_counts("pixiv", 10, 0.8)
