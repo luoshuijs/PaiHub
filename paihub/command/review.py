@@ -272,7 +272,7 @@ class ReviewCommand(Command):
                 InlineKeyboardButton(text="继续", callback_data=f"start_review_work|{review_info.work_id}"),
             ],
             [
-                InlineKeyboardButton(text="撤销修改", callback_data=f"revert_review_change|{review_info.work_id}"),
+                InlineKeyboardButton(text="撤销修改", callback_data=f"revert_review_change|{review_info.id}"),
                 InlineKeyboardButton(text="退出", callback_data="review_exit"),
             ],
         ]
