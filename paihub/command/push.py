@@ -111,7 +111,6 @@ class PushCommand(Command):
                     f"Tag {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
                     f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                     f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
-                    f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
                 )
                 if len(artwork_images) > 1:
                     media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
