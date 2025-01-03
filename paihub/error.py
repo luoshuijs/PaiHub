@@ -16,6 +16,12 @@ class ConnectionTimedOut(PaiHubException):
     pass
 
 
+class RetryAfter(PaiHubException):
+    def __init__(self, retry_after: int):
+        super().__init__(f"Retry after {retry_after} seconds")
+        self.retry_after = retry_after
+
+
 class BadRequest(PaiHubException):
     pass
 

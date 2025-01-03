@@ -10,7 +10,7 @@ from telegram.ext import MessageHandler, filters
 from paihub.base import Command
 from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
-from paihub.error import ArtWorkNotFoundError, BadRequest
+from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
 from paihub.system.sites.manager import SitesManager
 
@@ -94,6 +94,8 @@ class URLCommand(Command):
                                 )
                     except ArtWorkNotFoundError:
                         await message.reply_text("作品不存在")
+                    except RetryAfter as exc:
+                        await message.reply_text(f"触发速率限制 请等待{exc.retry_after}秒")
                     except BadRequest as exc:
                         await message.reply_text(f"获取图片详细信息时发生错误：\n{exc.message}")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)

@@ -10,7 +10,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandl
 from paihub.base import Command
 from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
-from paihub.error import ArtWorkNotFoundError, BadRequest
+from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
 from paihub.system.push.services import PushService
 from paihub.system.review.services import ReviewService
@@ -127,6 +127,10 @@ class SendCommand(Command):
                         await message.reply_text("请选择要推送的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
                     except ArtWorkNotFoundError:
                         await message.reply_text("作品不存在")
+                    except RetryAfter as exc:
+                        await message.reply_text(f"触发速率限制 请等待{exc.retry_after}秒")
+                        logger.warning(f"触发速率限制 请等待{exc.retry_after}秒", exc_info=exc)
+                        return ConversationHandler.END
                     except BadRequest as exc:
                         await message.reply_text(f"获取图片详细信息时发生错误：\n{exc.message}")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
@@ -139,6 +143,7 @@ class SendCommand(Command):
                     except Exception as exc:
                         await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
+                        return ConversationHandler.END
                     else:
                         return GET_WORK
 
@@ -259,6 +264,10 @@ class SendCommand(Command):
                 raise RuntimeError  # noqa: TRY301
         except ArtWorkNotFoundError:
             await message.reply_text("作品不存在")
+            return ConversationHandler.END
+        except RetryAfter as exc:
+            await message.reply_text(f"触发速率限制 请等待{exc.retry_after}秒")
+            logger.warning(f"触发速率限制 请等待{exc.retry_after}秒", exc_info=exc)
             return ConversationHandler.END
         except BadRequest as exc:
             await message.edit_text(f"推送时发生错误：\n{exc.message}")

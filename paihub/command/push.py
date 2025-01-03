@@ -12,7 +12,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandl
 from paihub.base import Command
 from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
-from paihub.error import ArtWorkNotFoundError, BadRequest
+from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
 from paihub.system.push.services import PushService
 from paihub.system.work.services import WorkService
@@ -161,6 +161,10 @@ class PushCommand(Command):
                 await message.reply_text(f"[Review]{push_context.review_id} 作品不存在")
                 logger.warning("[Review]%s 作品不存在", push_context.review_id)
                 continue
+            except RetryAfter as exc:
+                await message.reply_text(f"触发速率限制 请等待{exc.retry_after}秒")
+                logger.warning(f"触发速率限制 请等待{exc.retry_after}秒", exc_info=exc)
+                break
             except BadRequest as exc:
                 await push_context.set_push(status=False, create_by=user.id)
                 await message.reply_text(f"[Review]{push_context.review_id} 推送时发生错误：\n{exc.message}")

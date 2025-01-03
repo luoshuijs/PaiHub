@@ -13,7 +13,7 @@ from paihub.base import Command
 from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.entities.config import TomlConfig
-from paihub.error import ArtWorkNotFoundError, BadRequest
+from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
 from paihub.system.sites.manager import SitesManager
 
@@ -122,6 +122,9 @@ class Search(Command):
                             await message.reply_text(
                                 f"搜索结果 [{site.site_name}]{artwork_id} [title]{raw.title} 作品不存在"
                             )
+                        except RetryAfter as exc:
+                            await message.reply_text(f"触发速率限制 请等待{exc.retry_after}秒")
+                            logger.warning(f"触发速率限制 请等待{exc.retry_after}秒", exc_info=exc)
                         except BadRequest as exc:
                             await message.reply_text(f"获取图片详细信息时发生错误：\n{exc.message}")
                             logger.error("获取图片详细信息时发生致命错误", exc_info=exc)

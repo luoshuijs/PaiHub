@@ -1,11 +1,11 @@
 import asyncio
 
-from async_pixiv.error import ApiError, NotExistError, PixivError
+from async_pixiv.error import ApiError, NotExistError, PixivError, RateLimitError
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import SiteService
 from paihub.entities.artwork import ImageType
-from paihub.error import ArtWorkNotFoundError, BadRequest, ImagesFormatNotSupported
+from paihub.error import ArtWorkNotFoundError, BadRequest, ImagesFormatNotSupported, RetryAfter
 from paihub.log import logger
 from paihub.sites.pixiv.api import PixivMobileApi
 from paihub.sites.pixiv.cache import PixivCache, PixivReviewCache
@@ -79,6 +79,8 @@ class PixivSitesService(SiteService):
             illust_detail = await self.api.illust.detail(artwork_id)
         except NotExistError as exc:
             raise ArtWorkNotFoundError("Not Exist") from exc
+        except RateLimitError as exc:
+            raise RetryAfter(-1) from exc
         except ApiError as exc:
             message = exc.__str__()
             if "尚无此页" in message:
