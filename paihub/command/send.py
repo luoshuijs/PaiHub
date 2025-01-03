@@ -51,7 +51,7 @@ class SendCommand(Command):
                 GET_WORK: [CallbackQueryHandler(self.get_work, pattern=r"^send_work\|", block=False)],
                 SEND: [CallbackQueryHandler(self.send_artwork, pattern=r"^send_artwork\|", block=False)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^exit")],
+            fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^send_exit")],
         )
         self.bot.add_handler(conv_handler)
 
@@ -123,7 +123,7 @@ class SendCommand(Command):
                             ]
                             for work in works
                         ]
-                        keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
+                        keyboard.append([InlineKeyboardButton(text="退出", callback_data="send_exit")])
                         await message.reply_text("请选择要推送的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
                     except ArtWorkNotFoundError:
                         await message.reply_text("作品不存在")
@@ -186,7 +186,7 @@ class SendCommand(Command):
                 InlineKeyboardButton(text="确认", callback_data=f"send_artwork|{work.id}|{site_key}|{artwork_id}"),
             ],
             [
-                InlineKeyboardButton(text="退出", callback_data="exit"),
+                InlineKeyboardButton(text="退出", callback_data="send_exit"),
             ],
         ]
         await message.edit_text(text, reply_markup=InlineKeyboardMarkup(keyboard))

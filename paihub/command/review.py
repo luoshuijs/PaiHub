@@ -41,7 +41,10 @@ class ReviewCommand(Command):
                 ],
                 SET_REVIEW: [CallbackQueryHandler(self.set_review, pattern=r"^set_review_status\|", block=False)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^exit")],
+            fallbacks=[
+                CommandHandler("cancel", self.cancel),
+                CallbackQueryHandler(self.cancel, pattern=r"^review_exit"),
+            ],
         )
         self.bot.add_handler(conv_handler)
 
@@ -53,7 +56,7 @@ class ReviewCommand(Command):
         keyboard: list[list[InlineKeyboardButton]] = [
             [InlineKeyboardButton(text=work.name, callback_data=f"set_review_work|{work.id}")] for work in works
         ]
-        keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
+        keyboard.append([InlineKeyboardButton(text="退出", callback_data="review_exit")])
         await message.reply_html(
             f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard)
         )
@@ -86,7 +89,7 @@ class ReviewCommand(Command):
         keyboard = [
             [
                 InlineKeyboardButton(text="启动！", callback_data=f"start_review_work|{work_id}"),
-                InlineKeyboardButton(text="取消", callback_data="exit"),
+                InlineKeyboardButton(text="取消", callback_data="review_exit"),
             ],
         ]
 
@@ -199,7 +202,7 @@ class ReviewCommand(Command):
                         ),
                     ],
                     [
-                        InlineKeyboardButton(text="退出", callback_data="exit"),
+                        InlineKeyboardButton(text="退出", callback_data="review_exit"),
                     ],
                 ]
                 await message.reply_text("选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard))
@@ -270,7 +273,7 @@ class ReviewCommand(Command):
             ],
             [
                 InlineKeyboardButton(text="撤销修改", callback_data=f"revert_review_change|{review_info.work_id}"),
-                InlineKeyboardButton(text="退出", callback_data="exit"),
+                InlineKeyboardButton(text="退出", callback_data="review_exit"),
             ],
         ]
         await message.reply_text(
@@ -301,7 +304,7 @@ class ReviewCommand(Command):
                 InlineKeyboardButton(text="拒绝", callback_data=f"set_review_status|{review_info.id}|0"),
             ],
             [
-                InlineKeyboardButton(text="退出", callback_data="exit"),
+                InlineKeyboardButton(text="退出", callback_data="review_exit"),
             ],
         ]
 

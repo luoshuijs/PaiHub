@@ -36,7 +36,7 @@ class PushCommand(Command):
                 GET_WORK: [CallbackQueryHandler(self.get_pust, pattern=r"^set_push_work\|", block=False)],
                 START_PUSH: [CallbackQueryHandler(self.start_push, pattern=r"^start_push_work\|", block=False)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^exit")],
+            fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^push_exit")],
         )
         self.bot.add_handler(conv_handler)
 
@@ -48,7 +48,7 @@ class PushCommand(Command):
         keyboard: list[list[InlineKeyboardButton]] = [
             [InlineKeyboardButton(text=work.name, callback_data=f"set_push_work|{work.id}")] for work in works
         ]
-        keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
+        keyboard.append([InlineKeyboardButton(text="退出", callback_data="push_exit")])
         await message.reply_html(
             f"你好 {user.mention_html()} ！\n请选择你要进行的工作", reply_markup=InlineKeyboardMarkup(keyboard)
         )
@@ -71,7 +71,7 @@ class PushCommand(Command):
         keyboard = [
             [
                 InlineKeyboardButton(text="启动！", callback_data=f"start_push_work|{work_id}"),
-                InlineKeyboardButton(text="退出", callback_data="exit"),
+                InlineKeyboardButton(text="退出", callback_data="push_exit"),
             ],
         ]
 

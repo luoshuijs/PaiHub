@@ -44,7 +44,10 @@ class ResetCommand(Command):
                 SET_STATUS: [CallbackQueryHandler(self.set_status, pattern=r"^reset_review_status\|", block=False)],
                 MOVE_REVIEW: [CallbackQueryHandler(self.move_review, pattern=r"^reset_review_move\|", block=False)],
             },
-            fallbacks=[CommandHandler("cancel", self.cancel), CallbackQueryHandler(self.cancel, pattern=r"^exit")],
+            fallbacks=[
+                CommandHandler("cancel", self.cancel),
+                CallbackQueryHandler(self.cancel, pattern=r"^reset_exit"),
+            ],
         )
         self.bot.add_handler(conv_handler)
 
@@ -138,7 +141,7 @@ class ResetCommand(Command):
                 InlineKeyboardButton(text="移动", callback_data=f"reset_review_status|{review_info.id}|-2"),
             ],
             [
-                InlineKeyboardButton(text="退出", callback_data="exit"),
+                InlineKeyboardButton(text="退出", callback_data="reset_exit"),
             ],
         ]
 
@@ -177,7 +180,7 @@ class ResetCommand(Command):
             keyboard: list[list[InlineKeyboardButton]] = [
                 [InlineKeyboardButton(text=work.name, callback_data=f"reset_review_move|{work.id}")] for work in works
             ]
-            keyboard.append([InlineKeyboardButton(text="退出", callback_data="exit")])
+            keyboard.append([InlineKeyboardButton(text="退出", callback_data="reset_exit")])
             await message.edit_text("请选择要修改的 Work", reply_markup=InlineKeyboardMarkup(keyboard))
             return MOVE_REVIEW
         else:
