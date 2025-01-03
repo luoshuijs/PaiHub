@@ -34,6 +34,9 @@ class Application(_Application):
         self.scheduler.add_listener(self.scheduler_error_listener, EVENT_JOB_ERROR)
 
     def scheduler_error_listener(self, event: JobExecutionEvent):
+        if isinstance(event.exception, asyncio.CancelledError):
+            logger.warning("Cancelling scheduler error", exc_info=event.exception)
+            return
         asyncio.create_task(self.bot.process_error(update=None, error=event.exception))
 
     async def initialize(self) -> None:
