@@ -915,6 +915,17 @@
             "宵宮"
         ]
     },
+    "YumemizukiMizuki": {
+        "name": [
+            "YumemizukiMizuki",
+            "梦见月瑞希"
+        ],
+        "regex": [
+            "夢見月瑞希",
+            "Yumemizuki",
+            "Yumemizuki.?Mizuki"
+        ]
+    },
     "Yunjin": {
         "name": [
             "Yunjin",
