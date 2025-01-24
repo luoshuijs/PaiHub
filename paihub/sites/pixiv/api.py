@@ -143,9 +143,12 @@ class PixivMobileApi(ApiService):
             APP_API_HOST / "v2/illust/follow",
             params={"restrict": "public", "offset": offset},
         )
-
+        data = response.json()
+        illusts = [i for i in data.get("illusts", []) if i.get("title") is not None]
+        if len(illusts) != 0:
+            data["illusts"] = illusts
         with set_pixiv_client(self.client):
-            return IllustSearchResult.model_validate(response.json())
+            return IllustSearchResult.model_validate(data)
 
     @staticmethod
     def oauth_pkce() -> tuple[str, str]:
