@@ -247,8 +247,8 @@ class PixivSpider(Spider):
         client = self.mobile_api
         # Original code : client = self.mobile_api.illust
         while True:
-            search_result = await client.illust_follow()
-            # Original code : search_result = await client.follow()
+            search_result = await client.illust_follow(offset)
+            # Original code : search_result = await client.follow(offset)
             count = len(search_result.illusts)
             if count == 0:
                 break
