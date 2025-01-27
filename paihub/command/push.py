@@ -184,7 +184,9 @@ class PushCommand(Command):
                 await asyncio.sleep(exc.retry_after + 1)
                 continue
             except Exception as exc:
-                await message.reply_text("推送时发生致命错误，详情请查看日志")
+                await push_context.set_push(status=False, create_by=user.id)
+                await message.reply_text("推送时发生致命错误，退出Push")
+                await self.application.bot.process_error(update, exc)
                 logger.error("推送时发生致命错误", exc_info=exc)
                 break
 

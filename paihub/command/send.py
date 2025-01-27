@@ -141,7 +141,8 @@ class SendCommand(Command):
                         await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
                     except Exception as exc:
-                        await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
+                        await message.reply_text("获取图片详细信息时发生致命错误")
+                        await self.application.bot.process_error(update, exc)
                         logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
                         return ConversationHandler.END
                     else:
@@ -282,7 +283,8 @@ class SendCommand(Command):
             logger.error("推送时发生致命错误", exc_info=exc)
             return ConversationHandler.END
         except Exception as exc:
-            await message.edit_text("推送时发生致命错误，详情请查看日志")
+            await message.edit_text("推送时发生致命错误")
+            await self.application.bot.process_error(update, exc)
             logger.error("推送时发生致命错误", exc_info=exc)
             return ConversationHandler.END
 

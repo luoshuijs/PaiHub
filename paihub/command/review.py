@@ -235,7 +235,8 @@ class ReviewCommand(Command):
                 break
             except Exception as exc:
                 await review_context.set_review_status(ReviewStatus.ERROR, update_by=user.id)
-                await message.reply_text("Review时发生致命错误，详情请查看日志")
+                await message.reply_text("Review时发生致命错误，退出Review")
+                await self.application.bot.process_error(update, exc)
                 logger.error("Review时发生致命错误", exc_info=exc)
                 break
             else:
@@ -297,6 +298,7 @@ class ReviewCommand(Command):
             return ConversationHandler.END
         review_info.set_wait(user.id)
         review_info = await self.review_service.update_review(review_info)
+        logger.info("用户 %s[%s] 尝试对 Review[%s] 发出 Reset 命令", user.full_name, user.id, review_id)
 
         keyboard = [
             [
