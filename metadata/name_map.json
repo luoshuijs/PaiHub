@@ -808,6 +808,15 @@
             "ティナリ"
         ]
     },
+    "Varesa": {
+        "name": [
+            "Varesa",
+            "瓦雷莎"
+        ],
+        "regex": [
+            "ヴァレサ"
+        ]
+    },
     "Venti": {
         "name": [
             "Venti",
