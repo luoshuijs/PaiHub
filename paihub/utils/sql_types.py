@@ -21,7 +21,7 @@ class Tags(TypeDecorator[list[str]]):
     mysql_default_length = 255
 
     def load_dialect_impl(self, dialect: Dialect) -> "TypeEngine[Any]":
-        impl = cast(String, self.impl)
+        impl = cast("String", self.impl)
         if impl.length is None and dialect.name == "mysql":
             return dialect.type_descriptor(String(self.mysql_default_length))
         return super().load_dialect_impl(dialect)
@@ -42,7 +42,7 @@ class JSON(TypeDecorator):
     mysql_default_length = 255
 
     def load_dialect_impl(self, dialect: Dialect) -> "TypeEngine[Any]":
-        impl = cast(String, self.impl)
+        impl = cast("String", self.impl)
         if impl.length is None and dialect.name == "mysql":
             return dialect.type_descriptor(String(self.mysql_default_length))
         return super().load_dialect_impl(dialect)
