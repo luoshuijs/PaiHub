@@ -46,7 +46,7 @@ class DataBase(BaseDependence):
     async def initialize(self) -> None:
         try:
             async with self._engine.begin() as _conn:
-                conn = cast(AsyncConnection, _conn)
+                conn = cast("AsyncConnection", _conn)
                 await conn.run_sync(self._test_connection)
         except Exception:
             logger.error("连接数据库失败")
