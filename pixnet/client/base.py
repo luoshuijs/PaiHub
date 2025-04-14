@@ -1,6 +1,6 @@
 from contextlib import AbstractAsyncContextManager
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Self, TypeVar
 
 from httpx import AsyncClient, Headers, HTTPError, Timeout, TimeoutException
 
@@ -49,7 +49,7 @@ class BaseClient(AbstractAsyncContextManager["BaseClient"]):
         self.user_id = user_id
         self.lang = lang
 
-    async def __aenter__(self: RT) -> RT:
+    async def __aenter__(self) -> Self:
         """Enter the async context manager and initialize the client."""
         try:
             await self.initialize()
