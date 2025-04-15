@@ -88,19 +88,19 @@ class Search(Command):
                                 f"{artwork.author.name if not artwork.is_sourced else 'Source'}</a>\n"
                                 f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
                             )
-                            if len(artwork_images) > 1:
-                                if any(len(image) > FileSizeLimit.PHOTOSIZE_UPLOAD for image in artwork_images):
-                                    await message.reply_chat_action(ChatAction.TYPING)
-                                    for image in artwork_images:
-                                        await message.reply_document(
-                                            document=image,
-                                            caption=caption,
-                                            parse_mode=ParseMode.HTML,
-                                            connect_timeout=10,
-                                            read_timeout=10,
-                                            write_timeout=30,
-                                        )
-                                else:
+                            if any(len(image) > FileSizeLimit.PHOTOSIZE_UPLOAD for image in artwork_images):
+                                await message.reply_chat_action(ChatAction.TYPING)
+                                for image in artwork_images:
+                                    await message.reply_document(
+                                        document=image,
+                                        caption=caption,
+                                        parse_mode=ParseMode.HTML,
+                                        connect_timeout=10,
+                                        read_timeout=10,
+                                        write_timeout=30,
+                                    )
+                            else:
+                                if len(artwork_images) > 1:
                                     media = [
                                         InputMediaPhoto(media=artwork_images[0], caption=caption,
                                                         parse_mode=ParseMode.HTML)
@@ -114,18 +114,7 @@ class Search(Command):
                                         read_timeout=10,
                                         write_timeout=30,
                                     )
-                            elif len(artwork_images) == 1:
-                                if len(artwork_images[0]) > FileSizeLimit.PHOTOSIZE_UPLOAD:
-                                    await message.reply_chat_action(ChatAction.TYPING)
-                                    await message.reply_document(
-                                        document=artwork_images[0],
-                                        caption=caption,
-                                        parse_mode=ParseMode.HTML,
-                                        connect_timeout=10,
-                                        read_timeout=10,
-                                        write_timeout=30,
-                                    )
-                                else:
+                                elif len(artwork_images) == 1:
                                     if artwork.image_type == ImageType.STATIC:
                                         await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
                                         await message.reply_photo(
