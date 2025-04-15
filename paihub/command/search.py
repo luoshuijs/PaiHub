@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from PicImageSearch import Network, SauceNAO
 from telegram import InputMediaPhoto
-from telegram.constants import ChatAction, ParseMode
+from telegram.constants import ChatAction, FileSizeLimit, ParseMode
 from telegram.error import BadRequest as BotBadRequest
 from telegram.error import NetworkError as BotNetworkError
 from telegram.ext import MessageHandler, filters
@@ -51,7 +51,11 @@ class Search(Command):
         logger.info("用户 %s[%s] 尝试搜索图片", user.full_name, user.id)
         reply_message = await message.reply_text("正在搜索")
         await message.reply_chat_action(ChatAction.TYPING)
-        photo_file = await message.photo[-1].get_file()
+        reply_to_message = message.reply_to_message
+        if reply_to_message is not None:
+            photo_file = await reply_to_message.photo[-1].get_file()
+        else:
+            photo_file = await message.photo[-1].get_file()
         out = BytesIO()
         try:
             await photo_file.download_to_memory(out, read_timeout=10)
@@ -85,39 +89,63 @@ class Search(Command):
                                 f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
                             )
                             if len(artwork_images) > 1:
-                                media = [
-                                    InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)
-                                ]
-                                media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
-                                media = media[:10]
-                                await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
-                                await message.reply_media_group(
-                                    media,
-                                    connect_timeout=10,
-                                    read_timeout=10,
-                                    write_timeout=30,
-                                )
-                            elif len(artwork_images) == 1:
-                                if artwork.image_type == ImageType.STATIC:
+                                if any(len(image) > FileSizeLimit.PHOTOSIZE_UPLOAD for image in artwork_images):
+                                    await message.reply_chat_action(ChatAction.TYPING)
+                                    for image in artwork_images:
+                                        await message.reply_document(
+                                            document=image,
+                                            caption=caption,
+                                            parse_mode=ParseMode.HTML,
+                                            connect_timeout=10,
+                                            read_timeout=10,
+                                            write_timeout=30,
+                                        )
+                                else:
+                                    media = [
+                                        InputMediaPhoto(media=artwork_images[0], caption=caption,
+                                                        parse_mode=ParseMode.HTML)
+                                    ]
+                                    media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
+                                    media = media[:10]
                                     await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
-                                    await message.reply_photo(
-                                        photo=artwork_images[0],
+                                    await message.reply_media_group(
+                                        media,
+                                        connect_timeout=10,
+                                        read_timeout=10,
+                                        write_timeout=30,
+                                    )
+                            elif len(artwork_images) == 1:
+                                if len(artwork_images[0]) > FileSizeLimit.PHOTOSIZE_UPLOAD:
+                                    await message.reply_chat_action(ChatAction.TYPING)
+                                    await message.reply_document(
+                                        document=artwork_images[0],
                                         caption=caption,
                                         parse_mode=ParseMode.HTML,
                                         connect_timeout=10,
                                         read_timeout=10,
                                         write_timeout=30,
                                     )
-                                elif artwork.image_type == ImageType.DYNAMIC:
-                                    await message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
-                                    await message.reply_video(
-                                        video=artwork_images[0],
-                                        caption=caption,
-                                        parse_mode=ParseMode.HTML,
-                                        connect_timeout=10,
-                                        read_timeout=10,
-                                        write_timeout=30,
-                                    )
+                                else:
+                                    if artwork.image_type == ImageType.STATIC:
+                                        await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
+                                        await message.reply_photo(
+                                            photo=artwork_images[0],
+                                            caption=caption,
+                                            parse_mode=ParseMode.HTML,
+                                            connect_timeout=10,
+                                            read_timeout=10,
+                                            write_timeout=30,
+                                        )
+                                    elif artwork.image_type == ImageType.DYNAMIC:
+                                        await message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
+                                        await message.reply_video(
+                                            video=artwork_images[0],
+                                            caption=caption,
+                                            parse_mode=ParseMode.HTML,
+                                            connect_timeout=10,
+                                            read_timeout=10,
+                                            write_timeout=30,
+                                        )
                         except ArtWorkNotFoundError:
                             await message.reply_text(
                                 f"搜索结果 [{site.site_name}]{artwork_id} [title]{raw.title} 作品不存在"
@@ -128,14 +156,18 @@ class Search(Command):
                         except BadRequest as exc:
                             await message.reply_text(f"获取图片详细信息时发生错误：\n{exc.message}")
                             logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
+                            await self.application.bot.process_error(update, exc)
                         except BotBadRequest as exc:
-                            await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
+                            await message.reply_text("获取图片详细信息时发生致命错误")
                             logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
+                            await self.application.bot.process_error(update, exc)
                         except BotNetworkError as exc:
-                            await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
+                            await message.reply_text("获取图片详细信息时发生致命错误")
                             logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
+                            await self.application.bot.process_error(update, exc)
                         except Exception as exc:
-                            await message.reply_text("获取图片详细信息时发生致命错误，详情请查看日志")
+                            await message.reply_text("获取图片详细信息时发生致命错误")
                             logger.error("获取图片详细信息时发生致命错误", exc_info=exc)
+                            await self.application.bot.process_error(update, exc)
         await message.reply_text("搜索完成")
         await reply_message.delete()
