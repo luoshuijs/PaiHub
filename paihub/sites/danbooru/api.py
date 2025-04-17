@@ -1,8 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
-from httpx import AsyncClient
+from curl_cffi import AsyncSession, Response
+from httpx import codes
 from pybooru import Danbooru, PybooruHTTPError
 
 from paihub.base import ApiService
@@ -19,7 +20,7 @@ class DanbooruApi(ApiService):
         self.post_show = async_wrap(self.api.post_show, executor=executor)
         self.post_list = async_wrap(self.api.post_list, executor=executor)
         self.cache = cache
-        self.download_client = AsyncClient()
+        self.download_client = AsyncSession(impersonate="chrome")
 
     async def get_post(self, post_id: int | None = None, md5: str | None = None) -> dict[str, Any]:
         try:
@@ -63,6 +64,12 @@ class DanbooruApi(ApiService):
         url = post["file_url"]
         data = b""
         async with self.download_client.stream("GET", url) as response:
-            async for chunk in response.aiter_bytes():
+            response = cast(Response, response)
+            if codes.is_error(response.status_code):
+                raise BadRequest(f"Danbooru Api Get Images Error: {response.status_code}")
+            content_type = response.headers.get("Content-Type", "")
+            if not content_type.startswith("image/"):
+                raise BadRequest(f"Danbooru Api Get Images Content Type Error: {content_type}")
+            async for chunk in response.aiter_content():
                 data += chunk
         return [data]
