@@ -13,7 +13,7 @@ class User(BaseClient):
     ) -> JSONDict:
         user_id = user_id or self.user_id
         if user_id is None:
-            raise RuntimeError
+            raise RuntimeError("user_id is required")
         params = {"offset": offset, "limit": limit, "lang": self.lang or lang, "rest": "show", "tag": ""}
         url = f"https://www.pixiv.net/ajax/user/{user_id}/following"
         return await self.request_api("GET", url, params=params)

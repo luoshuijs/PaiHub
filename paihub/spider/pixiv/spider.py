@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from async_pixiv.error import ApiError, NotExistError
+from async_pixiv.error import APIError, NotExistError
 
 from paihub.base import Spider
 from paihub.log import Logger, logger
@@ -180,7 +180,7 @@ class PixivSpider(Spider):
             except NotExistError:
                 logger.info("添加 %s 关注列表失败 用户不存在", user_id)
                 await self.spider_document.set_not_exist_user(user_id)
-            except ApiError as exc:
+            except APIError as exc:
                 logger.info("添加 %s 关注列表失败 %s", user_id, str(exc.message))
                 await self.spider_document.set_not_exist_user(user_id)
             await asyncio.sleep(30)
@@ -199,7 +199,7 @@ class PixivSpider(Spider):
                     await self.spider_document.set_not_exist_user(user_id)
                     await asyncio.sleep(3)
                     break
-                except ApiError as exc:
+                except APIError as exc:
                     _logger.error("获取作者作品列表失败", exc_info=exc)
                     await self.spider_document.set_not_exist_user(user_id)
                     await asyncio.sleep(3)

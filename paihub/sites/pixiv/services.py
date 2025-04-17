@@ -1,6 +1,6 @@
 import asyncio
 
-from async_pixiv.error import ApiError, NotExistError, PixivError, RateLimitError
+from async_pixiv.error import APIError, NotExistError, PixivError, RateLimitError
 from async_pixiv.model.illust import IllustType
 
 from paihub.base import SiteService
@@ -81,7 +81,7 @@ class PixivSitesService(SiteService):
             raise ArtWorkNotFoundError("Not Exist") from exc
         except RateLimitError as exc:
             raise RetryAfter(-1) from exc
-        except ApiError as exc:
+        except APIError as exc:
             message = exc.__str__()
             if "尚无此页" in message:
                 raise ArtWorkNotFoundError(message) from exc
