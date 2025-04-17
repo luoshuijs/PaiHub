@@ -51,7 +51,7 @@ dev-dependencies = [
 
 [tool.uv.sources]
 picimagesearch = { git = "https://github.com/kitUIN/PicImageSearch" }
-# async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv"}
+async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv", branch = "fix" }
 persica = { git = "https://github.com/luoshuijs/Persica"}
 
 [tool.ruff]
