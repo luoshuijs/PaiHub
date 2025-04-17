@@ -69,42 +69,40 @@ class URLCommand(Command):
                                     read_timeout=10,
                                     write_timeout=30,
                                 )
-                        else:
-                            if len(artwork_images) > 1:
-                                media = [
-                                    InputMediaPhoto(media=artwork_images[0], caption=caption,
-                                                    parse_mode=ParseMode.HTML)
-                                ]
-                                media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
-                                media = media[:10]
+                        elif len(artwork_images) > 1:
+                            media = [
+                                InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)
+                            ]
+                            media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
+                            media = media[:10]
+                            await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
+                            await message.reply_media_group(
+                                media,
+                                connect_timeout=10,
+                                read_timeout=10,
+                                write_timeout=30,
+                            )
+                        elif len(artwork_images) == 1:
+                            if artwork.image_type == ImageType.STATIC:
                                 await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
-                                await message.reply_media_group(
-                                    media,
+                                await message.reply_photo(
+                                    photo=artwork_images[0],
+                                    caption=caption,
+                                    parse_mode=ParseMode.HTML,
                                     connect_timeout=10,
                                     read_timeout=10,
                                     write_timeout=30,
                                 )
-                            elif len(artwork_images) == 1:
-                                if artwork.image_type == ImageType.STATIC:
-                                    await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
-                                    await message.reply_photo(
-                                        photo=artwork_images[0],
-                                        caption=caption,
-                                        parse_mode=ParseMode.HTML,
-                                        connect_timeout=10,
-                                        read_timeout=10,
-                                        write_timeout=30,
-                                    )
-                                elif artwork.image_type == ImageType.DYNAMIC:
-                                    await message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
-                                    await message.reply_video(
-                                        video=artwork_images[0],
-                                        caption=caption,
-                                        parse_mode=ParseMode.HTML,
-                                        connect_timeout=10,
-                                        read_timeout=10,
-                                        write_timeout=30,
-                                    )
+                            elif artwork.image_type == ImageType.DYNAMIC:
+                                await message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
+                                await message.reply_video(
+                                    video=artwork_images[0],
+                                    caption=caption,
+                                    parse_mode=ParseMode.HTML,
+                                    connect_timeout=10,
+                                    read_timeout=10,
+                                    write_timeout=30,
+                                )
                     except ArtWorkNotFoundError:
                         await message.reply_text("作品不存在")
                     except RetryAfter as exc:

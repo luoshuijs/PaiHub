@@ -1,8 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-from curl_cffi import AsyncSession, Response
+from curl_cffi import AsyncSession
 from httpx import codes
 from pybooru import Danbooru, PybooruHTTPError
 
@@ -11,6 +11,9 @@ from paihub.error import ArtWorkNotFoundError, BadRequest
 from paihub.sites.danbooru.cache import DanbooruCache
 from paihub.sites.danbooru.entities import DanbooruArtWork, DanbooruUploader
 from paihub.utils.functools import async_wrap
+
+if TYPE_CHECKING:
+    from curl_cffi import Response
 
 
 class DanbooruApi(ApiService):
@@ -64,7 +67,7 @@ class DanbooruApi(ApiService):
         url = post["file_url"]
         data = b""
         async with self.download_client.stream("GET", url) as response:
-            response = cast(Response, response)
+            response = cast("Response", response)
             if codes.is_error(response.status_code):
                 raise BadRequest(f"Danbooru Api Get Images Error: {response.status_code}")
             content_type = response.headers.get("Content-Type", "")

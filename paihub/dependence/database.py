@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, cast
 
 from sqlalchemy import URL, inspect
 from sqlalchemy.ext.asyncio import (
-    AsyncConnection,
     AsyncEngine,
     async_scoped_session,
     async_sessionmaker,
@@ -18,6 +17,7 @@ from paihub.log import logger
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Connection
+    from sqlalchemy.ext.asyncio import AsyncConnection
 
 
 class DataBase(BaseDependence):
