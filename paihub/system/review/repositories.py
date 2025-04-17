@@ -29,10 +29,7 @@ class ReviewRepository(Repository[Review]):
         async with _AsyncSession(self.engine) as session:
             offset = (page_number - 1) * lines_per_page
             statement = text(
-                "SELECT id "
-                "FROM review "
-                "WHERE work_id = :work_id and status = :status "
-                "LIMIT :limit OFFSET :offset"
+                "SELECT id FROM review WHERE work_id = :work_id and status = :status LIMIT :limit OFFSET :offset"
             )
             params = {"work_id": work_id, "status": status.name, "limit": lines_per_page, "offset": offset}
             result = await session.execute(statement, params)
