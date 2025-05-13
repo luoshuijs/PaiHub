@@ -219,6 +219,15 @@
             "セノ"
         ]
     },
+    "Dahlia": {
+        "name": [
+            "Dahlia",
+            "塔利雅"
+        ],
+        "regex": [
+            "ダリア"
+        ]
+    },
     "Diluc": {
         "name": [
             "Diluc",
