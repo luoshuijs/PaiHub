@@ -399,6 +399,15 @@
             "イファ"
         ]
     },
+    "Istaroth": {
+        "name": [
+            "Istaroth",
+            "伊斯塔露"
+        ],
+        "regex": [
+            "イスタロト"
+        ]
+    },
     "Itto": {
         "name": [
             "Itto",
@@ -614,6 +623,15 @@
             "ムアラニ"
         ]
     },
+    "Naberius": {
+        "name": [
+            "Naberius",
+            "纳贝里士"
+        ],
+        "regex": [
+            "ナベリウス"
+        ]
+    },
     "Nahida": {
         "name": [
             "Nahida",
@@ -690,6 +708,15 @@
             "パイモン"
         ]
     },
+    "Pierro": {
+        "name": [
+            "Pierro",
+            "皮耶罗"
+        ],
+        "regex": [
+            "ピエロ"
+        ]
+    },
     "Qiqi": {
         "name": [
             "Qiqi",
@@ -717,6 +744,24 @@
         ],
         "regex": [
             "レザー"
+        ]
+    },
+    "Rhinedottir": {
+        "name": [
+            "Rhinedottir",
+            "莱茵多特"
+        ],
+        "regex": [
+            "レインドット"
+        ]
+    },
+    "Ronova": {
+        "name": [
+            "Ronova",
+            "若娜瓦"
+        ],
+        "regex": [
+            "ロノヴァ"
         ]
     },
     "Rosaria": {
