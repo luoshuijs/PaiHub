@@ -7,6 +7,24 @@
         "regex": [
         ]
     },
+    "Aino": {
+        "name": [
+            "Aino",
+            "爱诺"
+        ],
+        "regex": [
+            "アイノ"
+        ]
+    },
+    "Alice": {
+        "name": [
+            "Alice",
+            "艾莉丝"
+        ],
+        "regex": [
+            "アリス"
+        ]
+    },
     "Ajaw": {
         "name": [
             "Ajaw",
@@ -264,6 +282,15 @@
             "ドリー"
         ]
     },
+    "Durin": {
+        "name": [
+            "Durin",
+            "杜林"
+        ],
+        "regex": [
+            "ドゥリン"
+        ]
+    },
     "Egeria": {
         "name": [
             "Egeria",
@@ -308,6 +335,15 @@
         ],
         "regex": [
             "ファルザン"
+        ]
+    },
+    "Flins": {
+        "name": [
+            "Flins",
+            "菲林斯"
+        ],
+        "regex": [
+            "フリンズ"
         ]
     },
     "Fischl": {
@@ -399,6 +435,15 @@
             "イファ"
         ]
     },
+    "Ineffa": {
+        "name": [
+            "Ineffa",
+            "伊涅芙"
+        ],
+        "regex": [
+            "イネファ"
+        ]
+    },
     "Istaroth": {
         "name": [
             "Istaroth",
@@ -417,6 +462,15 @@
             "荒瀧一斗",
             "(?:Arataki.?)Itto",
             "(?:Itto.?)Arataki"
+        ]
+    },
+    "Jahoda": {
+        "name": [
+            "Jahoda",
+            "雅珂达"
+        ],
+        "regex": [
+            "ヤフォダ"
         ]
     },
     "Jean": {
@@ -529,6 +583,15 @@
         ],
         "regex": [
             "藍硯"
+        ]
+    },
+    "Lauma": {
+        "name": [
+            "Lauma",
+            "菈乌玛"
+        ],
+        "regex": [
+            "ラウマ"
         ]
     },
     "Layla": {
@@ -654,6 +717,15 @@
             "ナヴィア"
         ]
     },
+    "Nefer": {
+        "name": [
+            "Nefer",
+            "奈芙尔"
+        ],
+        "regex": [
+            "ネフェル"
+        ]
+    },
     "Neuvillette": {
         "name": [
             "Neuvillette",
@@ -661,6 +733,16 @@
         ],
         "regex": [
             "ヌヴィレット"
+        ]
+    },
+    "NicoleReeyn": {
+        "name": [
+            "NicoleReeyn",
+            "尼可莱恩"
+        ],
+        "regex": [
+            "ニコ・リヤン",
+            "ニコリヤン"
         ]
     },
     "Nilou":{
@@ -771,6 +853,15 @@
         ],
         "regex": [
             "ロサリア"
+        ]
+    },
+    "Sandrone": {
+        "name": [
+            "Sandrone",
+            "桑多涅"
+        ],
+        "regex": [
+            "サンドローネ"
         ]
     },
     "Sayu": {
@@ -887,6 +978,15 @@
         ],
         "regex": [
             "ヴァレサ"
+        ]
+    },
+    "Varka": {
+        "name": [
+            "Varka",
+            "法尔伽"
+        ],
+        "regex": [
+            "ファルカ"
         ]
     },
     "Venti": {
