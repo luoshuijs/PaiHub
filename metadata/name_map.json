@@ -147,6 +147,16 @@
             "キャンディス"
         ]
     },
+    "Capitano": {
+        "name": [
+            "Capitano",
+            "卡皮塔诺"
+        ],
+        "regex": [
+            "カピターノ",
+            "队长"
+        ]
+    },
     "Charlotte": {
         "name": [
             "Charlotte",
