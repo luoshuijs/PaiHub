@@ -54,12 +54,12 @@ class Review(SQLModel, table=True):
     __tablename__ = "review"
 
     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    work_id: int | None = Field(default=None, sa_type=BigInteger, foreign_key="work.id")
+    work_id: int | None = Field(default=None, sa_type=Integer, foreign_key="work.id")
     site_key: str | None = Field(default=None, sa_type=SiteKey)
     artwork_id: int | None = Field(default=None, sa_type=BigInteger)
     author_id: int | None = Field(default=None, sa_type=BigInteger)
     status: ReviewStatus | None = Field(default=ReviewStatus.WAIT, sa_column=Column("status", Enum(ReviewStatus)))
-    auto: bool | None = Field(default=False, sa_column=Column("auto", Integer))
+    auto: bool | None = Field(default=False)
     ext: dict | None = Field(default=None, sa_column=Column("ext", JSON))
     create_by: int | None = Field(default=None, sa_column=Column("create_by", Integer))
     create_time: datetime | None = Field(default=None, sa_column=Column("create_time", DateTime, default=func.now()))
@@ -139,20 +139,20 @@ class AutoReviewResult(BaseModel):
     description: str | None = None
 
 
-class ReviewBlackAuthor(SQLModel, table=True):
-    __tablename__ = "review_black_author"
-
-    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    site_key: str | None = Field(default=None, sa_type=SiteKey)
-    author_id: int | None = Field(default=None, sa_type=BigInteger)
-
-
-class ReviewWhiteAuthor(SQLModel, table=True):
-    __tablename__ = "review_white_author"
-
-    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    site_key: str | None = Field(default=None, sa_type=SiteKey)
-    author_id: int | None = Field(default=None, sa_type=BigInteger)
+# class ReviewBlackAuthor(SQLModel, table=True):
+#     __tablename__ = "review_black_author"
+#
+#     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+#     site_key: str | None = Field(default=None, sa_type=SiteKey)
+#     author_id: int | None = Field(default=None, sa_type=BigInteger)
+#
+#
+# class ReviewWhiteAuthor(SQLModel, table=True):
+#     __tablename__ = "review_white_author"
+#
+#     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+#     site_key: str | None = Field(default=None, sa_type=SiteKey)
+#     author_id: int | None = Field(default=None, sa_type=BigInteger)
 
 
 # class AutoReviewRule(SQLModel):

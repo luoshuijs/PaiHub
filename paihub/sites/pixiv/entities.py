@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import func
+from sqlalchemy import String, func
 from sqlmodel import BigInteger, Column, DateTime, Field, SQLModel
 
 from paihub.entities.artwork import ArtWork
@@ -12,8 +12,10 @@ class Pixiv(SQLModel, table=True):
     __tablename__ = "pixiv"
 
     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    title: str | None
-    tags: list[str] | None = Field(default=None, sa_column=Column("tags", Tags))
+    title: str | None = Field(
+        default=None, sa_column=Column("title", String(collation="utf8mb4_general_ci", length=255))
+    )
+    tags: list[str] | None = Field(default=None, sa_column=Column("tags", Tags(collation="utf8mb4_general_ci")))
     view_count: int | None
     like_count: int | None
     love_count: int | None
