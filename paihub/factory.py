@@ -1,7 +1,7 @@
 from persica.factory.interface import InterfaceFactory
 
 from paihub.application import Application
-from paihub.base import ApiService, Command, Repository, Service, SiteService, Spider
+from paihub.base import ApiService, Command, Job, Repository, Service, SiteService, Spider
 from paihub.dependence.database import DataBase
 
 
@@ -56,5 +56,14 @@ class SpiderFactory(InterfaceFactory[Spider]):
         self.application = application
 
     def get_object(self, obj: Spider | None) -> Spider:
+        obj.set_application(self.application)
+        return obj
+
+
+class JobFactory(InterfaceFactory[Job]):
+    def __init__(self, application: Application):
+        self.application = application
+
+    def get_object(self, obj: Job | None) -> Job:
         obj.set_application(self.application)
         return obj

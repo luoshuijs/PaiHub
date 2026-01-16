@@ -8,6 +8,7 @@ dependencies = [
     "async-lru>=2.0.4",
     "async-pixiv>=1.1.2",
     "asyncmy>=0.2.11",
+    "croniter>=5.0.1",
     "curl-cffi>=0.14.0",
     "httpx>=0.28.1",
     "motor>=3.7.1",
