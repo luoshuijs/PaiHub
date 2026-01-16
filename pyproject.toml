@@ -26,9 +26,13 @@ dependencies = [
     "watchfiles>=1.1.1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 playwright = [
     "playwright>=1.57.0",
+]
+dev = [
+    "black>=25.12.0",
+    "ruff>=0.14.13",
 ]
 
 [tool.pytest.ini_options]
@@ -42,12 +46,6 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 include = '\.pyi?$'
 line-length = 120
 target-version = ['py312']
-
-[tool.uv]
-dev-dependencies = [
-    "black>=25.12.0",
-    "ruff>=0.14.13",
-]
 
 [tool.uv.sources]
 picimagesearch = { git = "https://github.com/kitUIN/PicImageSearch" }
