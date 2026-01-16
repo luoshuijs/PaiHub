@@ -41,6 +41,13 @@ class Search(Command):
                 need_notify=False,
             )
         )
+        self.bot.add_handler(
+            AdminHandler(
+                MessageHandler(filters=filters.Document.IMAGE & filters.ChatType.PRIVATE, callback=self.photo, block=False),
+                self.application,
+                need_notify=False,
+            )
+        )
 
     async def shutdown(self) -> None:
         await self.network.close()
@@ -53,9 +60,20 @@ class Search(Command):
         await message.reply_chat_action(ChatAction.TYPING)
         reply_to_message = message.reply_to_message
         if reply_to_message is not None:
-            photo_file = await reply_to_message.photo[-1].get_file()
-        else:
+            if reply_to_message.document:
+                photo_file = await reply_to_message.document.get_file()
+            elif reply_to_message.photo:
+                photo_file = await reply_to_message.photo[-1].get_file()
+            else:
+                await message.reply_text("文件类型错误")
+                return
+        elif message.document:
+            photo_file = await message.document.get_file()
+        elif message.photo:
             photo_file = await message.photo[-1].get_file()
+        else:
+            await message.reply_text("文件类型错误")
+            return
         out = BytesIO()
         try:
             await photo_file.download_to_memory(out, read_timeout=10)
