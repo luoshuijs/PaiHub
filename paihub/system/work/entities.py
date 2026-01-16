@@ -1,12 +1,13 @@
 from typing import Optional
 
-from sqlmodel import BigInteger, Column, Field, Relationship, SQLModel
+from sqlalchemy import Integer, BigInteger
+from sqlmodel import Column, Field, Relationship, SQLModel
 
 
 class Work(SQLModel, table=True):
     __tablename__ = "work"
 
-    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+    id: int | None = Field(sa_column=Column("id", Integer, primary_key=True, autoincrement=True, nullable=False))
     name: str | None
     description: str | None
 
@@ -17,7 +18,7 @@ class Work(SQLModel, table=True):
 class WorkRule(SQLModel, table=True):
     __tablename__ = "work_rules"
 
-    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+    id: int | None = Field(sa_column=Column("id", Integer, primary_key=True, autoincrement=True, nullable=False))
     work_id: int = Field(foreign_key="work.id")
     name: str | None
     description: str | None
@@ -30,8 +31,8 @@ class WorkRule(SQLModel, table=True):
 class WorkChannel(SQLModel, table=True):
     __tablename__ = "work_channel"
 
-    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-    work_id: int | None = Field(default=None, foreign_key="work.id")
-    channel_id: int | None = Field(default=None, sa_column=Column("channel_id", BigInteger))
+    id: int | None = Field(sa_column=Column("id", Integer, primary_key=True, autoincrement=True, nullable=False))
+    work_id: int = Field(foreign_key="work.id")
+    channel_id: int = Field(sa_column=Column("channel_id", BigInteger))
 
     work: Optional["Work"] = Relationship(back_populates="work_channels")

@@ -31,7 +31,9 @@ playwright = [
     "playwright>=1.57.0",
 ]
 dev = [
+    "alembic>=1.18.1",
     "black>=25.12.0",
+    "mysqlclient>=2.2.7",
     "ruff>=0.14.13",
 ]
 
