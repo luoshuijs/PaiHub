@@ -130,12 +130,15 @@ class AutoPushJob(Job):
             return
 
         # 2. 自动审核指定数量的作品
-        reviewed_count = 0
+        passed_count = 0
+        rejected_count = 0
         passed_reviews = []  # 存储通过审核的review_id
 
-        for _ in range(min(config.review_count, count)):
+        # 继续审核直到达到目标数量（通过+拒绝），跳过的不计数
+        while (passed_count + rejected_count) < config.review_count:
             review_context = await self.review_service.retrieve_next_for_review(work_id=config.work_id)
             if review_context is None:
+                _logger.info("审核队列已空，实际处理 %d 个作品", passed_count + rejected_count)
                 break
 
             try:
@@ -154,14 +157,30 @@ class AutoPushJob(Job):
                         ReviewStatus.PASS, auto=True, update_by=config.create_by or 0
                     )
                     passed_reviews.append(review_context.review_id)
-                    reviewed_count += 1
-                    _logger.info("作品自动通过: %s[%s]", review_context.site_key, review_context.artwork_id)
+                    passed_count += 1
+                    _logger.info(
+                        "作品自动通过 [%d/%d]: %s[%s]",
+                        passed_count + rejected_count,
+                        config.review_count,
+                        review_context.site_key,
+                        review_context.artwork_id,
+                    )
                 elif auto_review is not None:
                     # 自动拒绝
                     await review_context.set_review_status(
                         ReviewStatus.REJECT, auto=True, update_by=config.create_by or 0
                     )
-                    _logger.info("作品自动拒绝: %s[%s]", review_context.site_key, review_context.artwork_id)
+                    rejected_count += 1
+                    _logger.info(
+                        "作品自动拒绝 [%d/%d]: %s[%s]",
+                        passed_count + rejected_count,
+                        config.review_count,
+                        review_context.site_key,
+                        review_context.artwork_id,
+                    )
+                else:
+                    # 无法自动审核（返回 None），跳过，不计入统计，继续下一个
+                    _logger.debug("作品无法自动审核，跳过: %s[%s]", review_context.site_key, review_context.artwork_id)
             except ArtWorkNotFoundError:
                 await review_context.set_review_status(ReviewStatus.NOT_FOUND, update_by=config.create_by or 0)
                 _logger.warning("作品不存在: %s[%s]", review_context.site_key, review_context.artwork_id)
@@ -171,7 +190,7 @@ class AutoPushJob(Job):
 
             await asyncio.sleep(2)  # 避免速率限制
 
-        _logger.info("批量模式: 完成自动审核，通过 %s 个作品", reviewed_count)
+        _logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
 
         # 3. 统一推送所有通过审核的作品
         if passed_reviews:
@@ -201,12 +220,15 @@ class AutoPushJob(Job):
             return
 
         # 2. 审核并立即推送
-        reviewed_count = 0
+        passed_count = 0
+        rejected_count = 0
         work_channel = await self.work_channel_repository.get_by_work_id(config.work_id)
 
-        for _ in range(min(config.review_count, count)):
+        # 继续审核直到达到目标数量（通过+拒绝），跳过的不计数
+        while (passed_count + rejected_count) < config.review_count:
             review_context = await self.review_service.retrieve_next_for_review(work_id=config.work_id)
             if review_context is None:
+                _logger.info("审核队列已空，实际处理 %d 个作品", passed_count + rejected_count)
                 break
 
             try:
@@ -234,14 +256,30 @@ class AutoPushJob(Job):
                         config.create_by or 0,
                     )
 
-                    reviewed_count += 1
-                    _logger.info("作品自动通过并推送: %s[%s]", review_context.site_key, review_context.artwork_id)
+                    passed_count += 1
+                    _logger.info(
+                        "作品自动通过并推送 [%d/%d]: %s[%s]",
+                        passed_count + rejected_count,
+                        config.review_count,
+                        review_context.site_key,
+                        review_context.artwork_id,
+                    )
                 elif auto_review is not None:
                     # 自动拒绝
                     await review_context.set_review_status(
                         ReviewStatus.REJECT, auto=True, update_by=config.create_by or 0
                     )
-                    _logger.info("作品自动拒绝: %s[%s]", review_context.site_key, review_context.artwork_id)
+                    rejected_count += 1
+                    _logger.info(
+                        "作品自动拒绝 [%d/%d]: %s[%s]",
+                        passed_count + rejected_count,
+                        config.review_count,
+                        review_context.site_key,
+                        review_context.artwork_id,
+                    )
+                else:
+                    # 无法自动审核（返回 None），跳过，不计入统计，继续下一个
+                    _logger.debug("作品无法自动审核，跳过: %s[%s]", review_context.site_key, review_context.artwork_id)
             except ArtWorkNotFoundError:
                 await review_context.set_review_status(ReviewStatus.NOT_FOUND, update_by=config.create_by or 0)
                 _logger.warning("作品不存在: %s[%s]", review_context.site_key, review_context.artwork_id)
@@ -254,7 +292,7 @@ class AutoPushJob(Job):
 
             await asyncio.sleep(3)  # 避免速率限制
 
-        _logger.info("即时模式: 完成自动审核并推送，共处理 %s 个作品", reviewed_count)
+        _logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
 
     async def _send_to_owner(self, artwork, artwork_images, review_id: int, work_id: int):
         """发送作品到BOT_OWNER
@@ -264,7 +302,7 @@ class AutoPushJob(Job):
         :param work_id: 工作ID
         """
         try:
-            bot = self.application.bot
+            bot = self.application.bot.bot  # 获取真正的 Bot 对象
             owner_id = self.application.settings.bot.owner
 
             caption = (
@@ -316,7 +354,7 @@ class AutoPushJob(Job):
         :param create_by: 创建人ID
         """
         try:
-            bot = self.application.bot
+            bot = self.application.bot.bot  # 获取真正的 Bot 对象
             caption = (
                 f"Title: {html.escape(artwork.title)}\n"
                 f"Tag: {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
@@ -375,25 +413,37 @@ class AutoPushJob(Job):
         :param review_ids: 审核ID列表
         :param create_by: 创建人ID
         """
+        if not review_ids:
+            _logger.warning("没有需要推送的作品")
+            return
+
         work_channel = await self.work_channel_repository.get_by_work_id(work_id)
 
-        for review_id in review_ids:
+        # 将通过审核的作品添加到推送队列
+        await self.push_service.push_cache.set_pending_push(work_id, review_ids)
+        _logger.info("已将 %s 个作品添加到推送队列", len(review_ids))
+
+        # 逐个推送
+        for _ in range(len(review_ids)):
             push_context = await self.push_service.get_next_push(work_id=work_id)
             if push_context is None:
-                continue
+                _logger.warning("推送队列为空，跳过")
+                break
 
             try:
                 artwork = await push_context.get_artwork()
                 artwork_images = await push_context.get_artwork_images()
 
-                await self._push_single_artwork(artwork, artwork_images, work_channel.channel_id, review_id, create_by)
-                _logger.info("作品推送成功: Review ID %s", review_id)
+                await self._push_single_artwork(
+                    artwork, artwork_images, work_channel.channel_id, push_context.review_id, create_by
+                )
+                _logger.info("作品推送成功: Review ID %s", push_context.review_id)
             except BotRetryAfter as exc:
                 await push_context.undo_push()
                 _logger.warning("触发Telegram速率限制，等待 %s 秒", exc.retry_after)
                 await asyncio.sleep(exc.retry_after + 1)
             except Exception as exc:
-                _logger.error("推送作品时发生错误: Review ID %s", review_id, exc_info=exc)
+                _logger.error("推送作品时发生错误: Review ID %s", push_context.review_id, exc_info=exc)
 
             await asyncio.sleep(3)  # 避免速率限制
 
