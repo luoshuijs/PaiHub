@@ -33,6 +33,6 @@ class WorkChannel(SQLModel, table=True):
 
     id: int | None = Field(sa_column=Column("id", Integer, primary_key=True, autoincrement=True, nullable=False))
     work_id: int = Field(foreign_key="work.id")
-    channel_id: int = Field(sa_column=Column("channel_id", BigInteger))
+    channel_id: int = Field(sa_column=Column("channel_id", BigInteger, nullable=False))
 
     work: Optional["Work"] = Relationship(back_populates="work_channels")

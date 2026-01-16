@@ -27,8 +27,8 @@ def upgrade() -> None:
     op.create_table(
         "pixiv",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
-        sa.Column("title", sa.String(length=255, collation="utf8mb4_0900_ai_ci"), nullable=True),
-        sa.Column("tags", paihub.utils.sql_types.Tags(collation="utf8mb4_0900_ai_ci"), nullable=True),
+        sa.Column("title", sa.String(length=255, collation="utf8mb4_general_ci"), nullable=True),
+        sa.Column("tags", paihub.utils.sql_types.Tags(collation="utf8mb4_general_ci"), nullable=True),
         sa.Column("view_count", sa.Integer(), nullable=True),
         sa.Column("like_count", sa.Integer(), nullable=True),
         sa.Column("love_count", sa.Integer(), nullable=True),

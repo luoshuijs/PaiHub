@@ -13,9 +13,9 @@ class Pixiv(SQLModel, table=True):
 
     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
     title: str | None = Field(
-        default=None, sa_column=Column("title", String(collation="utf8mb4_0900_ai_ci", length=255))
+        default=None, sa_column=Column("title", String(collation="utf8mb4_general_ci", length=255))
     )
-    tags: list[str] | None = Field(default=None, sa_column=Column("tags", Tags(collation="utf8mb4_0900_ai_ci")))
+    tags: list[str] | None = Field(default=None, sa_column=Column("tags", Tags(collation="utf8mb4_general_ci")))
     view_count: int | None
     like_count: int | None
     love_count: int | None
