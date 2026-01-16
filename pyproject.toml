@@ -7,28 +7,28 @@ requires-python = ">=3.12"
 dependencies = [
     "async-lru>=2.0.4",
     "async-pixiv>=1.1.2",
-    "asyncmy>=0.2.10",
-    "curl-cffi>=0.10.0",
-    "httpx>=0.28.0",
-    "motor>=3.6.0",
-    "orjson>=3.10.7",
+    "asyncmy>=0.2.11",
+    "curl-cffi>=0.14.0",
+    "httpx>=0.28.1",
+    "motor>=3.7.1",
+    "orjson>=3.11.5",
     "persica",
     "picimagesearch",
     "pybooru>=4.2.2",
-    "pydantic-settings>=2.7.0",
-    "python-dotenv>=1.0.1",
-    "python-telegram-bot[ext,rate-limiter]>=21.9",
-    "redis>=5.2.1",
-    "rich>=13.9.4",
-    "sqlmodel>=0.0.22",
+    "pydantic-settings>=2.12.0",
+    "python-dotenv>=1.2.1",
+    "python-telegram-bot[ext,rate-limiter]>=22.5",
+    "redis>=7.1.0",
+    "rich>=14.2.0",
+    "sqlmodel>=0.0.31",
     "toml>=0.10.2",
     "uvloop>=0.21.0 ; sys_platform == 'linux'",
-    "watchfiles>=1.0.3",
+    "watchfiles>=1.1.1",
 ]
 
 [project.optional-dependencies]
 playwright = [
-    "playwright>=1.47.0",
+    "playwright>=1.57.0",
 ]
 
 [tool.pytest.ini_options]
@@ -45,13 +45,13 @@ target-version = ['py312']
 
 [tool.uv]
 dev-dependencies = [
-    "black>=24.8.0",
-    "ruff>=0.6.4",
+    "black>=25.12.0",
+    "ruff>=0.14.13",
 ]
 
 [tool.uv.sources]
 picimagesearch = { git = "https://github.com/kitUIN/PicImageSearch" }
-async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv", branch = "fix" }
+async-pixiv = { git = "https://github.com/ArkoClub/async-pixiv"}
 persica = { git = "https://github.com/luoshuijs/Persica"}
 
 [tool.ruff]
