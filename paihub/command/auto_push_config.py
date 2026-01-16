@@ -317,12 +317,15 @@ class AutoPushConfigCommand(Command):
         # 计算下次运行时间
         config.next_run_time = self.auto_push_job._calculate_next_run_time(config.cron_expression)
 
+        # 保存配置名称 在保存到数据库前获取避免 DetachedInstanceError
+        config_name = config.name
+
         # 保存到数据库
         await self.config_repository.add(config)
 
         await message.edit_text(
             f"✅ 配置创建成功！\n\n"
-            f"配置名称：{config.name}\n"
+            f"配置名称：{config_name}\n"
             f"当前状态：已禁用\n\n"
             f"请使用 /auto_push_config 命令查看配置列表并启用配置。"
         )
