@@ -14,6 +14,9 @@ except ImportError:
 
 logger.info("Welcome to PaiHub!")
 
+# https://docs.python.org/3.13/library/asyncio-eventloop.html#asyncio.get_event_loop
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
 class ApplicationBuilder(_ApplicationBuilder):
     _application_class = Application
@@ -21,5 +24,6 @@ class ApplicationBuilder(_ApplicationBuilder):
 
 builder = ApplicationBuilder()
 builder.set_scanner_package("paihub")
+builder.set_loop(loop)
 application = builder.build()
 application.run()
