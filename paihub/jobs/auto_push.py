@@ -20,7 +20,8 @@ from paihub.system.review.services import ReviewService
 from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.repositories import WorkChannelRepository
 
-_logger = Logger("Auto Push Job", filename="auto_push.log")
+_logger = Logger("Auto Push Job", filename="auto_push.log")  # 详细日志
+_main_logger = logger  # 主日志，用于关键信息
 
 
 class AutoPushJob(Job):
@@ -47,6 +48,7 @@ class AutoPushJob(Job):
             IntervalTrigger(minutes=1),
             next_run_time=datetime.now() + timedelta(seconds=30),
         )
+        _main_logger.info("自动推送Job已启动，将每分钟检查一次待执行任务")
         _logger.info("自动推送Job已启动，将每分钟检查一次待执行任务")
 
     async def check_and_run_tasks(self):
@@ -62,6 +64,7 @@ class AutoPushJob(Job):
 
                 # 检查是否到达执行时间
                 if config.next_run_time and config.next_run_time <= now:
+                    _main_logger.info("开始执行自动推送任务: %s (ID: %s)", config.name, config.id)
                     _logger.info("开始执行自动推送任务: %s (ID: %s)", config.name, config.id)
                     # 异步执行任务，避免阻塞
                     asyncio.create_task(self.execute_auto_push_task(config))
@@ -97,8 +100,10 @@ class AutoPushJob(Job):
                 config.next_run_time = self._calculate_next_run_time(config.cron_expression)
             await self.config_repository.update(config)
 
+            _main_logger.info("自动推送任务执行完成: %s", config.name)
             _logger.info("自动推送任务执行完成: %s", config.name)
         except Exception as exc:
+            _main_logger.error("执行自动推送任务时发生错误: %s", config.name, exc_info=exc)
             logger.error("执行自动推送任务时发生错误: %s", config.name, exc_info=exc)
             # 恢复状态为启用
             config.set_completed()
@@ -111,6 +116,7 @@ class AutoPushJob(Job):
         """执行批量模式的自动推送
         :param config: AutoPushConfig 配置对象
         """
+        _main_logger.info("批量模式: 开始自动审核 %s 个作品 (Work ID: %s)", config.review_count, config.work_id)
         _logger.info("批量模式: 开始自动审核 %s 个作品", config.review_count)
 
         # 1. 初始化审核队列
@@ -119,6 +125,7 @@ class AutoPushJob(Job):
                 work_id=config.work_id, lines_per_page=10000, create_by=config.create_by
             )
         except WorkRuleNotFound:
+            _main_logger.warning("Work ID %s 未配置规则，跳过任务", config.work_id)
             _logger.warning("Work ID %s 未配置规则，跳过任务", config.work_id)
             return
 
@@ -190,10 +197,12 @@ class AutoPushJob(Job):
 
             await asyncio.sleep(2)  # 避免速率限制
 
+        _main_logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
         _logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
 
         # 3. 统一推送所有通过审核的作品
         if passed_reviews:
+            _main_logger.info("批量模式: 开始推送 %s 个作品", len(passed_reviews))
             _logger.info("批量模式: 开始推送 %s 个作品", len(passed_reviews))
             await self._batch_push_artworks(config.work_id, passed_reviews, config.create_by or 0)
 
@@ -201,6 +210,7 @@ class AutoPushJob(Job):
         """执行即时模式的自动推送
         :param config: AutoPushConfig 配置对象
         """
+        _main_logger.info("即时模式: 开始自动审核并推送 %s 个作品 (Work ID: %s)", config.review_count, config.work_id)
         _logger.info("即时模式: 开始自动审核并推送 %s 个作品", config.review_count)
 
         # 1. 初始化审核队列
@@ -209,6 +219,7 @@ class AutoPushJob(Job):
                 work_id=config.work_id, lines_per_page=10000, create_by=config.create_by
             )
         except WorkRuleNotFound:
+            _main_logger.warning("Work ID %s 未配置规则，跳过任务", config.work_id)
             _logger.warning("Work ID %s 未配置规则，跳过任务", config.work_id)
             return
 
@@ -292,6 +303,7 @@ class AutoPushJob(Job):
 
             await asyncio.sleep(3)  # 避免速率限制
 
+        _main_logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
         _logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
 
     async def _send_to_owner(self, artwork, artwork_images, review_id: int, work_id: int):
@@ -424,6 +436,8 @@ class AutoPushJob(Job):
         _logger.info("已将 %s 个作品添加到推送队列", len(review_ids))
 
         # 逐个推送
+        success_count = 0
+        failed_count = 0
         for _ in range(len(review_ids)):
             push_context = await self.push_service.get_next_push(work_id=work_id)
             if push_context is None:
@@ -437,15 +451,21 @@ class AutoPushJob(Job):
                 await self._push_single_artwork(
                     artwork, artwork_images, work_channel.channel_id, push_context.review_id, create_by
                 )
+                success_count += 1
                 _logger.info("作品推送成功: Review ID %s", push_context.review_id)
             except BotRetryAfter as exc:
                 await push_context.undo_push()
+                failed_count += 1
                 _logger.warning("触发Telegram速率限制，等待 %s 秒", exc.retry_after)
                 await asyncio.sleep(exc.retry_after + 1)
             except Exception as exc:
+                failed_count += 1
                 _logger.error("推送作品时发生错误: Review ID %s", push_context.review_id, exc_info=exc)
 
             await asyncio.sleep(3)  # 避免速率限制
+
+        _main_logger.info("批量推送完成: 成功 %d 个，失败 %d 个", success_count, failed_count)
+        _logger.info("批量推送完成: 成功 %d 个，失败 %d 个", success_count, failed_count)
 
     @staticmethod
     def _calculate_next_run_time(cron_expression: str) -> datetime:
