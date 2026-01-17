@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from apscheduler.triggers.interval import IntervalTrigger
 from croniter import croniter
-from telegram import InputMediaPhoto
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.constants import ParseMode
 from telegram.error import RetryAfter as BotRetryAfter
 
@@ -174,6 +174,16 @@ class AutoPushJob(Job):
                     )
                 elif auto_review is not None:
                     # 自动拒绝
+                    # 获取作品信息（用于发送给 BOT_OWNER）
+                    artwork = await review_context.get_artwork()
+                    artwork_images = await review_context.get_artwork_images()
+
+                    # 同步到BOT_OWNER（标记为拒绝）
+                    if config.push_to_owner:
+                        await self._send_to_owner(
+                            artwork, artwork_images, review_context.review_id, config.work_id, rejected=True
+                        )
+
                     await review_context.set_review_status(
                         ReviewStatus.REJECT, auto=True, update_by=config.create_by or 0
                     )
@@ -277,6 +287,16 @@ class AutoPushJob(Job):
                     )
                 elif auto_review is not None:
                     # 自动拒绝
+                    # 获取作品信息（用于发送给 BOT_OWNER）
+                    artwork = await review_context.get_artwork()
+                    artwork_images = await review_context.get_artwork_images()
+
+                    # 同步到BOT_OWNER（标记为拒绝）
+                    if config.push_to_owner:
+                        await self._send_to_owner(
+                            artwork, artwork_images, review_context.review_id, config.work_id, rejected=True
+                        )
+
                     await review_context.set_review_status(
                         ReviewStatus.REJECT, auto=True, update_by=config.create_by or 0
                     )
@@ -306,19 +326,21 @@ class AutoPushJob(Job):
         _main_logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
         _logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
 
-    async def _send_to_owner(self, artwork, artwork_images, review_id: int, work_id: int):
+    async def _send_to_owner(self, artwork, artwork_images, review_id: int, work_id: int, rejected: bool = False):
         """发送作品到BOT_OWNER
         :param artwork: 作品对象
         :param artwork_images: 作品图片列表
         :param review_id: 审核ID
         :param work_id: 工作ID
+        :param rejected: 是否为拒绝的作品
         """
         try:
             bot = self.application.bot.bot  # 获取真正的 Bot 对象
             owner_id = self.application.settings.bot.owner
 
+            status_text = "自动审核拒绝" if rejected else "自动审核通过"
             caption = (
-                f"[自动审核通过]\n"
+                f"[{status_text}]\n"
                 f"Title: {html.escape(artwork.title)}\n"
                 f"Tag: {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
                 f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
@@ -354,6 +376,22 @@ class AutoPushJob(Job):
                         read_timeout=10,
                         write_timeout=30,
                     )
+
+            # 发送撤销按钮
+            keyboard = [[
+                InlineKeyboardButton(
+                    text="撤销该修改",
+                    callback_data=f"reset_review_form_command|{review_id}",
+                ),
+            ]]
+
+            message_text = f"当前作品已经{status_text}\n正在获取下一个作品"
+            await bot.send_message(
+                chat_id=owner_id,
+                text=message_text,
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode=ParseMode.HTML,
+            )
         except Exception as exc:
             _logger.error("发送到BOT_OWNER时发生错误", exc_info=exc)
 
