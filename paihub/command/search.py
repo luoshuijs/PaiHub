@@ -43,7 +43,9 @@ class Search(Command):
         )
         self.bot.add_handler(
             AdminHandler(
-                MessageHandler(filters=filters.Document.IMAGE & filters.ChatType.PRIVATE, callback=self.photo, block=False),
+                MessageHandler(
+                    filters=filters.Document.IMAGE & filters.ChatType.PRIVATE, callback=self.photo, block=False
+                ),
                 self.application,
                 need_notify=False,
             )

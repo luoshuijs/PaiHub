@@ -378,12 +378,14 @@ class AutoPushJob(Job):
                     )
 
             # 发送撤销按钮
-            keyboard = [[
-                InlineKeyboardButton(
-                    text="撤销该修改",
-                    callback_data=f"reset_review_form_command|{review_id}",
-                ),
-            ]]
+            keyboard = [
+                [
+                    InlineKeyboardButton(
+                        text="撤销该修改",
+                        callback_data=f"reset_review_form_command|{review_id}",
+                    ),
+                ]
+            ]
 
             message_text = f"当前作品已经{status_text}\n正在获取下一个作品"
             await bot.send_message(

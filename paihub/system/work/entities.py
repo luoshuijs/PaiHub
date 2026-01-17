@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import Integer, BigInteger
+from sqlalchemy import BigInteger, Integer
 from sqlmodel import Column, Field, Relationship, SQLModel
 
 
