@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -492,8 +493,6 @@ class AutoPushConfigCommand(Command):
         await message.edit_text(f"🚀 开始立即执行配置 '{config.name}'...")
 
         # 异步执行任务
-        import asyncio
-
         asyncio.create_task(self.auto_push_job.execute_auto_push_task(config))
 
         await message.edit_text(

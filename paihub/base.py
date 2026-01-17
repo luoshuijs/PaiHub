@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Generic, TypeVar, get_args
+from typing import TYPE_CHECKING, get_args
 
 from persica.factory.component import AsyncInitializingComponent
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -12,9 +12,6 @@ if TYPE_CHECKING:
     from paihub.entities.artwork import ArtWork
 
 
-T = TypeVar("T", bound=SQLModel)
-
-
 class Component(AsyncInitializingComponent):
     __order__ = 0
 
@@ -23,7 +20,7 @@ class BaseDependence(AsyncInitializingComponent):
     __order__ = -1
 
 
-class Repository(Generic[T], AsyncInitializingComponent):
+class Repository[T: SQLModel](AsyncInitializingComponent):
     __order__ = -2
     entity_class: type[T]
     engine: AsyncEngine

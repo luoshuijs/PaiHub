@@ -1,10 +1,8 @@
-from asyncio import create_subprocess_shell
+from asyncio import create_subprocess_shell, subprocess
 
 
 async def execute(command: str | bytes, pass_error: bool = True) -> str:
     """Executes command and returns output, with the option of enabling stderr."""
-    from asyncio import subprocess
-
     executor = await create_subprocess_shell(
         command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
     )

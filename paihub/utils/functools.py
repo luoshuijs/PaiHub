@@ -2,13 +2,10 @@ import asyncio
 from collections.abc import Callable, Coroutine
 from concurrent.futures import Executor
 from functools import partial, wraps
-from typing import Any, ParamSpec, TypeVar
-
-T = TypeVar("T")
-P = ParamSpec("P")
+from typing import Any
 
 
-def async_wrap(
+def async_wrap[**P, T](
     func: Callable[P, T],
     loop: asyncio.AbstractEventLoop | None = None,
     executor: Executor | None = None,
@@ -19,7 +16,7 @@ def async_wrap(
         loop = asyncio.get_event_loop()
 
     @wraps(func)
-    async def run(*args: "P.args", **kwargs: "P.kwargs") -> "T":
+    async def run(*args: P.args, **kwargs: P.kwargs) -> T:
         p_func = partial(func, *args, **kwargs)
         return await loop.run_in_executor(executor, p_func)
 

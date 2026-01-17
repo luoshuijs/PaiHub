@@ -452,12 +452,12 @@ class AutoPushJob(Job):
                 await self.push_service.set_send_push(
                     review_id=review_id, channel_id=channel_id, message_id=message_id, status=True, create_by=create_by
                 )
-        except Exception as exc:
+        except Exception:
             # 记录推送失败
             await self.push_service.set_send_push(
                 review_id=review_id, channel_id=channel_id, message_id=0, status=False, create_by=create_by
             )
-            raise exc
+            raise
 
     async def _batch_push_artworks(self, work_id: int, review_ids: list[int], create_by: int):
         """批量推送作品到频道

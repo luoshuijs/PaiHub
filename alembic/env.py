@@ -5,6 +5,7 @@ import dotenv
 from sqlalchemy import URL, engine_from_config, pool
 
 from alembic import context
+from paihub.models import metadata
 
 # Load environment variables from .env file
 dotenv.load_dotenv()
@@ -20,7 +21,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from paihub.models import metadata
 
 target_metadata = metadata
 
