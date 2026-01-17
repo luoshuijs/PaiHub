@@ -18,6 +18,7 @@ logger.info("Welcome to PaiHub!")
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
+
 class ApplicationBuilder(_ApplicationBuilder):
     _application_class = Application
 

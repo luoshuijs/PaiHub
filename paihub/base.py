@@ -13,15 +13,15 @@ if TYPE_CHECKING:
 
 
 class Component(AsyncInitializingComponent):
-    __order__ = 0
+    __order__ = 1
 
 
-class BaseDependence(AsyncInitializingComponent):
-    __order__ = -1
+class BaseDependence(Component):
+    __order__ = 2
 
 
-class Repository[T: SQLModel](AsyncInitializingComponent):
-    __order__ = -2
+class Repository[T: SQLModel](Component):
+    __order__ = 3
     entity_class: type[T]
     engine: AsyncEngine
 
@@ -80,16 +80,16 @@ class Repository[T: SQLModel](AsyncInitializingComponent):
             return results.all()
 
 
-class Service(AsyncInitializingComponent):
-    __order__ = -3
+class Service(Component):
+    __order__ = 4
     application: "Application"
 
     def set_application(self, application: "Application"):
         self.application = application
 
 
-class Command(AsyncInitializingComponent):
-    __order__ = -5
+class Command(Component):
+    __order__ = 5
     application: "Application"
     bot: "BotApplication"
 
@@ -101,8 +101,8 @@ class Command(AsyncInitializingComponent):
         """Add bot handlers used by this function"""
 
 
-class SiteService(AsyncInitializingComponent):
-    __order__ = -5
+class SiteService(Component):
+    __order__ = 5
     site_name: str  # 网站名称
     site_key: str  # 网站关键标识符 最大长度不超过16
     application: "Application"
@@ -131,18 +131,18 @@ class SiteService(AsyncInitializingComponent):
         return None
 
 
-class ApiService(AsyncInitializingComponent):
-    __order__ = -3
+class ApiService(Component):
+    __order__ = 4
     application: "Application"
 
     def set_application(self, application: "Application"):
         self.application = application
 
 
-class Job(AsyncInitializingComponent):
+class Job(Component):
     """定时任务基类"""
 
-    __order__ = -6
+    __order__ = 6
     application: "Application"
 
     def set_application(self, application: "Application"):
@@ -153,8 +153,8 @@ class Job(AsyncInitializingComponent):
         """Add scheduled jobs to the application scheduler."""
 
 
-class Spider(AsyncInitializingComponent):
-    __order__ = -6
+class Spider(Component):
+    __order__ = 6
     application: "Application"
 
     def set_application(self, application: "Application"):
