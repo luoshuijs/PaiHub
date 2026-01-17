@@ -8,6 +8,7 @@ from sqlmodel import SQLModel
 
 # 导入所有表
 from paihub.sites.pixiv.entities import Pixiv
+from paihub.system.push.auto_push_entities import AutoPushConfig
 from paihub.system.push.entities import Push
 from paihub.system.review.entities import Review
 from paihub.system.user.entities import User
@@ -18,6 +19,7 @@ metadata = SQLModel.metadata
 
 __all__ = [
     "metadata",
+    "AutoPushConfig",
     "Pixiv",
     "Push",
     "Review",

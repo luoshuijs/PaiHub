@@ -142,6 +142,20 @@ class ApiService(AsyncInitializingComponent):
         self.application = application
 
 
+class Job(AsyncInitializingComponent):
+    """定时任务基类"""
+
+    __order__ = -6
+    application: "Application"
+
+    def set_application(self, application: "Application"):
+        self.application = application
+        self.add_jobs()
+
+    def add_jobs(self) -> None:
+        """Add scheduled jobs to the application scheduler."""
+
+
 class Spider(AsyncInitializingComponent):
     __order__ = -6
     application: "Application"
