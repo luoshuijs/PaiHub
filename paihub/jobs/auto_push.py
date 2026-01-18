@@ -268,23 +268,36 @@ class AutoPushJob(Job):
                         ReviewStatus.PASS, auto=True, update_by=config.create_by or 0
                     )
 
-                    # 立即推送到频道
-                    await self._push_single_artwork(
-                        artwork,
-                        artwork_images,
-                        work_channel.channel_id,
-                        review_context.review_id,
-                        config.create_by or 0,
-                    )
+                    # 推送前再次验证状态（防止在极短时间窗口内被 reset_review 修改）
+                    review = await self.review_service.get_by_review_id(review_context.review_id)
+                    if review and review.status == ReviewStatus.PASS:
+                        # 立即推送到频道
+                        await self._push_single_artwork(
+                            artwork,
+                            artwork_images,
+                            work_channel.channel_id,
+                            review_context.review_id,
+                            config.create_by or 0,
+                        )
 
-                    passed_count += 1
-                    _logger.info(
-                        "作品自动通过并推送 [%d/%d]: %s[%s]",
-                        passed_count + rejected_count,
-                        config.review_count,
-                        review_context.site_key,
-                        review_context.artwork_id,
-                    )
+                        passed_count += 1
+                        _logger.info(
+                            "作品自动通过并推送 [%d/%d]: %s[%s]",
+                            passed_count + rejected_count,
+                            config.review_count,
+                            review_context.site_key,
+                            review_context.artwork_id,
+                        )
+                    else:
+                        # 如果状态被修改，仍然计入拒绝数（因为已经处理过）
+                        rejected_count += 1
+                        _logger.warning(
+                            "Review ID %s 状态已被修改为 %s，跳过推送 [%d/%d]",
+                            review_context.review_id,
+                            review.status.name if review else "NOT_FOUND",
+                            passed_count + rejected_count,
+                            config.review_count,
+                        )
                 elif auto_review is not None:
                     # 自动拒绝
                     # 获取作品信息（用于发送给 BOT_OWNER）
@@ -479,7 +492,7 @@ class AutoPushJob(Job):
         success_count = 0
         failed_count = 0
         for _ in range(len(review_ids)):
-            push_context = await self.push_service.get_next_push(work_id=work_id)
+            push_context = await self.push_service.get_next_push_with_validation(work_id=work_id)
             if push_context is None:
                 _logger.warning("推送队列为空，跳过")
                 break

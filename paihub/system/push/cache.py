@@ -21,3 +21,16 @@ class PushCache(Component):
 
     async def get_push_count(self, work_id: int) -> int:
         return await self.client.scard(f"push:pending:{work_id}")
+
+    async def remove_from_push_queue(self, work_id: int, review_id: int) -> bool:
+        """从推送队列中移除指定的 review
+
+        Args:
+            work_id: 工作ID
+            review_id: 审核ID
+
+        Returns:
+            是否成功移除（True表示原本存在并已移除）
+        """
+        removed_count = await self.client.srem(f"push:pending:{work_id}", review_id)
+        return removed_count > 0

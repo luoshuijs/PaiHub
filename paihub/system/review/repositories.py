@@ -95,3 +95,21 @@ class ReviewRepository(Repository[Review]):
                 statement = statement.where(Review.status == status)
             results = await session.exec(statement)
             return results.first()
+
+    async def get_by_ids_with_status(self, review_ids: list[int], status: ReviewStatus) -> list[Review]:
+        """批量查询指定ID列表中状态符合条件的 Review
+
+        Args:
+            review_ids: Review ID 列表
+            status: 要匹配的状态
+
+        Returns:
+            符合条件的 Review 列表
+        """
+        if not review_ids:
+            return []
+
+        async with AsyncSession(self.engine) as session:
+            statement = select(Review).where(Review.id.in_(review_ids), Review.status == status)
+            results = await session.exec(statement)
+            return results.all()

@@ -7,6 +7,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandl
 from paihub.base import Command
 from paihub.bot.adminhandler import AdminHandler
 from paihub.log import logger
+from paihub.system.push.cache import PushCache
 from paihub.system.review.services import ReviewService
 from paihub.system.sites.manager import SitesManager
 from paihub.system.work.services import WorkService
@@ -19,10 +20,17 @@ GET_REVIEW, GET_STATUS, SET_STATUS, MOVE_REVIEW = range(4)
 
 
 class ResetCommand(Command):
-    def __init__(self, work_service: WorkService, review_service: ReviewService, sites_manager: SitesManager):
+    def __init__(
+        self,
+        work_service: WorkService,
+        review_service: ReviewService,
+        sites_manager: SitesManager,
+        push_cache: PushCache,
+    ):
         self.sites_manager = sites_manager
         self.work_service = work_service
         self.review_service = review_service
+        self.push_cache = push_cache
 
     def add_handlers(self):
         conv_handler = ConversationHandler(
@@ -171,8 +179,15 @@ class ResetCommand(Command):
         elif status == 0:
             review_info.set_reject(user.id)
             await self.review_service.update_review(review_info)
-            await message.edit_text("已经修改为拒绝")
+            # 从推送队列中移除
+            if await self.push_cache.remove_from_push_queue(review_info.work_id, review_info.id):
+                logger.info("已从推送队列中移除 Review ID: %s", review_info.id)
+                await message.edit_text("已经修改为拒绝，并从推送队列中移除")
+            else:
+                await message.edit_text("已经修改为拒绝")
         elif status == -1:
+            # 从推送队列中移除
+            await self.push_cache.remove_from_push_queue(review_info.work_id, review_info.id)
             await self.review_service.remove_review(review_info)
             await message.edit_text("已经删除该审核信息")
         elif status == -2:
