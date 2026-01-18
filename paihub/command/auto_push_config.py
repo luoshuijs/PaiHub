@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from croniter import croniter
+from croniter import CroniterBadCronError, croniter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CallbackQueryHandler, CommandHandler, ConversationHandler, MessageHandler, filters
 
@@ -205,7 +205,11 @@ class AutoPushConfigCommand(Command):
             # 验证cron表达式
             try:
                 croniter(cron_expr, datetime.now())
-            except Exception:
+            except CroniterBadCronError:
+                await message.reply_text("Cron表达式格式错误，请重新输入：")
+                return INPUT_CRON
+            except Exception as exc:
+                logger.error("Cron表达式处理出现错误", exc_info=exc)
                 await message.reply_text("Cron表达式格式错误，请重新输入：")
                 return INPUT_CRON
 

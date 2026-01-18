@@ -3,7 +3,7 @@ import html
 from datetime import datetime, timedelta
 
 from apscheduler.triggers.interval import IntervalTrigger
-from croniter import croniter
+from croniter import CroniterBadCronError, croniter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.constants import ParseMode
 from telegram.error import RetryAfter as BotRetryAfter
@@ -97,7 +97,11 @@ class AutoPushJob(Job):
                 config.disable(update_by=0)
                 _logger.info("配置 '%s' 设置为仅运行一次，已自动禁用", config.name)
             else:
-                config.next_run_time = self._calculate_next_run_time(config.cron_expression)
+                try:
+                    config.next_run_time = self._calculate_next_run_time(config.cron_expression)
+                except CroniterBadCronError as exc:
+                    logger.error("表达式解析错误 任务将被禁用", exc_info=exc)
+                    config.disable(update_by=0)
             await self.config_repository.update(config)
 
             _main_logger.info("自动推送任务执行完成: %s", config.name)
@@ -526,9 +530,5 @@ class AutoPushJob(Job):
         :param cron_expression: Cron表达式
         :return: 下次运行时间
         """
-        try:
-            cron = croniter(cron_expression, datetime.now())
-            return cron.get_next(datetime)
-        except Exception:
-            # 如果cron表达式无效，默认6小时后执行
-            return datetime.now() + timedelta(hours=6)
+        cron = croniter(cron_expression, datetime.now())
+        return cron.get_next(datetime)
