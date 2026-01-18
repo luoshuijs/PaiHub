@@ -65,7 +65,7 @@ class PushService(Service):
             # 验证 review 状态
             review_data = await self.review_repository.get_by_id(int(review_id))
             if review_data and review_data.status == ReviewStatus.PASS:
-                # 状态仍为 PASS，可以推送
+                # 状态仍为 PASS 可以推送
                 site_service = self.sites_manager.get_site_by_site_key(review_data.site_key)
                 work_channel = await self.work_channel_repository.get_by_work_id(work_id)
                 return PushCallbackContext(
@@ -76,14 +76,13 @@ class PushService(Service):
                     site_service=site_service,
                     push_service=self,
                 )
-            else:
-                # 状态已变更，记录日志并继续下一个
-                logger.info(
-                    "Review %s 状态已变更为 %s，跳过推送",
-                    review_id,
-                    review_data.status.name if review_data else "NOT_FOUND",
-                )
-                continue
+            # 状态已变更 记录日志并继续下一个
+            logger.info(
+                "Review %s 状态已变更为 %s，跳过推送",
+                review_id,
+                review_data.status.name if review_data else "NOT_FOUND",
+            )
+            continue
 
     async def add_push(self, review_id: int, channel_id: int, message_id: int, status: bool, create_by: int):
         instance = Push(
