@@ -1,4 +1,5 @@
 from paihub.base import Service
+from paihub.system.name_map.service import WorkTagFormatterService
 from paihub.system.review.cache import ReviewCache
 from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
 from paihub.system.review.ext import ReviewCallbackContext
@@ -18,13 +19,14 @@ class ReviewService(Service):
         sites_manager: SitesManager,
         review_repository: ReviewRepository,
         review_cache: ReviewCache,
+        tag_formatter: WorkTagFormatterService,
     ):
         self.review_repository = review_repository
         self.work_repository = work_repository
         self.sites_manager = sites_manager
         self.work_rule_repository = work_rule_repository
         self.review_cache = review_cache
-        # todo : 这里的全部操作都属于线程不安全 后期需要加锁运行
+        self.tag_formatter = tag_formatter
 
     @property
     def repository(self):
@@ -80,7 +82,9 @@ class ReviewService(Service):
             return None
         review_data = await self.review_repository.get_by_id(int(review_id))
         site_service = self.sites_manager.get_site_by_site_key(review_data.site_key)
-        return ReviewCallbackContext(review=review_data, site_service=site_service, review_service=self)
+        return ReviewCallbackContext(
+            review=review_data, site_service=site_service, review_service=self, tag_formatter=self.tag_formatter
+        )
 
     async def get_review_count(self, work_id: int) -> int:
         """获取下一个审核的队列

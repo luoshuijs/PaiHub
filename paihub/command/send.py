@@ -12,6 +12,7 @@ from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
+from paihub.system.name_map.service import WorkTagFormatterService
 from paihub.system.push.services import PushService
 from paihub.system.review.services import ReviewService
 from paihub.system.sites.manager import SitesManager
@@ -33,11 +34,13 @@ class SendCommand(Command):
         work_service: WorkService,
         push_service: PushService,
         review_service: ReviewService,
+        tag_formatter: WorkTagFormatterService,
     ):
         self.work_service = work_service
         self.push_service = push_service
         self.review_service = review_service
         self.sites_manager = sites_manager
+        self.tag_formatter = tag_formatter
 
     def add_handlers(self):
         conv_handler = ConversationHandler(
@@ -72,9 +75,12 @@ class SendCommand(Command):
                     try:
                         artwork = await site.get_artwork(artwork_id)
                         artwork_images = await site.get_artwork_images(artwork_id)
+                        formatted_tags = await self.tag_formatter.format_tags(
+                            artwork, filter_character_tags=True, work_id=None
+                        )
                         caption = (
                             f"Title {html.escape(artwork.title)}\n"
-                            f"Tag {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
+                            f"Tag {html.escape(formatted_tags)}\n"
                             f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                             f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
                             f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
@@ -222,9 +228,10 @@ class SendCommand(Command):
         try:
             artwork = await site.get_artwork(artwork_id)
             artwork_images = await site.get_artwork_images(artwork_id)
+            formatted_tags = await self.tag_formatter.format_tags(artwork, filter_character_tags=True, work_id=work_id)
             caption = (
                 f"Title {html.escape(artwork.title)}\n"
-                f"Tag {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
+                f"Tag {html.escape(formatted_tags)}\n"
                 f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                 f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
                 f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"

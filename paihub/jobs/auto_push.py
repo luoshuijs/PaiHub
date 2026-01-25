@@ -1,6 +1,7 @@
 import asyncio
 import html
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, Union
 
 from apscheduler.triggers.interval import IntervalTrigger
 from croniter import CroniterBadCronError, croniter
@@ -19,6 +20,10 @@ from paihub.system.review.entities import ReviewStatus
 from paihub.system.review.services import ReviewService
 from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.repositories import WorkChannelRepository
+
+if TYPE_CHECKING:
+    from paihub.system.push.ext import PushCallbackContext
+    from paihub.system.review.ext import ReviewCallbackContext
 
 _logger = Logger("Auto Push Job", filename="auto_push.log")  # 详细日志
 _main_logger = logger  # 主日志，用于关键信息
@@ -161,7 +166,9 @@ class AutoPushJob(Job):
 
                     # 同步到BOT_OWNER
                     if config.push_to_owner:
-                        await self._send_to_owner(artwork, artwork_images, review_context.review_id, config.work_id)
+                        await self._send_to_owner(
+                            review_context, artwork, artwork_images, review_context.review_id, config.work_id
+                        )
 
                     # 设置审核状态为通过
                     await review_context.set_review_status(
@@ -185,7 +192,12 @@ class AutoPushJob(Job):
                     # 同步到BOT_OWNER（标记为拒绝）
                     if config.push_to_owner:
                         await self._send_to_owner(
-                            artwork, artwork_images, review_context.review_id, config.work_id, rejected=True
+                            review_context,
+                            artwork,
+                            artwork_images,
+                            review_context.review_id,
+                            config.work_id,
+                            rejected=True,
                         )
 
                     await review_context.set_review_status(
@@ -265,7 +277,9 @@ class AutoPushJob(Job):
 
                     # 同步到BOT_OWNER
                     if config.push_to_owner:
-                        await self._send_to_owner(artwork, artwork_images, review_context.review_id, config.work_id)
+                        await self._send_to_owner(
+                            review_context, artwork, artwork_images, review_context.review_id, config.work_id
+                        )
 
                     # 设置审核状态为通过
                     await review_context.set_review_status(
@@ -277,6 +291,7 @@ class AutoPushJob(Job):
                     if review and review.status == ReviewStatus.PASS:
                         # 立即推送到频道
                         await self._push_single_artwork(
+                            review_context,
                             artwork,
                             artwork_images,
                             work_channel.channel_id,
@@ -311,7 +326,12 @@ class AutoPushJob(Job):
                     # 同步到BOT_OWNER（标记为拒绝）
                     if config.push_to_owner:
                         await self._send_to_owner(
-                            artwork, artwork_images, review_context.review_id, config.work_id, rejected=True
+                            review_context,
+                            artwork,
+                            artwork_images,
+                            review_context.review_id,
+                            config.work_id,
+                            rejected=True,
                         )
 
                     await review_context.set_review_status(
@@ -343,8 +363,17 @@ class AutoPushJob(Job):
         _main_logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
         _logger.info("即时模式: 完成自动审核并推送，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
 
-    async def _send_to_owner(self, artwork, artwork_images, review_id: int, work_id: int, rejected: bool = False):
+    async def _send_to_owner(
+        self,
+        review_context: "ReviewCallbackContext",
+        artwork,
+        artwork_images,
+        review_id: int,
+        work_id: int,
+        rejected: bool = False,
+    ):
         """发送作品到BOT_OWNER
+        :param review_context: ReviewCallbackContext 审核上下文对象
         :param artwork: 作品对象
         :param artwork_images: 作品图片列表
         :param review_id: 审核ID
@@ -356,10 +385,11 @@ class AutoPushJob(Job):
             owner_id = self.application.settings.bot.owner
 
             status_text = "自动审核拒绝" if rejected else "自动审核通过"
+            formatted_tags = await review_context.format_artwork_tags(artwork, filter_character_tags=True)
             caption = (
                 f"[{status_text}]\n"
                 f"Title: {html.escape(artwork.title)}\n"
-                f"Tag: {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
+                f"Tag: {html.escape(formatted_tags)}\n"
                 f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                 f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
                 f"Review ID: {review_id} | Work ID: {work_id}"
@@ -414,8 +444,17 @@ class AutoPushJob(Job):
         except Exception as exc:
             _logger.error("发送到BOT_OWNER时发生错误", exc_info=exc)
 
-    async def _push_single_artwork(self, artwork, artwork_images, channel_id: int, review_id: int, create_by: int):
+    async def _push_single_artwork(
+        self,
+        context: Union["PushCallbackContext", "ReviewCallbackContext"],
+        artwork,
+        artwork_images,
+        channel_id: int,
+        review_id: int,
+        create_by: int,
+    ):
         """推送单个作品到频道
+        :param context: PushCallbackContext 或 ReviewCallbackContext 上下文对象（用于格式化标签）
         :param artwork: 作品对象
         :param artwork_images: 作品图片列表
         :param channel_id: 频道ID
@@ -424,9 +463,10 @@ class AutoPushJob(Job):
         """
         try:
             bot = self.application.bot.bot  # 获取真正的 Bot 对象
+            formatted_tags = await context.format_artwork_tags(artwork, filter_character_tags=True)
             caption = (
                 f"Title: {html.escape(artwork.title)}\n"
-                f"Tag: {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
+                f"Tag: {html.escape(formatted_tags)}\n"
                 f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                 f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>"
             )
@@ -506,7 +546,12 @@ class AutoPushJob(Job):
                 artwork_images = await push_context.get_artwork_images()
 
                 await self._push_single_artwork(
-                    artwork, artwork_images, work_channel.channel_id, push_context.review_id, create_by
+                    push_context,
+                    artwork,
+                    artwork_images,
+                    work_channel.channel_id,
+                    push_context.review_id,
+                    create_by,
                 )
                 success_count += 1
                 _logger.info("作品推送成功: Review ID %s", push_context.review_id)

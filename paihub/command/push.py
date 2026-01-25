@@ -106,9 +106,10 @@ class PushCommand(Command):
             try:
                 artwork = await push_context.get_artwork()
                 artwork_images = await push_context.get_artwork_images()
+                formatted_tags = await push_context.format_artwork_tags(artwork, filter_character_tags=True)
                 caption = (
                     f"Title {html.escape(artwork.title)}\n"
-                    f"Tag {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
+                    f"Tag {html.escape(formatted_tags)}\n"
                     f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                     f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
                 )
