@@ -176,6 +176,7 @@ class AutoPushJob(Job):
                         review_context.site_key,
                         review_context.artwork_id,
                     )
+                    await asyncio.sleep(2)  # 避免速率限制
                 elif auto_review is not None:
                     # 自动拒绝
                     # 获取作品信息（用于发送给 BOT_OWNER）
@@ -199,6 +200,7 @@ class AutoPushJob(Job):
                         review_context.site_key,
                         review_context.artwork_id,
                     )
+                    await asyncio.sleep(2)  # 避免速率限制
                 else:
                     # 无法自动审核（返回 None），跳过，不计入统计，继续下一个
                     _logger.debug("作品无法自动审核，跳过: %s[%s]", review_context.site_key, review_context.artwork_id)
@@ -208,8 +210,6 @@ class AutoPushJob(Job):
             except Exception as exc:
                 await review_context.set_review_status(ReviewStatus.ERROR, update_by=config.create_by or 0)
                 _logger.error("审核作品时发生错误", exc_info=exc)
-
-            await asyncio.sleep(2)  # 避免速率限制
 
         _main_logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
         _logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
