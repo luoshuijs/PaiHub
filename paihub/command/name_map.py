@@ -792,6 +792,12 @@ class NameMapCommand(Command):
             # 获取 name_map 实例
             name_map = await self.tag_formatter.get_name_map_for_work(work_id)
 
+            if name_map is None:
+                await message.reply_text(
+                    "❌ 当前工作流未配置可用的 name_map。请先使用 /name_map_config 或 /name_map_bind 配置。"
+                )
+                return ConversationHandler.END
+
             # 测试映射
             result = name_map.filter_character_tags(tags)
             identified = name_map.identify_characters(tags)
