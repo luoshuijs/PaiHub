@@ -99,6 +99,14 @@ class WorkTagFormatterService(Service):
 
         await self.config_repo.add(config)
 
+        if is_global_default:
+            if config.id is None:
+                raise RuntimeError("Failed to create NameMap config: missing config id")
+
+            success = await self.config_repo.set_global_default(config.id)
+            if not success:
+                raise RuntimeError(f"Failed to set global default for config {config.id}")
+
         # 清理缓存，确保新配置生效
         self.name_map_factory.clear_cache()
 

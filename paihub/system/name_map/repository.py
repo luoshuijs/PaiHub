@@ -37,7 +37,12 @@ class NameMapConfigRepository(Repository[NameMapConfig]):
         """
         async with AsyncSession(self.engine) as session:
             # 优先查找标记为全局默认的配置
-            statement = select(NameMapConfig).where(and_(NameMapConfig.is_global_default, NameMapConfig.is_active))
+            statement = (
+                select(NameMapConfig)
+                .where(and_(NameMapConfig.is_global_default, NameMapConfig.is_active))
+                .order_by(NameMapConfig.priority.desc(), NameMapConfig.id.desc())
+                .limit(1)
+            )
             results = await session.exec(statement)
             config = results.first()
 
