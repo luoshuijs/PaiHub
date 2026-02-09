@@ -27,6 +27,9 @@ _main_logger = logger  # 主日志，用于关键信息
 class AutoPushJob(Job):
     """自动推送Job - 定时执行自动审核和推送"""
 
+    STALE_RUNNING_TIMEOUT_MINUTES = 30
+    RETRY_BACKOFF_MINUTES = 10
+
     def __init__(
         self,
         config_repository: AutoPushConfigRepository,
@@ -42,14 +45,55 @@ class AutoPushJob(Job):
 
     def add_jobs(self) -> None:
         """添加定时任务"""
+        asyncio.create_task(self.recover_stale_running_tasks())
         # 每分钟检查一次是否有需要执行的自动推送任务
         self.application.scheduler.add_job(
             self.check_and_run_tasks,
             IntervalTrigger(minutes=1),
+            id="auto_push_check_and_run_tasks",
+            replace_existing=True,
+            max_instances=1,
+            coalesce=True,
+            misfire_grace_time=50,
             next_run_time=datetime.now() + timedelta(seconds=30),
         )
         _main_logger.info("自动推送Job已启动，将每分钟检查一次待执行任务")
         _logger.info("自动推送Job已启动，将每分钟检查一次待执行任务")
+
+    async def recover_stale_running_tasks(self) -> None:
+        """启动时恢复异常中断导致的 RUNNING 状态任务。"""
+        try:
+            running_configs = await self.config_repository.get_running_configs()
+            if not running_configs:
+                return
+
+            now = datetime.now()
+            recovered = 0
+
+            for config in running_configs:
+                # last_run_time 为空，说明状态异常，直接恢复。
+                if config.last_run_time is None:
+                    config.set_completed()
+                    if not config.next_run_time:
+                        config.next_run_time = self._calculate_next_run_time(config.cron_expression)
+                    await self.config_repository.update(config)
+                    recovered += 1
+                    continue
+
+                # 超过阈值还处于 RUNNING，判定为僵尸任务并恢复。
+                if config.last_run_time + timedelta(minutes=self.STALE_RUNNING_TIMEOUT_MINUTES) <= now:
+                    config.set_completed()
+                    if config.next_run_time is None or config.next_run_time <= now:
+                        config.next_run_time = self._calculate_next_run_time(config.cron_expression)
+                    await self.config_repository.update(config)
+                    recovered += 1
+
+            if recovered > 0:
+                _main_logger.warning("启动恢复了 %s 个卡死的自动推送任务", recovered)
+                _logger.warning("启动恢复了 %s 个卡死的自动推送任务", recovered)
+        except Exception as exc:
+            _main_logger.error("恢复卡死自动推送任务时发生错误", exc_info=exc)
+            _logger.error("恢复卡死自动推送任务时发生错误", exc_info=exc)
 
     async def check_and_run_tasks(self):
         """检查并运行待执行的自动推送任务"""
@@ -109,8 +153,9 @@ class AutoPushJob(Job):
         except Exception as exc:
             _main_logger.error("执行自动推送任务时发生错误: %s", config.name, exc_info=exc)
             logger.error("执行自动推送任务时发生错误: %s", config.name, exc_info=exc)
-            # 恢复状态为启用
+            # 恢复状态为启用，并设置退避后的下次执行时间，避免每分钟重复失败。
             config.set_completed()
+            config.next_run_time = datetime.now() + timedelta(minutes=self.RETRY_BACKOFF_MINUTES)
             await self.config_repository.update(config)
         finally:
             # 移除运行标记
