@@ -64,37 +64,40 @@ class NameMapFactory(Service):
         # 慢速路径：需要创建实例，使用写锁
         await self._acquire_write()
         try:
-            # 双重检查锁定模式
-            if self._global_default_cache is not None:
-                return self._global_default_cache
-
-            config = await self.repository.get_global_default()
-            if not config:
-                logger.debug("No global default NameMap config found, will return raw tags")
-                return None
-
-            # 确定文件路径
-            if config.file_path:
-                file_path = self._base_path / config.file_path
-            else:
-                file_path = self._name_map_dir / f"{config.name_map_key}.json"
-
-            if not file_path.exists():
-                logger.warning(
-                    f"NameMap file not found: {file_path} (key: {config.name_map_key}), will return raw tags"
-                )
-                return None
-
-            # 创建实例并缓存
-            try:
-                self._global_default_cache = NameMap(file_path)
-                logger.info(f"Loaded global default NameMap: {config.name_map_key} (file: {file_path.name})")
-                return self._global_default_cache
-            except Exception as e:
-                logger.error(f"Failed to load global default NameMap: {e}", exc_info=True)
-                return None
+            return await self._get_global_default_instance_locked()
         finally:
             await self._release_write()
+
+    async def _get_global_default_instance_locked(self) -> NameMap | None:
+        """在已持有写锁时获取全局默认实例，避免重复加锁导致死锁。"""
+        # 双重检查锁定模式
+        if self._global_default_cache is not None:
+            return self._global_default_cache
+
+        config = await self.repository.get_global_default()
+        if not config:
+            logger.debug("No global default NameMap config found, will return raw tags")
+            return None
+
+        # 确定文件路径
+        if config.file_path:
+            file_path = self._base_path / config.file_path
+        else:
+            file_path = self._name_map_dir / f"{config.name_map_key}.json"
+
+        if not file_path.exists():
+            logger.warning(f"NameMap file not found: {file_path} (key: {config.name_map_key}), will return raw tags")
+            return None
+
+        # 创建实例并缓存
+        try:
+            self._global_default_cache = NameMap(file_path)
+            logger.info(f"Loaded global default NameMap: {config.name_map_key} (file: {file_path.name})")
+        except Exception as e:
+            logger.error(f"Failed to load global default NameMap: {e}", exc_info=True)
+            return None
+        else:
+            return self._global_default_cache
 
     async def get_instance_for_work(self, work_id: int | None = None) -> NameMap | None:
         """获取指定工作流的 NameMap 实例
@@ -142,7 +145,7 @@ class NameMapFactory(Service):
             # 如果 work 没有特定配置，回退到全局默认
             if not config:
                 logger.debug(f"Work {work_id} has no specific config, falling back to global default")
-                return await self.get_global_default_instance()
+                return await self._get_global_default_instance_locked()
 
             # 确定缓存键和文件路径
             cache_key = f"work_{work_id}_{config.name_map_key}"
@@ -159,7 +162,7 @@ class NameMapFactory(Service):
                     f"NameMap file not found: {file_path} (work_id={work_id}, key={config.name_map_key}), "
                     f"falling back to global default"
                 )
-                return await self.get_global_default_instance()
+                return await self._get_global_default_instance_locked()
 
             # 创建新实例
             try:
@@ -169,13 +172,14 @@ class NameMapFactory(Service):
                 logger.info(
                     f"Created NameMap instance for work {work_id}: {config.name_map_key} (file: {file_path.name})"
                 )
-                return instance
             except Exception as e:
                 logger.error(
                     f"Failed to create NameMap instance for work {work_id}: {e}, falling back to global default",
                     exc_info=True,
                 )
-                return await self.get_global_default_instance()
+                return await self._get_global_default_instance_locked()
+            else:
+                return instance
         finally:
             await self._release_write()
 
