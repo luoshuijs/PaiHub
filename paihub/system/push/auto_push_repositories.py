@@ -27,6 +27,15 @@ class AutoPushConfigRepository(Repository[AutoPushConfig]):
             results = await session.exec(statement)
             return list(results.all())
 
+    async def get_running_configs(self) -> list[AutoPushConfig]:
+        """获取所有运行中状态的配置
+        :return: 配置列表
+        """
+        async with AsyncSession(self.engine) as session:
+            statement = select(AutoPushConfig).where(AutoPushConfig.status == AutoPushStatus.RUNNING)
+            results = await session.exec(statement)
+            return list(results.all())
+
     async def get_by_work_and_name(self, work_id: int, name: str) -> AutoPushConfig | None:
         """根据work_id和name获取配置
         :param work_id: 工作ID
