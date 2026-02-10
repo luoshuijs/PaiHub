@@ -40,6 +40,8 @@ class PixivCache(Component):
 
     async def get_illust_detail(self, artwork_id: int) -> dict | None:
         data = await self.client.get(f"pixiv:illust:detail:{artwork_id}")
+        if data is None:
+            return None
         return jsonlib.loads(data)
 
     async def set_illust_detail(self, artwork_id: int, value: str):
