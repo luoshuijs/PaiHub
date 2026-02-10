@@ -42,10 +42,10 @@ class AutoPushJob(Job):
         self.push_service = push_service
         self.work_channel_repository = work_channel_repository
         self._running_jobs: set[int] = set()  # 记录正在运行的任务ID，防止重复执行
+        self._recovery_checked = False
 
     def add_jobs(self) -> None:
         """添加定时任务"""
-        asyncio.create_task(self.recover_stale_running_tasks())
         # 每分钟检查一次是否有需要执行的自动推送任务
         self.application.scheduler.add_job(
             self.check_and_run_tasks,
@@ -60,12 +60,12 @@ class AutoPushJob(Job):
         _main_logger.info("自动推送Job已启动，将每分钟检查一次待执行任务")
         _logger.info("自动推送Job已启动，将每分钟检查一次待执行任务")
 
-    async def recover_stale_running_tasks(self) -> None:
-        """启动时恢复异常中断导致的 RUNNING 状态任务。"""
+    async def recover_stale_running_tasks(self) -> bool:
+        """在检查循环内恢复异常中断导致的 RUNNING 状态任务。"""
         try:
             running_configs = await self.config_repository.get_running_configs()
             if not running_configs:
-                return
+                return True
 
             now = datetime.now()
             recovered = 0
@@ -94,10 +94,16 @@ class AutoPushJob(Job):
         except Exception as exc:
             _main_logger.error("恢复卡死自动推送任务时发生错误", exc_info=exc)
             _logger.error("恢复卡死自动推送任务时发生错误", exc_info=exc)
+            return False
+        else:
+            return True
 
     async def check_and_run_tasks(self):
         """检查并运行待执行的自动推送任务"""
         try:
+            if not self._recovery_checked:
+                self._recovery_checked = await self.recover_stale_running_tasks()
+
             enabled_configs = await self.config_repository.get_enabled_configs()
             now = datetime.now()
 
