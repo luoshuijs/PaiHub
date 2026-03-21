@@ -19,6 +19,7 @@ class SetBotCommand(Command):
 
     admin = [
         BotCommand("review", "开始审核"),
+        BotCommand("review_rule", "管理作者规则"),
         BotCommand("push", "开始推送"),
         BotCommand("reset", "重设审核"),
         BotCommand("update", "更新代码"),

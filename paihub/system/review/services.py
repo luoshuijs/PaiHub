@@ -1,9 +1,16 @@
 from paihub.base import Service
 from paihub.system.name_map.service import WorkTagFormatterService
 from paihub.system.review.cache import ReviewCache
-from paihub.system.review.entities import AutoReviewResult, Review, ReviewStatus
+from paihub.system.review.entities import (
+    AutoReviewResult,
+    Review,
+    ReviewAuthorRule,
+    ReviewAuthorRuleAction,
+    ReviewStatus,
+    StatusStatistics,
+)
 from paihub.system.review.ext import ReviewCallbackContext
-from paihub.system.review.repositories import ReviewRepository
+from paihub.system.review.repositories import ReviewAuthorRuleRepository, ReviewRepository
 from paihub.system.sites.manager import SitesManager
 from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.repositories import WorkRepository, WorkRuleRepository
@@ -18,10 +25,12 @@ class ReviewService(Service):
         work_rule_repository: WorkRuleRepository,
         sites_manager: SitesManager,
         review_repository: ReviewRepository,
+        review_author_rule_repository: ReviewAuthorRuleRepository,
         review_cache: ReviewCache,
         tag_formatter: WorkTagFormatterService,
     ):
         self.review_repository = review_repository
+        self.review_author_rule_repository = review_author_rule_repository
         self.work_repository = work_repository
         self.sites_manager = sites_manager
         self.work_rule_repository = work_rule_repository
@@ -133,20 +142,78 @@ class ReviewService(Service):
         await self.review_repository.add(move)
         await self.review_repository.update(review)
 
-    async def try_auto_review(self, work_id: int, site_key: str, author_id: int) -> AutoReviewResult | None:
+    async def get_author_rule(self, work_id: int, site_key: str, author_id: int) -> ReviewAuthorRule | None:
+        return await self.review_author_rule_repository.get_by_work_site_author(work_id, site_key, author_id)
+
+    async def get_author_rule_by_id(self, rule_id: int) -> ReviewAuthorRule | None:
+        return await self.review_author_rule_repository.get_by_id(rule_id)
+
+    async def get_author_rules_by_work(self, work_id: int) -> list[ReviewAuthorRule]:
+        return await self.review_author_rule_repository.get_all_by_work_id(work_id)
+
+    async def set_author_rule(
+        self,
+        work_id: int,
+        site_key: str,
+        author_id: int,
+        action: ReviewAuthorRuleAction,
+        update_by: int,
+        reason: str | None = None,
+    ) -> ReviewAuthorRule:
+        rule = await self.review_author_rule_repository.get_by_work_site_author(work_id, site_key, author_id)
+        if rule is None:
+            rule = ReviewAuthorRule(
+                work_id=work_id,
+                site_key=site_key,
+                author_id=author_id,
+                action=action,
+                reason=reason,
+                create_by=update_by,
+            )
+            await self.review_author_rule_repository.add(rule)
+            return await self.review_author_rule_repository.get_by_work_site_author(work_id, site_key, author_id)
+        rule.action = action
+        rule.reason = reason
+        rule.update_by = update_by
+        return await self.review_author_rule_repository.update(rule)
+
+    async def remove_author_rule(self, work_id: int, site_key: str, author_id: int) -> bool:
+        rule = await self.review_author_rule_repository.get_by_work_site_author(work_id, site_key, author_id)
+        if rule is None:
+            return False
+        await self.review_author_rule_repository.remove(rule)
+        return True
+
+    async def remove_author_rule_by_id(self, rule_id: int) -> bool:
+        rule = await self.review_author_rule_repository.get_by_id(rule_id)
+        if rule is None:
+            return False
+        await self.review_author_rule_repository.remove(rule)
+        return True
+
+    async def try_auto_review(self, work_id: int, site_key: str, author_id: int | None) -> AutoReviewResult | None:
         """尝试自动审核
         :param work_id: 当前 Work id
         :param site_key: 网站唯一标识符
         :param author_id: 作者ID
         :return: Optional[AutoReviewResult] 如果无法判断会返回 None 审核成功会返回 AutoReviewResult
         """
+        if author_id is None:
+            return None
+
+        author_rule = await self.review_author_rule_repository.get_by_work_site_author(work_id, site_key, author_id)
+        if author_rule is not None:
+            is_auto_pass = author_rule.action == ReviewAuthorRuleAction.AUTO_PASS
+            description = "author_whitelist" if is_auto_pass else "author_blacklist"
+            return AutoReviewResult(status=is_auto_pass, statistics=StatusStatistics(), description=description)
+
         statistics = await self.review_repository.get_by_status_statistics(
             work_id, site_key=site_key, author_id=author_id
         )
         if statistics.already >= 3:
             if statistics.pass_count / statistics.already >= 0.5:
-                return AutoReviewResult(status=True, statistics=statistics)
-            return AutoReviewResult(status=False, statistics=statistics)
+                return AutoReviewResult(status=True, statistics=statistics, description="history_pass_ratio")
+            return AutoReviewResult(status=False, statistics=statistics, description="history_reject_ratio")
         return None
 
     async def get_review_by_artwork_id(self, artwork_id: int) -> list[Review]:
@@ -157,7 +224,13 @@ class ReviewService(Service):
         return await self.review_repository.get_review_by_artwork_id(artwork_id)
 
     async def set_send_review(
-        self, work_id: int, site_key: str, artwork_id: int, create_by: int, status: ReviewStatus = ReviewStatus.PASS
+        self,
+        work_id: int,
+        site_key: str,
+        artwork_id: int,
+        create_by: int,
+        status: ReviewStatus = ReviewStatus.PASS,
+        author_id: int | None = None,
     ):
         """设置发送 Review 信息
         :param work_id: 工作ID
@@ -170,10 +243,17 @@ class ReviewService(Service):
         review_info = await self.review_repository.get_review(work_id, site_key, artwork_id)
         if review_info is None:
             instance = Review(
-                work_id=work_id, site_key=site_key, artwork_id=artwork_id, status=status, create_by=create_by
+                work_id=work_id,
+                site_key=site_key,
+                artwork_id=artwork_id,
+                author_id=author_id,
+                status=status,
+                create_by=create_by,
             )
             await self.review_repository.add(instance)
             return await self.review_repository.get_review(work_id, site_key, artwork_id, status)
         review_info.status = status
+        if author_id is not None:
+            review_info.author_id = author_id
         review_info.update_by = create_by
         return await self.review_repository.update(review_info)

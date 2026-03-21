@@ -295,7 +295,13 @@ class SendCommand(Command):
             logger.error("推送时发生致命错误", exc_info=exc)
             return ConversationHandler.END
 
-        review_info = await self.review_service.set_send_review(work_id, site_key, artwork_id, user.id)
+        review_info = await self.review_service.set_send_review(
+            work_id,
+            site_key,
+            artwork_id,
+            user.id,
+            author_id=artwork.author.auther_id,
+        )
         await self.push_service.set_send_push(review_info.id, send_message.chat_id, send_message.id, True, user.id)
         await message.edit_text("推送完成")
 

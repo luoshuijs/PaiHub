@@ -11,7 +11,7 @@ from paihub.sites.pixiv.entities import Pixiv
 from paihub.system.name_map.entities import NameMapConfig
 from paihub.system.push.auto_push_entities import AutoPushConfig
 from paihub.system.push.entities import Push
-from paihub.system.review.entities import Review
+from paihub.system.review.entities import Review, ReviewAuthorRule
 from paihub.system.user.entities import User
 from paihub.system.work.entities import Work, WorkChannel, WorkRule
 
@@ -24,6 +24,7 @@ __all__ = [
     "Pixiv",
     "Push",
     "Review",
+    "ReviewAuthorRule",
     "User",
     "Work",
     "WorkChannel",

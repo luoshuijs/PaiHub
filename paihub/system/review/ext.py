@@ -50,11 +50,19 @@ class ReviewCallbackContext:
         )
 
     async def set_review_status(
-        self, status: "ReviewStatus", auto: bool = False, update_by: int | None = None
+        self,
+        status: "ReviewStatus",
+        auto: bool = False,
+        update_by: int | None = None,
+        auto_reason: str | None = None,
     ) -> "Review":
         """设置审核作品"""
         self.review.status = status
         self.review.auto = auto
+        if auto_reason is not None:
+            ext = dict(self.review.ext or {})
+            ext["auto_reason"] = auto_reason
+            self.review.ext = ext
         if update_by is not None:
             self.review.update_by = update_by
         review = await self.review_service.review_repository.update(self.review)
