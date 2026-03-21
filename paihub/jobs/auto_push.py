@@ -216,7 +216,10 @@ class AutoPushJob(Job):
 
                     # 设置审核状态为通过
                     await review_context.set_review_status(
-                        ReviewStatus.PASS, auto=True, update_by=config.create_by or 0
+                        ReviewStatus.PASS,
+                        auto=True,
+                        update_by=config.create_by or 0,
+                        auto_reason=auto_review.description,
                     )
                     passed_reviews.append(review_context.review_id)
                     passed_count += 1
@@ -241,7 +244,10 @@ class AutoPushJob(Job):
                         )
 
                     await review_context.set_review_status(
-                        ReviewStatus.REJECT, auto=True, update_by=config.create_by or 0
+                        ReviewStatus.REJECT,
+                        auto=True,
+                        update_by=config.create_by or 0,
+                        auto_reason=auto_review.description,
                     )
                     rejected_count += 1
                     _logger.info(
@@ -320,7 +326,10 @@ class AutoPushJob(Job):
 
                     # 设置审核状态为通过
                     await review_context.set_review_status(
-                        ReviewStatus.PASS, auto=True, update_by=config.create_by or 0
+                        ReviewStatus.PASS,
+                        auto=True,
+                        update_by=config.create_by or 0,
+                        auto_reason=auto_review.description,
                     )
 
                     # 推送前再次验证状态（防止在极短时间窗口内被 reset_review 修改）
@@ -366,7 +375,10 @@ class AutoPushJob(Job):
                         )
 
                     await review_context.set_review_status(
-                        ReviewStatus.REJECT, auto=True, update_by=config.create_by or 0
+                        ReviewStatus.REJECT,
+                        auto=True,
+                        update_by=config.create_by or 0,
+                        auto_reason=auto_review.description,
                     )
                     rejected_count += 1
                     _logger.info(

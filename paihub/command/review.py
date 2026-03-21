@@ -13,7 +13,7 @@ from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
-from paihub.system.review.entities import ReviewStatus
+from paihub.system.review.entities import AutoReviewResult, ReviewAuthorRuleAction, ReviewStatus
 from paihub.system.review.services import ReviewService
 from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.services import WorkService
@@ -30,6 +30,58 @@ class ReviewCommand(Command):
         self.work_service = work_service
         self.review_service = review_service
 
+    @staticmethod
+    def build_review_keyboard(review_id: int) -> InlineKeyboardMarkup:
+        keyboard = [
+            [
+                InlineKeyboardButton(text="通过", callback_data=f"set_review_status|{review_id}|1"),
+                InlineKeyboardButton(text="拒绝", callback_data=f"set_review_status|{review_id}|0"),
+            ],
+            [
+                InlineKeyboardButton(text="加白并通过", callback_data=f"set_review_author_rule|{review_id}|1"),
+                InlineKeyboardButton(text="加黑并拒绝", callback_data=f"set_review_author_rule|{review_id}|0"),
+            ],
+            [InlineKeyboardButton(text="退出", callback_data="review_exit")],
+        ]
+        return InlineKeyboardMarkup(keyboard)
+
+    @staticmethod
+    def build_review_result_keyboard(
+        work_id: int,
+        review_id: int,
+        undo_callback: str = "revert_review_change",
+        undo_text: str = "撤销修改",
+    ) -> InlineKeyboardMarkup:
+        keyboard = [
+            [InlineKeyboardButton(text="继续", callback_data=f"start_review_work|{work_id}")],
+            [
+                InlineKeyboardButton(text=undo_text, callback_data=f"{undo_callback}|{review_id}"),
+                InlineKeyboardButton(text="退出", callback_data="review_exit"),
+            ],
+        ]
+        return InlineKeyboardMarkup(keyboard)
+
+    @staticmethod
+    def build_auto_review_keyboard(review_id: int) -> InlineKeyboardMarkup:
+        keyboard = [
+            [InlineKeyboardButton(text="撤销该修改", callback_data=f"reset_review_form_command|{review_id}")],
+        ]
+        return InlineKeyboardMarkup(keyboard)
+
+    @staticmethod
+    def format_auto_review_text(auto_review: AutoReviewResult) -> str:
+        if auto_review.description == "author_whitelist":
+            return "命中作者白名单，当前作品已自动通过"
+        if auto_review.description == "author_blacklist":
+            return "命中作者黑名单，当前作品已自动拒绝"
+        if auto_review.description == "history_pass_ratio":
+            return "根据历史审核记录，当前作品已自动通过"
+        if auto_review.description == "history_reject_ratio":
+            return "根据历史审核记录，当前作品已自动拒绝"
+        if auto_review.status:
+            return "当前作品已自动通过"
+        return "当前作品已自动拒绝"
+
     def add_handlers(self):
         conv_handler = ConversationHandler(
             entry_points=[AdminHandler(CommandHandler("review", self.start, block=False), self.application)],
@@ -38,8 +90,20 @@ class ReviewCommand(Command):
                 START_REVIEW: [
                     CallbackQueryHandler(self.start_review, pattern=r"^start_review_work\|", block=False),
                     CallbackQueryHandler(self.revert_review_change, pattern=r"^revert_review_change\|", block=False),
+                    CallbackQueryHandler(
+                        self.revert_review_author_rule,
+                        pattern=r"^revert_review_author_rule\|",
+                        block=False,
+                    ),
                 ],
-                SET_REVIEW: [CallbackQueryHandler(self.set_review, pattern=r"^set_review_status\|", block=False)],
+                SET_REVIEW: [
+                    CallbackQueryHandler(self.set_review, pattern=r"^set_review_status\|", block=False),
+                    CallbackQueryHandler(
+                        self.set_review_author_rule,
+                        pattern=r"^set_review_author_rule\|",
+                        block=False,
+                    ),
+                ],
             },
             fallbacks=[
                 CommandHandler("cancel", self.cancel),
@@ -107,7 +171,7 @@ class ReviewCommand(Command):
             _data = callback_query_data.split("|")
             return int(_data[1])
 
-        await message.edit_text("正在获取图片")
+        await message.edit_text("正在处理作品")
         await message.reply_chat_action(ChatAction.TYPING)
         while True:
             work_id = get_callback_query(callback_query.data)
@@ -120,6 +184,20 @@ class ReviewCommand(Command):
                 await message.reply_text("当前 Review 队列无任务\n退出 Review")
                 return ConversationHandler.END
             try:
+                auto_review = await review_context.try_auto_review()
+                if auto_review is not None:
+                    review_status = ReviewStatus.PASS if auto_review.status else ReviewStatus.REJECT
+                    await review_context.set_review_status(
+                        review_status,
+                        auto=True,
+                        update_by=user.id,
+                        auto_reason=auto_review.description,
+                    )
+                    await message.reply_text(
+                        f"{self.format_auto_review_text(auto_review)}\n正在获取下一个作品",
+                        reply_markup=self.build_auto_review_keyboard(review_context.review_id),
+                    )
+                    continue
                 artwork = await review_context.get_artwork()
                 artwork_images = await review_context.get_artwork_images()
                 caption = (
@@ -163,49 +241,9 @@ class ReviewCommand(Command):
                         )
                 else:
                     raise RuntimeError  # noqa: TRY301
-                auto_review = await review_context.try_auto_review()
-                if auto_review is not None:
-                    if auto_review.status:
-                        await review_context.set_review_status(ReviewStatus.PASS, auto=True, update_by=user.id)
-                        keyboard = [
-                            [
-                                InlineKeyboardButton(
-                                    text="撤销该修改",
-                                    callback_data=f"reset_review_form_command|{review_context.review_id}",
-                                ),
-                            ],
-                        ]
-                        await message.reply_text(
-                            "当前作品已经自动通过\n正在获取下一个作品", reply_markup=InlineKeyboardMarkup(keyboard)
-                        )
-                    else:
-                        keyboard = [
-                            [
-                                InlineKeyboardButton(
-                                    text="撤销该修改",
-                                    callback_data=f"reset_review_form_command|{review_context.review_id}",
-                                ),
-                            ],
-                        ]
-                        await review_context.set_review_status(ReviewStatus.REJECT, auto=True, update_by=user.id)
-                        await message.reply_text(
-                            "当前作品已经自动拒绝\n正在获取下一个作品", reply_markup=InlineKeyboardMarkup(keyboard)
-                        )
-                    continue
-                keyboard = [
-                    [
-                        InlineKeyboardButton(
-                            text="通过", callback_data=f"set_review_status|{review_context.review_id}|1"
-                        ),
-                        InlineKeyboardButton(
-                            text="拒绝", callback_data=f"set_review_status|{review_context.review_id}|0"
-                        ),
-                    ],
-                    [
-                        InlineKeyboardButton(text="退出", callback_data="review_exit"),
-                    ],
-                ]
-                await message.reply_text("选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard))
+                await message.reply_text(
+                    "选择你要的操作", reply_markup=self.build_review_keyboard(review_context.review_id)
+                )
                 await message.delete()
             except ArtWorkNotFoundError:
                 await review_context.set_review_status(ReviewStatus.NOT_FOUND, update_by=user.id)
@@ -268,17 +306,60 @@ class ReviewCommand(Command):
             await message.edit_text("你选择了拒绝")
         await self.review_service.update_review(review_info)
         count = await self.review_service.get_review_count(review_info.work_id)
-        keyboard = [
-            [
-                InlineKeyboardButton(text="继续", callback_data=f"start_review_work|{review_info.work_id}"),
-            ],
-            [
-                InlineKeyboardButton(text="撤销修改", callback_data=f"revert_review_change|{review_info.id}"),
-                InlineKeyboardButton(text="退出", callback_data="review_exit"),
-            ],
-        ]
         await message.reply_text(
-            f"当前还有{count}个作品未审核\n选择你要的操作", reply_markup=InlineKeyboardMarkup(keyboard)
+            f"当前还有{count}个作品未审核\n选择你要的操作",
+            reply_markup=self.build_review_result_keyboard(review_info.work_id, review_info.id),
+        )
+        return START_REVIEW
+
+    async def set_review_author_rule(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
+        message = update.effective_message
+        callback_query = update.callback_query
+        user = update.effective_user
+
+        def get_callback_query(callback_query_data: str) -> tuple[int, int]:
+            _data = callback_query_data.split("|")
+            _review_id = int(_data[1])
+            _action = int(_data[2])
+            return _review_id, _action
+
+        review_id, action = get_callback_query(callback_query.data)
+        review_info = await self.review_service.get_by_review_id(review_id=review_id)
+        if review_info is None:
+            await message.edit_text("该 Review 不存在")
+            return ConversationHandler.END
+        if review_info.author_id is None:
+            await message.edit_text(
+                "当前 Review 缺少作者信息，无法设置作者规则", reply_markup=self.build_review_keyboard(review_id)
+            )
+            return SET_REVIEW
+
+        author_rule_action = ReviewAuthorRuleAction.AUTO_PASS if action == 1 else ReviewAuthorRuleAction.AUTO_REJECT
+        await self.review_service.set_author_rule(
+            work_id=review_info.work_id,
+            site_key=review_info.site_key,
+            author_id=review_info.author_id,
+            action=author_rule_action,
+            update_by=user.id,
+        )
+
+        if action == 1:
+            review_info.set_pass(user.id)
+            await message.edit_text("已加入当前 Work 的作者白名单，并设置为通过")
+        else:
+            review_info.set_reject(user.id)
+            await message.edit_text("已加入当前 Work 的作者黑名单，并设置为拒绝")
+
+        await self.review_service.update_review(review_info)
+        count = await self.review_service.get_review_count(review_info.work_id)
+        await message.reply_text(
+            f"当前还有{count}个作品未审核\n选择你要的操作",
+            reply_markup=self.build_review_result_keyboard(
+                review_info.work_id,
+                review_info.id,
+                undo_callback="revert_review_author_rule",
+                undo_text="撤销规则",
+            ),
         )
         return START_REVIEW
 
@@ -300,17 +381,37 @@ class ReviewCommand(Command):
         review_info = await self.review_service.update_review(review_info)
         logger.info("用户 %s[%s] 尝试对 Review[%s] 发出 Reset 命令", user.full_name, user.id, review_id)
 
-        keyboard = [
-            [
-                InlineKeyboardButton(text="通过", callback_data=f"set_review_status|{review_info.id}|1"),
-                InlineKeyboardButton(text="拒绝", callback_data=f"set_review_status|{review_info.id}|0"),
-            ],
-            [
-                InlineKeyboardButton(text="退出", callback_data="review_exit"),
-            ],
-        ]
+        await message.edit_text("选择你要的重写的操作", reply_markup=self.build_review_keyboard(review_info.id))
+        return SET_REVIEW
 
-        await message.edit_text("选择你要的重写的操作", reply_markup=InlineKeyboardMarkup(keyboard))
+    async def revert_review_author_rule(self, update: "Update", _: "ContextTypes.DEFAULT_TYPE"):
+        message = update.effective_message
+        callback_query = update.callback_query
+        user = update.effective_user
+
+        def get_callback_query(callback_query_data: str) -> int:
+            _data = callback_query_data.split("|")
+            return int(_data[1])
+
+        review_id = get_callback_query(callback_query.data)
+        review_info = await self.review_service.get_by_review_id(review_id=review_id)
+        if review_info is None:
+            await message.edit_text("该 Review 不存在")
+            return ConversationHandler.END
+        if review_info.author_id is None:
+            await message.edit_text("当前 Review 缺少作者信息，无法撤销作者规则")
+            return ConversationHandler.END
+
+        await self.review_service.remove_author_rule(
+            work_id=review_info.work_id,
+            site_key=review_info.site_key,
+            author_id=review_info.author_id,
+        )
+        review_info.set_wait(user.id)
+        review_info = await self.review_service.update_review(review_info)
+        await message.edit_text(
+            "已撤销作者规则，并恢复当前 Review", reply_markup=self.build_review_keyboard(review_info.id)
+        )
         return SET_REVIEW
 
     @staticmethod

@@ -3,7 +3,7 @@ from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
-from sqlalchemy import Enum, func
+from sqlalchemy import Enum, Index, UniqueConstraint, func
 from sqlmodel import BigInteger, Column, DateTime, Field, Integer, SQLModel
 
 from paihub.utils.sql_types import JSON, SiteKey
@@ -28,6 +28,11 @@ class ReviewStatus(IntEnum):
     MOVE = 10
     NOT_FOUND = 11
     ERROR = 12
+
+
+class ReviewAuthorRuleAction(IntEnum):
+    AUTO_REJECT = 0
+    AUTO_PASS = 1
 
 
 class Review(SQLModel, table=True):
@@ -72,6 +77,7 @@ class Review(SQLModel, table=True):
         :return: None
         """
         self.status = ReviewStatus.REJECT
+        self.auto = False
         self.update_by = update_by
 
     def set_pass(self, update_by: int):
@@ -80,6 +86,7 @@ class Review(SQLModel, table=True):
         :return: None
         """
         self.status = ReviewStatus.PASS
+        self.auto = False
         self.update_by = update_by
 
     def set_wait(self, update_by: int):
@@ -88,6 +95,7 @@ class Review(SQLModel, table=True):
         :return: None
         """
         self.status = ReviewStatus.WAIT
+        self.auto = False
         self.update_by = update_by
 
     def set_move(self, update_by: int, move_work_id: int | None = None):
@@ -97,6 +105,7 @@ class Review(SQLModel, table=True):
         :return: None
         """
         self.status = ReviewStatus.MOVE
+        self.auto = False
         self.update_by = update_by
         if move_work_id is not None:
             self.ext["move_work_id"] = move_work_id
@@ -139,20 +148,23 @@ class AutoReviewResult(BaseModel):
     description: str | None = None
 
 
-# class ReviewBlackAuthor(SQLModel, table=True):
-#     __tablename__ = "review_black_author"
-#
-#     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-#     site_key: str | None = Field(default=None, sa_type=SiteKey)
-#     author_id: int | None = Field(default=None, sa_type=BigInteger)
-#
-#
-# class ReviewWhiteAuthor(SQLModel, table=True):
-#     __tablename__ = "review_white_author"
-#
-#     id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
-#     site_key: str | None = Field(default=None, sa_type=SiteKey)
-#     author_id: int | None = Field(default=None, sa_type=BigInteger)
+class ReviewAuthorRule(SQLModel, table=True):
+    __tablename__ = "review_author_rule"
+    __table_args__ = (
+        UniqueConstraint("work_id", "site_key", "author_id", name="uq_review_author_rule_work_site_author"),
+        Index("ix_review_author_rule_work_site_action", "work_id", "site_key", "action"),
+    )
+
+    id: int | None = Field(sa_column=Column("id", BigInteger, primary_key=True, autoincrement=True))
+    work_id: int | None = Field(default=None, sa_type=Integer, foreign_key="work.id")
+    site_key: str | None = Field(default=None, sa_type=SiteKey)
+    author_id: int | None = Field(default=None, sa_type=BigInteger)
+    action: ReviewAuthorRuleAction | None = Field(sa_column=Column("action", Enum(ReviewAuthorRuleAction)))
+    reason: str | None = Field(default=None, max_length=255)
+    create_by: int | None = Field(default=None, sa_column=Column("create_by", Integer))
+    create_time: datetime | None = Field(default=None, sa_column=Column("create_time", DateTime, default=func.now()))
+    update_by: int | None = Field(default=None, sa_column=Column("update_by", Integer))
+    update_time: datetime | None = Field(default=None, sa_column=Column("update_time", DateTime, onupdate=func.now()))
 
 
 # class AutoReviewRule(SQLModel):

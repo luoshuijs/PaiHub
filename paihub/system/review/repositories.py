@@ -4,7 +4,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from paihub.base import Repository
-from paihub.system.review.entities import Review, ReviewStatus, StatusStatistics
+from paihub.system.review.entities import Review, ReviewAuthorRule, ReviewStatus, StatusStatistics
 
 
 class ReviewRepository(Repository[Review]):
@@ -113,3 +113,25 @@ class ReviewRepository(Repository[Review]):
             statement = select(Review).where(Review.id.in_(review_ids), Review.status == status)
             results = await session.exec(statement)
             return results.all()
+
+
+class ReviewAuthorRuleRepository(Repository[ReviewAuthorRule]):
+    async def get_all_by_work_id(self, work_id: int) -> list[ReviewAuthorRule]:
+        async with AsyncSession(self.engine) as session:
+            statement = (
+                select(ReviewAuthorRule)
+                .where(ReviewAuthorRule.work_id == work_id)
+                .order_by(ReviewAuthorRule.site_key, ReviewAuthorRule.action, ReviewAuthorRule.author_id)
+            )
+            results = await session.exec(statement)
+            return results.all()
+
+    async def get_by_work_site_author(self, work_id: int, site_key: str, author_id: int) -> ReviewAuthorRule | None:
+        async with AsyncSession(self.engine) as session:
+            statement = select(ReviewAuthorRule).where(
+                ReviewAuthorRule.work_id == work_id,
+                ReviewAuthorRule.site_key == site_key,
+                ReviewAuthorRule.author_id == author_id,
+            )
+            results = await session.exec(statement)
+            return results.first()
