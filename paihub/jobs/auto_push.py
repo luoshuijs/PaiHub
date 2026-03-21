@@ -68,8 +68,9 @@ class AutoPushJob(Job):
     async def recover_stale_running_tasks(self) -> bool:
         """在检查循环内恢复异常中断导致的 RUNNING 状态任务。"""
         try:
-            if not self._recovery_checked:
-                self._recovery_checked = await self.recover_stale_running_tasks()
+            running_configs = await self.config_repository.get_running_configs()
+            if not running_configs:
+                return True
 
             now = datetime.now()
             recovered = 0
