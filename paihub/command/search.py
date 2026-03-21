@@ -15,8 +15,8 @@ from paihub.entities.artwork import ImageType
 from paihub.entities.config import TomlConfig
 from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
-from paihub.system.sites.manager import SitesManager
 from paihub.system.name_map.service import WorkTagFormatterService
+from paihub.system.sites.manager import SitesManager
 
 if TYPE_CHECKING:
     from telegram import Update
