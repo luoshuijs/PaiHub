@@ -12,6 +12,7 @@ from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
+from paihub.system.name_map.service import WorkTagFormatterService
 from paihub.system.sites.manager import SitesManager
 
 if TYPE_CHECKING:
@@ -22,8 +23,9 @@ URL_REGEX = r"(http|https):\/\/([\w\-\.]+)(:[0-9]+)?(\/[\w\-\.\/]*)?(\?[a-zA-Z0-
 
 
 class URLCommand(Command):
-    def __init__(self, sites_manager: SitesManager):
+    def __init__(self, sites_manager: SitesManager, tag_formatter: WorkTagFormatterService):
         self.sites_manager = sites_manager
+        self.tag_formatter = tag_formatter
 
     def add_handlers(self):
         self.bot.add_handler(
@@ -50,9 +52,12 @@ class URLCommand(Command):
                     try:
                         artwork = await site.get_artwork(artwork_id)
                         artwork_images = await site.get_artwork_images(artwork_id)
+                        formatted_tags = await self.tag_formatter.format_tags(
+                            artwork, filter_character_tags=True, work_id=None
+                        )
                         caption = (
                             f"Title {html.escape(artwork.title)}\n"
-                            f"Tag {html.escape(artwork.format_tags(filter_character_tags=True))}\n"
+                            f"Tag {html.escape(formatted_tags)}\n"
                             f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
                             f"By <a href='{artwork.author.url if not artwork.is_sourced else artwork.source}'>"
                             f"{artwork.author.name if not artwork.is_sourced else 'Source'}</a>\n"

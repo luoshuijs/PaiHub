@@ -4,15 +4,16 @@
             "Aether",
             "空"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Aino": {
         "name": [
             "Aino",
             "爱诺"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アイノ"
         ]
     },
@@ -21,7 +22,8 @@
             "Alice",
             "艾莉丝"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アリス"
         ]
     },
@@ -32,8 +34,10 @@
         ],
         "regex": [
             "(?:K'uhul )?Ajaw",
-            "库胡勒阿乔",
             "(?:クフル・)?アハウ"
+        ],
+        "aliases": [
+            "库胡勒阿乔"
         ]
     },
     "Albedo": {
@@ -41,7 +45,8 @@
             "Albedo",
             "阿贝多"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アルベド"
         ]
     },
@@ -50,7 +55,8 @@
             "Alhaitham",
             "艾尔海森"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アルハイゼン"
         ]
     },
@@ -59,7 +65,8 @@
             "Aloy",
             "埃洛伊"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アーロイ"
         ]
     },
@@ -68,7 +75,8 @@
             "Arlecchino",
             "阿蕾奇诺"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アルレッキーノ"
         ]
     },
@@ -81,7 +89,8 @@
             "(?:神里)?綾華",
             "Kamisato.?Ayaka",
             "Ayaka.?Kamisato"
-        ]
+        ],
+        "aliases": []
     },
     "Ayato": {
         "name": [
@@ -92,14 +101,16 @@
             "(?:神里)?綾人",
             "Kamisato.?Ayato",
             "Ayato.?Kamisato"
-        ]
+        ],
+        "aliases": []
     },
     "Amber": {
         "name": [
             "Amber",
             "安柏"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "アンバー"
         ]
     },
@@ -108,7 +119,8 @@
             "Baizhu",
             "白术"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "白朮"
         ]
     },
@@ -117,7 +129,8 @@
             "Barbara",
             "芭芭拉"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "バーバラ"
         ]
     },
@@ -126,15 +139,16 @@
             "Beidou",
             "北斗"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Bennett": {
         "name": [
             "Bennett",
             "班尼特"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ベネット"
         ]
     },
@@ -143,7 +157,8 @@
             "Candace",
             "坎蒂丝"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "キャンディス"
         ]
     },
@@ -152,7 +167,8 @@
             "Capitano",
             "卡皮塔诺"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "カピターノ",
             "队长"
         ]
@@ -162,7 +178,8 @@
             "Charlotte",
             "夏洛蒂"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "シャルロット"
         ]
     },
@@ -171,7 +188,8 @@
             "Chasca",
             "恰斯卡"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "チャスカ"
         ]
     },
@@ -180,7 +198,8 @@
             "Chevreuse",
             "夏沃蕾"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "シュヴルーズ"
         ]
     },
@@ -189,7 +208,8 @@
             "Chiori",
             "千织"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "千織"
         ]
     },
@@ -198,7 +218,8 @@
             "Citlali",
             "茜特菈莉"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "シトラリ"
         ]
     },
@@ -207,7 +228,8 @@
             "Chongyun",
             "重云"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "重雲"
         ]
     },
@@ -216,7 +238,8 @@
             "Clorinde",
             "克洛琳德"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "クロリンデ"
         ]
     },
@@ -225,7 +248,8 @@
             "Collei",
             "柯莱"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "コレイ"
         ]
     },
@@ -234,7 +258,8 @@
             "Columbina",
             "哥伦比娅"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "コロンビーナ"
         ]
     },
@@ -243,7 +268,8 @@
             "Cyno",
             "赛诺"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "セノ"
         ]
     },
@@ -252,7 +278,8 @@
             "Dahlia",
             "塔利雅"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ダリア"
         ]
     },
@@ -261,7 +288,8 @@
             "Diluc",
             "迪卢克"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ディルック"
         ]
     },
@@ -270,7 +298,8 @@
             "Dehya",
             "迪希雅"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ディシア"
         ]
     },
@@ -279,7 +308,8 @@
             "Diona",
             "迪奥娜"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ディオナ"
         ]
     },
@@ -288,7 +318,8 @@
             "Dori",
             "多莉"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ドリー"
         ]
     },
@@ -297,7 +328,8 @@
             "Durin",
             "杜林"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ドゥリン"
         ]
     },
@@ -306,7 +338,8 @@
             "Egeria",
             "厄歌莉娅"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "エゲリア"
         ]
     },
@@ -315,7 +348,8 @@
             "Emilie",
             "艾梅莉埃"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "エミリエ"
         ]
     },
@@ -324,7 +358,8 @@
             "Escoffier",
             "爱可菲"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "エスコフィエ"
         ]
     },
@@ -333,7 +368,8 @@
             "Eula",
             "优菈"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "エウルア",
             "ユーラ"
         ]
@@ -343,7 +379,8 @@
             "Faruzan",
             "珐露珊"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ファルザン"
         ]
     },
@@ -352,7 +389,8 @@
             "Flins",
             "菲林斯"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "フリンズ"
         ]
     },
@@ -361,7 +399,8 @@
             "Fischl",
             "菲谢尔"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "フィッシュル"
         ]
     },
@@ -370,7 +409,8 @@
             "Freminet",
             "菲米尼"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "フレミネ"
         ]
     },
@@ -379,7 +419,8 @@
             "Furina",
             "芙宁娜"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "フリーナ"
         ]
     },
@@ -388,22 +429,24 @@
             "Gaming",
             "嘉明"
         ],
-        "regex": []
+        "regex": [],
+        "aliases": []
     },
     "Ganyu": {
         "name": [
             "Ganyu",
             "甘雨"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Gorou": {
         "name": [
             "Gorou",
             "五郎"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ゴロー"
         ]
     },
@@ -417,22 +460,24 @@
             "(?:鹿野院?)平藏",
             "(?:鹿野院?)平蔵",
             "(?:しかのいん?)へいぞう"
-        ]
+        ],
+        "aliases": []
     },
     "Hutao": {
         "name": [
             "Hutao",
             "胡桃"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Iansan": {
         "name": [
             "Iansan",
             "伊安珊"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "イアンサ"
         ]
     },
@@ -441,7 +486,8 @@
             "Ifa",
             "伊法"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "イファ"
         ]
     },
@@ -450,7 +496,8 @@
             "Ineffa",
             "伊涅芙"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "イネファ"
         ]
     },
@@ -459,7 +506,8 @@
             "Istaroth",
             "伊斯塔露"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "イスタロト"
         ]
     },
@@ -469,9 +517,11 @@
             "荒泷一斗"
         ],
         "regex": [
-            "荒瀧一斗",
             "(?:Arataki.?)Itto",
             "(?:Itto.?)Arataki"
+        ],
+        "aliases": [
+            "荒瀧一斗"
         ]
     },
     "Jahoda": {
@@ -479,7 +529,8 @@
             "Jahoda",
             "雅珂达"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ヤフォダ"
         ]
     },
@@ -488,7 +539,8 @@
             "Jean",
             "琴"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ジン"
         ]
     },
@@ -497,7 +549,8 @@
             "Kachina",
             "卡齐娜"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "カチーナ"
         ]
     },
@@ -506,7 +559,8 @@
             "Kaeya",
             "凯亚"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ガイア"
         ]
     },
@@ -515,7 +569,8 @@
             "Kaveh",
             "卡维"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "カーヴェ"
         ]
     },
@@ -525,10 +580,12 @@
             "枫原万叶"
         ],
         "regex": [
-            "万叶",
-            "楓原万葉",
             "Kaedehara.?Kazuha",
             "Kazuha.?Kaedehara"
+        ],
+        "aliases": [
+            "万叶",
+            "楓原万葉"
         ]
     },
     "Keqing": {
@@ -536,15 +593,16 @@
             "Keqing",
             "刻晴"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Kinich": {
         "name": [
             "Kinich",
             "基尼奇"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "キィニチ"
         ]
     },
@@ -553,7 +611,8 @@
             "Kirara",
             "绮良良"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "綺良々"
         ]
     },
@@ -562,7 +621,8 @@
             "Klee",
             "可莉"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "クレー"
         ]
     },
@@ -574,7 +634,8 @@
         "regex": [
             "(?:珊瑚宮)?心海",
             "(?:Sangonomiya)?Kokomi"
-        ]
+        ],
+        "aliases": []
     },
     "KujouSara": {
         "name": [
@@ -582,8 +643,10 @@
             "九条裟罗"
         ],
         "regex": [
-            "九条裟羅",
             "Kujou.?Sara"
+        ],
+        "aliases": [
+            "九条裟羅"
         ]
     },
     "LanYan": {
@@ -591,7 +654,8 @@
             "LanYan",
             "蓝砚"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "藍硯"
         ]
     },
@@ -600,7 +664,8 @@
             "Lauma",
             "菈乌玛"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ラウマ"
         ]
     },
@@ -609,7 +674,8 @@
             "Layla",
             "莱依拉"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "レイラ"
         ]
     },
@@ -618,7 +684,8 @@
             "Lumine",
             "荧"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "蛍"
         ]
     },
@@ -627,7 +694,8 @@
             "Lynette",
             "琳妮特"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "リネット"
         ]
     },
@@ -636,7 +704,8 @@
             "Lyney",
             "林尼"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "リネ"
         ]
     },
@@ -645,7 +714,8 @@
             "Lisa",
             "丽莎"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "リサ"
         ]
     },
@@ -654,7 +724,8 @@
             "Mavuika",
             "玛薇卡"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "マーヴィカ"
         ]
     },
@@ -663,7 +734,8 @@
             "Mika",
             "米卡"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ミカ"
         ]
     },
@@ -673,9 +745,11 @@
             "八重神子"
         ],
         "regex": [
-            "神子",
             "Yae.?Miko",
             "Miko.?Yae"
+        ],
+        "aliases": [
+            "神子"
         ]
     },
     "Mona": {
@@ -683,7 +757,8 @@
             "Mona",
             "莫娜"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "モナ"
         ]
     },
@@ -692,7 +767,8 @@
             "Mualani",
             "玛拉妮"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ムアラニ"
         ]
     },
@@ -701,7 +777,8 @@
             "Naberius",
             "纳贝里士"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ナベリウス"
         ]
     },
@@ -711,9 +788,11 @@
             "纳西妲"
         ],
         "regex": [
+            "(?:小吉祥)?草王"
+        ],
+        "aliases": [
             "Kusanali",
             "クサナリ",
-            "(?:小吉祥)?草王",
             "ナヒーダ",
             "草神"
         ]
@@ -723,7 +802,8 @@
             "Navia",
             "娜维娅"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ナヴィア"
         ]
     },
@@ -732,7 +812,8 @@
             "Nefer",
             "奈芙尔"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ネフェル"
         ]
     },
@@ -741,7 +822,8 @@
             "Neuvillette",
             "那维莱特"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ヌヴィレット"
         ]
     },
@@ -750,17 +832,19 @@
             "NicoleReeyn",
             "尼可莱恩"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ニコ・リヤン",
             "ニコリヤン"
         ]
     },
-    "Nilou":{
+    "Nilou": {
         "name": [
             "Nilou",
             "妮露"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "nilu",
             "ニィロウ"
         ]
@@ -770,15 +854,16 @@
             "Ningguang",
             "凝光"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Noelle": {
         "name": [
             "Noelle",
             "诺艾尔"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ノエル"
         ]
     },
@@ -787,7 +872,8 @@
             "Ororon",
             "欧洛伦"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "オロルン"
         ]
     },
@@ -796,7 +882,8 @@
             "Paimon",
             "派蒙"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "パイモン"
         ]
     },
@@ -805,7 +892,8 @@
             "Pierro",
             "皮耶罗"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ピエロ"
         ]
     },
@@ -814,8 +902,8 @@
             "Qiqi",
             "七七"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "RaidenShogun": {
         "name": [
@@ -823,10 +911,12 @@
             "雷电将军"
         ],
         "regex": [
-            "Baal",
             "(?:雷神)?バアル",
             "雷電(?:将軍)?",
             "Raiden(?:Shogun)?"
+        ],
+        "aliases": [
+            "Baal"
         ]
     },
     "Razor": {
@@ -834,7 +924,8 @@
             "Razor",
             "雷泽"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "レザー"
         ]
     },
@@ -843,7 +934,8 @@
             "Rhinedottir",
             "莱茵多特"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "レインドット"
         ]
     },
@@ -852,7 +944,8 @@
             "Ronova",
             "若娜瓦"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ロノヴァ"
         ]
     },
@@ -861,7 +954,8 @@
             "Rosaria",
             "罗莎莉亚"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ロサリア"
         ]
     },
@@ -870,7 +964,8 @@
             "Sandrone",
             "桑多涅"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "サンドローネ"
         ]
     },
@@ -879,15 +974,16 @@
             "Sayu",
             "早柚"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Scaramouche": {
         "name": [
             "Scaramouche",
             "散兵"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "Wanderer",
             "Kunikuzushi",
             "Balladeer",
@@ -902,7 +998,8 @@
             "Shenhe",
             "申鹤"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "申鶴"
         ]
     },
@@ -912,7 +1009,9 @@
             "久岐忍"
         ],
         "regex": [
-            "(?:Kuki.?)?Shinobu",
+            "(?:Kuki.?)?Shinobu"
+        ],
+        "aliases": [
             "久岐忍"
         ]
     },
@@ -921,7 +1020,8 @@
             "Sigewinne",
             "希格雯"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "シグウィン"
         ]
     },
@@ -931,7 +1031,9 @@
             "女士"
         ],
         "regex": [
-            "La.?Signora",
+            "La.?Signora"
+        ],
+        "aliases": [
             "シニョーラ"
         ]
     },
@@ -940,7 +1042,8 @@
             "Skirk",
             "丝柯克"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "スカーク"
         ]
     },
@@ -949,7 +1052,8 @@
             "Sucrose",
             "砂糖"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "スクロース"
         ]
     },
@@ -958,7 +1062,8 @@
             "Tartaglia",
             "达达利亚"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "Childe",
             "タルタリヤ"
         ]
@@ -968,7 +1073,8 @@
             "Thoma",
             "托马"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "トーマ"
         ]
     },
@@ -977,7 +1083,8 @@
             "Tighnari",
             "提纳里"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ティナリ"
         ]
     },
@@ -986,7 +1093,8 @@
             "Varesa",
             "瓦雷莎"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ヴァレサ"
         ]
     },
@@ -995,7 +1103,8 @@
             "Varka",
             "法尔伽"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ファルカ"
         ]
     },
@@ -1004,7 +1113,8 @@
             "Venti",
             "温迪"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ウェンティ"
         ]
     },
@@ -1013,7 +1123,8 @@
             "Wriothesley",
             "莱欧斯利"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "リオセスリ"
         ]
     },
@@ -1022,8 +1133,8 @@
             "Xiangling",
             "香菱"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Xianyun": {
         "name": [
@@ -1031,10 +1142,12 @@
             "闲云"
         ],
         "regex": [
+            "Cloud.?Retainer"
+        ],
+        "aliases": [
             "閑雲",
             "留云借风",
-            "留雲借風",
-            "Cloud.?Retainer"
+            "留雲借風"
         ]
     },
     "Xiao": {
@@ -1042,15 +1155,16 @@
             "Xiao",
             "魈"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Xilonen": {
         "name": [
             "Xilonen",
             "希诺宁"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "シロネン"
         ]
     },
@@ -1059,23 +1173,24 @@
             "Xingqiu",
             "行秋"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Xinyan": {
         "name": [
             "Xinyan",
             "辛焱"
         ],
-        "regex": [
-        ]
+        "regex": [],
+        "aliases": []
     },
     "Yanfei": {
         "name": [
             "Yanfei",
             "烟绯"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "煙緋"
         ]
     },
@@ -1084,7 +1199,8 @@
             "Yaoyao",
             "瑶瑶"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "ヨォーヨ"
         ]
     },
@@ -1093,7 +1209,8 @@
             "Yelan",
             "夜兰"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "夜蘭"
         ]
     },
@@ -1102,7 +1219,8 @@
             "Yoimiya",
             "宵宫"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "宵宮"
         ]
     },
@@ -1112,9 +1230,11 @@
             "梦见月瑞希"
         ],
         "regex": [
-            "夢見月瑞希",
-            "Yumemizuki",
             "Yumemizuki.?Mizuki"
+        ],
+        "aliases": [
+            "夢見月瑞希",
+            "Yumemizuki"
         ]
     },
     "Yunjin": {
@@ -1122,7 +1242,8 @@
             "Yunjin",
             "云堇"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "雲菫"
         ]
     },
@@ -1131,7 +1252,8 @@
             "Zhongli",
             "钟离"
         ],
-        "regex": [
+        "regex": [],
+        "aliases": [
             "鍾離"
         ]
     }

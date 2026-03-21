@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import BigInteger, Integer
 from sqlmodel import Column, Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from paihub.system.name_map.entities import NameMapConfig
 
 
 class Work(SQLModel, table=True):
@@ -13,6 +16,9 @@ class Work(SQLModel, table=True):
 
     work_rules: list["WorkRule"] = Relationship(back_populates="work")
     work_channels: list["WorkChannel"] = Relationship(back_populates="work")
+    name_map_configs: list["NameMapConfig"] = Relationship(
+        back_populates="work", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
 
 class WorkRule(SQLModel, table=True):

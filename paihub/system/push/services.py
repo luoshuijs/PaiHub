@@ -1,5 +1,6 @@
 from paihub.base import Service
 from paihub.log import logger
+from paihub.system.name_map.service import WorkTagFormatterService
 from paihub.system.push.cache import PushCache
 from paihub.system.push.entities import Push
 from paihub.system.push.ext import PushCallbackContext
@@ -18,12 +19,14 @@ class PushService(Service):
         push_cache: PushCache,
         review_repository: ReviewRepository,
         work_channel_repository: WorkChannelRepository,
+        tag_formatter: WorkTagFormatterService,
     ):
         self.push_repository = push_repository
         self.push_cache = push_cache
         self.sites_manager = sites_manager
         self.review_repository = review_repository
         self.work_channel_repository = work_channel_repository
+        self.tag_formatter = tag_formatter
 
     async def get_push(self, work_id: int) -> int:
         reviews_id = await self.push_repository.get_review_id_by_push(work_id)
@@ -46,6 +49,7 @@ class PushService(Service):
             artwork_id=review_data.artwork_id,
             site_service=site_service,
             push_service=self,
+            tag_formatter=self.tag_formatter,
         )
 
     async def get_next_push_with_validation(self, work_id: int) -> PushCallbackContext | None:
@@ -75,6 +79,7 @@ class PushService(Service):
                     artwork_id=review_data.artwork_id,
                     site_service=site_service,
                     push_service=self,
+                    tag_formatter=self.tag_formatter,
                 )
             # 状态已变更 记录日志并继续下一个
             logger.info(
