@@ -68,14 +68,14 @@ class AutoPushJob(Job):
     async def recover_stale_running_tasks(self) -> bool:
         """在检查循环内恢复异常中断导致的 RUNNING 状态任务。"""
         try:
-            running_configs = await self.config_repository.get_running_configs()
-            if not running_configs:
-                return True
+            if not self._recovery_checked:
+                self._recovery_checked = await self.recover_stale_running_tasks()
 
             now = datetime.now()
             recovered = 0
 
             for config in running_configs:
+                # last_run_time 为空，说明状态异常，直接恢复。
                 if config.last_run_time is None:
                     config.set_completed()
                     if not config.next_run_time:
@@ -84,6 +84,7 @@ class AutoPushJob(Job):
                     recovered += 1
                     continue
 
+                # 超过阈值还处于 RUNNING，判定为僵尸任务并恢复。
                 if config.last_run_time + timedelta(minutes=self.STALE_RUNNING_TIMEOUT_MINUTES) <= now:
                     config.set_completed()
                     if config.next_run_time is None or config.next_run_time <= now:
@@ -232,6 +233,7 @@ class AutoPushJob(Job):
                         review_context.site_key,
                         review_context.artwork_id,
                     )
+                    await asyncio.sleep(2)  # 避免速率限制
                 elif auto_review is not None:
                     # 自动拒绝
                     # 获取作品信息（用于发送给 BOT_OWNER）
@@ -260,6 +262,7 @@ class AutoPushJob(Job):
                         review_context.site_key,
                         review_context.artwork_id,
                     )
+                    await asyncio.sleep(2)  # 避免速率限制
                 else:
                     # 无法自动审核（返回 None），跳过，不计入统计，继续下一个
                     _logger.debug("作品无法自动审核，跳过: %s[%s]", review_context.site_key, review_context.artwork_id)
@@ -269,8 +272,6 @@ class AutoPushJob(Job):
             except Exception as exc:
                 await review_context.set_review_status(ReviewStatus.ERROR, update_by=config.create_by or 0)
                 _logger.error("审核作品时发生错误", exc_info=exc)
-
-            await asyncio.sleep(2)  # 避免速率限制
 
         _main_logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)
         _logger.info("批量模式: 完成自动审核，通过 %d 个，拒绝 %d 个", passed_count, rejected_count)

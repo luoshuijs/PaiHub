@@ -15,6 +15,8 @@ class ReviewCache(Component):
         data = await self.client.spop(f"review:pending:{work_id}", 1)
         if data is None:
             return None
+        if len(data) == 0:
+            return None
         return data[-1]
 
     async def get_review_count(self, work_id: int) -> int:
