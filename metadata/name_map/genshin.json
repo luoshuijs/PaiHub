@@ -491,6 +491,16 @@
             "イファ"
         ]
     },
+    "Illuga": {
+        "name": [
+            "Illuga",
+            "叶洛亚"
+        ],
+        "regex": [],
+        "aliases": [
+            "イルーガ"
+        ]
+    },
     "Ineffa": {
         "name": [
             "Ineffa",
@@ -707,6 +717,16 @@
         "regex": [],
         "aliases": [
             "リネ"
+        ]
+    },
+    "Linnea": {
+        "name": [
+            "Linnea",
+            "莉奈娅"
+        ],
+        "regex": [],
+        "aliases": [
+            "リンネア"
         ]
     },
     "Lisa": {
@@ -1256,5 +1276,13 @@
         "aliases": [
             "鍾離"
         ]
+    },
+    "Zibai": {
+        "name": [
+            "Zibai",
+            "兹白"
+        ],
+        "regex": [],
+        "aliases": []
     }
 }
