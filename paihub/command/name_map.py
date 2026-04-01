@@ -361,6 +361,8 @@ class NameMapCommand(Command):
                 is_global_default,
             )
 
+        except ValueError as e:
+            await message.edit_text(f"❌ 创建配置失败: {e}")
         except Exception as e:
             logger.error("Error in confirm_create: %s", e, exc_info=True)
             await message.edit_text(f"❌ 创建配置失败: {str(e)}")

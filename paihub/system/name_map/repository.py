@@ -8,6 +8,29 @@ from paihub.system.name_map.entities import NameMapConfig
 class NameMapConfigRepository(Repository[NameMapConfig]):
     """工作流 NameMap 配置仓储"""
 
+    async def get_by_scope_and_key(self, work_id: int | None, name_map_key: str) -> NameMapConfig | None:
+        """按作用域和 name_map_key 获取配置。"""
+        async with AsyncSession(self.engine) as session:
+            work_scope_filter = NameMapConfig.work_id.is_(None) if work_id is None else NameMapConfig.work_id == work_id
+            statement = select(NameMapConfig).where(and_(work_scope_filter, NameMapConfig.name_map_key == name_map_key))
+            results = await session.exec(statement)
+            return results.first()
+
+    async def get_duplicate_global_keys(self) -> list[str]:
+        """返回存在重复全局配置的 name_map_key 列表。"""
+        async with AsyncSession(self.engine) as session:
+            statement = select(NameMapConfig.name_map_key).where(NameMapConfig.work_id.is_(None))
+            results = await session.exec(statement)
+            keys = results.all()
+
+        duplicate_keys: list[str] = []
+        seen: set[str] = set()
+        for key in keys:
+            if key in seen and key not in duplicate_keys:
+                duplicate_keys.append(key)
+            seen.add(key)
+        return duplicate_keys
+
     async def get_by_work_id(self, work_id: int | None) -> list[NameMapConfig]:
         """获取指定工作流的所有配置"""
         async with AsyncSession(self.engine) as session:

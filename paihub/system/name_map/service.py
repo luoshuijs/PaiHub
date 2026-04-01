@@ -88,6 +88,11 @@ class WorkTagFormatterService(Service):
         Returns:
             创建的 NameMapConfig 实例
         """
+        existing_config = await self.config_repo.get_by_scope_and_key(work_id, name_map_key)
+        if existing_config is not None:
+            scope_label = "全局配置" if work_id is None else f"工作流 {work_id}"
+            raise ValueError(f"{scope_label} 已存在 name_map={name_map_key} 的配置，请先编辑或删除现有配置")
+
         config = NameMapConfig(
             work_id=work_id,
             name_map_key=name_map_key,
