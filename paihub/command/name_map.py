@@ -183,8 +183,7 @@ class NameMapCommand(Command):
         keyboard.append([InlineKeyboardButton(text="❌ 取消", callback_data="nm_cancel")])
 
         await message.edit_text(
-            f"已选择：**{work_name}**\n\n请选择要使用的 name_map：",
-            parse_mode="Markdown",
+            f"已选择：{work_name}\n\n请选择要使用的 name_map：",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return SELECT_NAME_MAP
@@ -220,13 +219,12 @@ class NameMapCommand(Command):
         work_name = "全局配置" if work_id is None else f"工作流 {work_id}"
 
         await message.edit_text(
-            f"**配置信息**\n\n"
+            f"配置信息\n\n"
             f"工作流：{work_name}\n"
             f"name_map：{name_map_key}\n"
             f"优先级：0\n"
             f"全局默认：否\n\n"
             f"请调整配置选项或直接确认创建：",
-            parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return CONFIRM_CONFIG
@@ -263,13 +261,12 @@ class NameMapCommand(Command):
         work_name = "全局配置" if work_id is None else f"工作流 {work_id}"
 
         await message.edit_text(
-            f"**配置信息**\n\n"
+            f"配置信息\n\n"
             f"工作流：{work_name}\n"
             f"name_map：{name_map_key}\n"
             f"优先级：{new_priority}\n"
             f"全局默认：{'是' if is_global_default else '否'}\n\n"
             f"请调整配置选项或直接确认创建：",
-            parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return CONFIRM_CONFIG
@@ -305,13 +302,12 @@ class NameMapCommand(Command):
         work_name = "全局配置" if work_id is None else f"工作流 {work_id}"
 
         await message.edit_text(
-            f"**配置信息**\n\n"
+            f"配置信息\n\n"
             f"工作流：{work_name}\n"
             f"name_map：{name_map_key}\n"
             f"优先级：{priority}\n"
             f"全局默认：{'是' if new_status else '否'}\n\n"
             f"请调整配置选项或直接确认创建：",
-            parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return CONFIRM_CONFIG
@@ -347,13 +343,12 @@ class NameMapCommand(Command):
 
             await message.edit_text(
                 f"✅ 配置创建成功\n\n"
-                f"**配置 ID**：{config.id}\n"
-                f"**工作流**：{work_name}\n"
-                f"**name_map**：{name_map_key}\n"
-                f"**优先级**：{priority}\n"
-                f"**全局默认**：{'是' if is_global_default else '否'}\n"
-                f"**状态**：已启用",
-                parse_mode="Markdown",
+                f"配置 ID：{config.id}\n"
+                f"工作流：{work_name}\n"
+                f"name_map：{name_map_key}\n"
+                f"优先级：{priority}\n"
+                f"全局默认：{'是' if is_global_default else '否'}\n"
+                f"状态：已启用"
             )
 
             logger.info(
@@ -440,21 +435,21 @@ class NameMapCommand(Command):
                         if work and work.name:
                             work_name = work.name
 
-                    message = f"📋 **{work_name} 的 name_map 配置**\n\n"
+                    message = f"📋 {work_name} 的 name_map 配置\n\n"
                     for config in configs:
                         status = "✅ 启用" if config.is_active else "❌ 禁用"
-                        message += f"**ID**: {config.id}\n"
-                        message += f"**Key**: {config.name_map_key}\n"
-                        message += f"**状态**: {status}\n"
-                        message += f"**优先级**: {config.priority}\n"
-                        message += f"**全局默认**: {'是 🌐' if config.is_global_default else '否'}\n"
+                        message += f"ID: {config.id}\n"
+                        message += f"Key: {config.name_map_key}\n"
+                        message += f"状态: {status}\n"
+                        message += f"优先级: {config.priority}\n"
+                        message += f"全局默认: {'是 🌐' if config.is_global_default else '否'}\n"
                         if config.description:
-                            message += f"**描述**: {config.description}\n"
+                            message += f"描述: {config.description}\n"
                         if config.file_path:
-                            message += f"**文件**: {config.file_path}\n"
+                            message += f"文件: {config.file_path}\n"
                         message += "\n"
 
-            await update.message.reply_markdown(message)
+            await update.message.reply_text(message)
 
         except ValueError:
             await update.message.reply_text("❌ work_id 必须是数字或 'global'")
@@ -524,8 +519,7 @@ class NameMapCommand(Command):
         keyboard.append([InlineKeyboardButton(text="❌ 取消", callback_data="nm_cancel")])
 
         await message.edit_text(
-            f"**{work_name}** 的配置列表\n\n请选择要切换状态的配置：",
-            parse_mode="Markdown",
+            f"{work_name} 的配置列表\n\n请选择要切换状态的配置：",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return TOGGLE_SELECT_CONFIG
@@ -555,11 +549,10 @@ class NameMapCommand(Command):
                 work_name = "全局配置" if config.work_id is None else f"工作流 {config.work_id}"
                 await message.edit_text(
                     f"✅ 配置状态已更新\n\n"
-                    f"**配置 ID**：{config_id}\n"
-                    f"**工作流**：{work_name}\n"
-                    f"**name_map**：{config.name_map_key}\n"
-                    f"**新状态**：{status_text}",
-                    parse_mode="Markdown",
+                    f"配置 ID：{config_id}\n"
+                    f"工作流：{work_name}\n"
+                    f"name_map：{config.name_map_key}\n"
+                    f"新状态：{status_text}"
                 )
                 logger.info("用户 %s[%s] 将配置 %s 状态切换为 %s", user.full_name, user.id, config_id, status_text)
             else:
@@ -636,8 +629,7 @@ class NameMapCommand(Command):
         keyboard.append([InlineKeyboardButton(text="❌ 取消", callback_data="nm_cancel")])
 
         await message.edit_text(
-            f"**{work_name}** 的配置列表\n\n⚠️ 请选择要删除的配置：",
-            parse_mode="Markdown",
+            f"{work_name} 的配置列表\n\n⚠️ 请选择要删除的配置：",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return DELETE_SELECT_CONFIG
@@ -670,14 +662,13 @@ class NameMapCommand(Command):
         ]
 
         await message.edit_text(
-            f"⚠️ **确认删除配置？**\n\n"
-            f"**配置 ID**：{config.id}\n"
-            f"**工作流**：{work_name}\n"
-            f"**name_map**：{config.name_map_key}\n"
-            f"**优先级**：{config.priority}\n"
-            f"**全局默认**：{'是 🌐' if config.is_global_default else '否'}\n\n"
+            f"⚠️ 确认删除配置？\n\n"
+            f"配置 ID：{config.id}\n"
+            f"工作流：{work_name}\n"
+            f"name_map：{config.name_map_key}\n"
+            f"优先级：{config.priority}\n"
+            f"全局默认：{'是 🌐' if config.is_global_default else '否'}\n\n"
             f"此操作不可撤销！",
-            parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return DELETE_CONFIRM
@@ -703,10 +694,7 @@ class NameMapCommand(Command):
 
             if success:
                 work_name = "全局配置" if config.work_id is None else f"工作流 {config.work_id}"
-                await message.edit_text(
-                    f"✅ 配置已删除\n\n**工作流**：{work_name}\n**name_map**：{config.name_map_key}",
-                    parse_mode="Markdown",
-                )
+                await message.edit_text(f"✅ 配置已删除\n\n工作流：{work_name}\nname_map：{config.name_map_key}")
                 logger.info("用户 %s[%s] 删除了配置 %s", user.full_name, user.id, config_id)
             else:
                 await message.edit_text("❌ 删除失败")
@@ -766,11 +754,10 @@ class NameMapCommand(Command):
             work_name = work.name if work and work.name else f"工作流 {work_id}"
 
         await message.edit_text(
-            f"已选择：**{work_name}**\n\n"
+            f"已选择：{work_name}\n\n"
             f"请直接回复要测试的标签，多个标签用空格分隔。\n"
-            f"例如：`胡洮 walnut 护堂`\n\n"
-            f"或使用 /cancel 取消测试。",
-            parse_mode="Markdown",
+            f"例如：胡洮 walnut 护堂\n\n"
+            f"或使用 /cancel 取消测试。"
         )
 
         return TEST_INPUT_TAGS
@@ -816,20 +803,20 @@ class NameMapCommand(Command):
                 config_info = f"{config.name_map_key} (优先级: {config.priority})"
 
             # 构建回复消息
-            response = "🧪 **name_map 测试结果**\n\n"
-            response += f"**工作流**: {work_id or '全局/默认'}\n"
-            response += f"**使用配置**: {config_info}\n"
-            response += f"**配置文件**: {name_map.data_file.name}\n\n"
-            response += f"**输入标签**: {' '.join(tags)}\n"
-            response += f"**识别结果**: {', '.join(details) if details else '无匹配'}\n"
-            response += f"**格式化输出**: {result}\n"
+            response = "🧪 name_map 测试结果\n\n"
+            response += f"工作流: {work_id or '全局/默认'}\n"
+            response += f"使用配置: {config_info}\n"
+            response += f"配置文件: {name_map.data_file.name}\n\n"
+            response += f"输入标签: {' '.join(tags)}\n"
+            response += f"识别结果: {', '.join(details) if details else '无匹配'}\n"
+            response += f"格式化输出: {result}\n"
 
             # 显示缓存信息（调试）
             cache_info = self.name_map_factory.get_cached_instances_info()
             if cache_info:
-                response += f"\n**缓存实例**: {len(cache_info)}"
+                response += f"\n缓存实例: {len(cache_info)}"
 
-            await message.reply_markdown(response)
+            await message.reply_text(response)
 
             logger.info("用户 %s[%s] 测试了 work_id=%s 的标签映射", user.full_name, user.id, work_id)
 
