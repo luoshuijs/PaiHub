@@ -51,10 +51,12 @@ class Repository[T: SQLModel](Component):
             results = await session.exec(statement)
             return results.first()
 
-    async def add(self, instance: T):
+    async def add(self, instance: T) -> T:
         async with AsyncSession(self.engine) as session:
             session.add(instance)
             await session.commit()
+            await session.refresh(instance)
+            return instance
 
     async def update(self, instance: T) -> T:
         async with AsyncSession(self.engine) as session:
