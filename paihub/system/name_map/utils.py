@@ -95,20 +95,23 @@ class NameMap:
             for alias in value.get("aliases", []):
                 self.simple_matches[alias.lower()] = key
 
-            # 只有复杂模式才用正则
-            if regex_list := value.get("regex", []):
-                # 构建每个角色的正则模式
-                pattern_parts = []
-                # 如果角色名小于2个字符，使用严格匹配
-                for name in value["name"]:
-                    if len(name) < 2:
-                        pattern_parts.append(f"^{re.escape(name)}$")
-                    else:
-                        pattern_parts.append(re.escape(name))
+            # 为每个角色构建正则模式（name + aliases + regex 都参与子串匹配）
+            pattern_parts = []
+            for name in value["name"]:
+                if len(name) < 2:
+                    pattern_parts.append(f"^{re.escape(name)}$")
+                else:
+                    pattern_parts.append(re.escape(name))
 
-                # 添加正则表达式
-                pattern_parts.extend(regex_list)
+            for alias in value.get("aliases", []):
+                if len(alias) < 2:
+                    pattern_parts.append(f"^{re.escape(alias)}$")
+                else:
+                    pattern_parts.append(re.escape(alias))
 
+            pattern_parts.extend(value.get("regex", []))
+
+            if pattern_parts:
                 character_pattern = f"(?P<{key}>{'|'.join(pattern_parts)})"
                 complex_patterns.append(character_pattern)
 

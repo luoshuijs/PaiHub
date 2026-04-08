@@ -35,6 +35,7 @@ dev = [
     "alembic>=1.18.1",
     "black>=25.12.0",
     "mysqlclient>=2.2.7",
+    "pytest>=9.0.0",
     "ruff>=0.14.13",
 ]
 
