@@ -1,5 +1,4 @@
 import json
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -20,7 +19,7 @@ SAMPLE_DATA = {
 }
 
 
-@pytest.fixture()
+@pytest.fixture
 def name_map(tmp_path: Path) -> NameMap:
     f = tmp_path / "test.json"
     f.write_text(json.dumps(SAMPLE_DATA), encoding="utf-8")
