@@ -689,6 +689,16 @@
             "レイラ"
         ]
     },
+    "Lohen": {
+        "name": [
+            "Lohen",
+            "洛恩"
+        ],
+        "regex": [],
+        "aliases": [
+            "ローエン"
+        ]
+    },
     "Lumine": {
         "name": [
             "Lumine",
@@ -847,13 +857,15 @@
             "ヌヴィレット"
         ]
     },
-    "NicoleReeyn": {
+    "Nicole": {
         "name": [
-            "NicoleReeyn",
-            "尼可莱恩"
+            "Nicole",
+            "尼可"
         ],
         "regex": [],
         "aliases": [
+            "尼可莱恩",
+            "ニコ",
             "ニコ・リヤン",
             "ニコリヤン"
         ]
@@ -915,6 +927,16 @@
         "regex": [],
         "aliases": [
             "ピエロ"
+        ]
+    },
+    "Prune": {
+        "name": [
+            "Prune",
+            "布伦妮"
+        ],
+        "regex": [],
+        "aliases": [
+            "プルーネ"
         ]
     },
     "Qiqi": {
