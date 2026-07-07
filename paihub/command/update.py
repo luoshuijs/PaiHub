@@ -23,6 +23,7 @@ except ImportError:
     import json as jsonlib
 
 UPDATE_DATA = os.path.join(os.getcwd(), "update.json")
+UPDATE_DATA_PATH = anyio.Path(UPDATE_DATA)
 
 
 class UpdateCommand(Command):
@@ -32,8 +33,8 @@ class UpdateCommand(Command):
         self.bot.add_handler(AdminHandler(CommandHandler("update", self.update, block=False), self.application))
 
     async def initialize(self) -> None:
-        if os.path.exists(UPDATE_DATA):
-            async with await anyio.open_file(UPDATE_DATA) as file:
+        if await UPDATE_DATA_PATH.exists():
+            async with await anyio.open_file(UPDATE_DATA_PATH) as file:
                 data = jsonlib.loads(await file.read())
             try:
                 reply_text = Message.de_json(data, self.application.bot.bot)
@@ -44,7 +45,7 @@ class UpdateCommand(Command):
                 logger.error("JSONDecodeError")
             except KeyError as exc:
                 logger.error("编辑消息出现错误", exc_info=exc)
-            os.remove(UPDATE_DATA)
+            await UPDATE_DATA_PATH.unlink()
 
     async def update(self, update: "Update", context: "ContextTypes.DEFAULT_TYPE"):
         user = update.effective_user
@@ -62,6 +63,6 @@ class UpdateCommand(Command):
             await execute("git pull --all")
             logger.info("更新成功 正在重启")
             await reply_text.edit_text("更新成功 正在重启")
-            async with await anyio.open_file(UPDATE_DATA, mode="w", encoding="utf-8") as file:
+            async with await anyio.open_file(UPDATE_DATA_PATH, mode="w", encoding="utf-8") as file:
                 await file.write(reply_text.to_json())
         raise SystemExit

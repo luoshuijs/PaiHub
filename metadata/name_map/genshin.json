@@ -70,6 +70,16 @@
             "アーロイ"
         ]
     },
+    "Alyosha": {
+        "name": [
+            "Alyosha",
+            "阿罗夏"
+        ],
+        "regex": [],
+        "aliases": [
+            "アリョーシャ"
+        ]
+    },
     "Arlecchino": {
         "name": [
             "Arlecchino",
@@ -271,6 +281,16 @@
         "regex": [],
         "aliases": [
             "セノ"
+        ]
+    },
+    "Danica": {
+        "name": [
+            "Danica",
+            "达妮卡"
+        ],
+        "regex": [],
+        "aliases": [
+            "ダニカ"
         ]
     },
     "Dahlia": {
@@ -769,6 +789,16 @@
             "ミカ"
         ]
     },
+    "Mitya": {
+        "name": [
+            "Mitya",
+            "米提亚"
+        ],
+        "regex": [],
+        "aliases": [
+            "ミティヤ"
+        ]
+    },
     "Miko": {
         "name": [
             "Miko",
@@ -899,6 +929,26 @@
             "ノエル"
         ]
     },
+    "Noy": {
+        "name": [
+            "Noy",
+            "诺伊"
+        ],
+        "regex": [],
+        "aliases": [
+            "ノイ"
+        ]
+    },
+    "Odette": {
+        "name": [
+            "Odette",
+            "奥黛塔"
+        ],
+        "regex": [],
+        "aliases": [
+            "オデット"
+        ]
+    },
     "Ororon": {
         "name": [
             "Ororon",
@@ -919,6 +969,17 @@
             "パイモン"
         ]
     },
+    "Pantalone": {
+        "name": [
+            "Pantalone",
+            "潘塔罗涅"
+        ],
+        "regex": [],
+        "aliases": [
+            "Regrator",
+            "パンタローネ"
+        ]
+    },
     "Pierro": {
         "name": [
             "Pierro",
@@ -937,6 +998,17 @@
         "regex": [],
         "aliases": [
             "プルーネ"
+        ]
+    },
+    "Pulcinella": {
+        "name": [
+            "Pulcinella",
+            "普契涅拉"
+        ],
+        "regex": [],
+        "aliases": [
+            "The Rooster",
+            "プルチネッラ"
         ]
     },
     "Qiqi": {
@@ -1150,6 +1222,16 @@
             "ファルカ"
         ]
     },
+    "Valeriy": {
+        "name": [
+            "Valeriy",
+            "瓦列里"
+        ],
+        "regex": [],
+        "aliases": [
+            "バレリー"
+        ]
+    },
     "Venti": {
         "name": [
             "Venti",
@@ -1158,6 +1240,26 @@
         "regex": [],
         "aliases": [
             "ウェンティ"
+        ]
+    },
+    "Vesna": {
+        "name": [
+            "Vesna",
+            "薇斯纳"
+        ],
+        "regex": [],
+        "aliases": [
+            "ヴェスナ"
+        ]
+    },
+    "Vodyanitsa": {
+        "name": [
+            "Vodyanitsa",
+            "沃雅妮莎"
+        ],
+        "regex": [],
+        "aliases": [
+            "ヴォジャニーツァ"
         ]
     },
     "Wriothesley": {
