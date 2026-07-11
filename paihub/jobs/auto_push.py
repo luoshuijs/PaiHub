@@ -17,6 +17,11 @@ from paihub.system.push.auto_push_entities import AutoPushMode
 from paihub.system.push.auto_push_repositories import AutoPushConfigRepository
 from paihub.system.push.services import PushService
 from paihub.system.review.entities import ReviewStatus
+from paihub.system.review.notifications import (
+    format_auto_review_reason,
+    format_auto_review_summary,
+    should_send_auto_review_images,
+)
 from paihub.system.review.services import ReviewService
 from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.repositories import WorkChannelRepository
@@ -213,12 +218,15 @@ class AutoPushJob(Job):
                 if auto_review is not None and auto_review.status:
                     # 获取作品信息
                     artwork = await review_context.get_artwork()
-                    artwork_images = await review_context.get_artwork_images()
 
                     # 同步到BOT_OWNER
                     if config.push_to_owner:
                         await self._send_to_owner(
-                            review_context, artwork, artwork_images, review_context.review_id, config.work_id
+                            review_context,
+                            auto_review,
+                            review_context.review_id,
+                            config.work_id,
+                            artwork=artwork,
                         )
 
                     # 设置审核状态为通过
@@ -240,19 +248,17 @@ class AutoPushJob(Job):
                     await asyncio.sleep(2)  # 避免速率限制
                 elif auto_review is not None:
                     # 自动拒绝
-                    # 获取作品信息（用于发送给 BOT_OWNER）
-                    artwork = await review_context.get_artwork()
-                    artwork_images = await review_context.get_artwork_images()
-
                     # 同步到BOT_OWNER（标记为拒绝）
                     if config.push_to_owner:
+                        artwork = None
+                        if auto_review.description == "author_blacklist":
+                            artwork = await review_context.get_artwork()
                         await self._send_to_owner(
                             review_context,
-                            artwork,
-                            artwork_images,
+                            auto_review,
                             review_context.review_id,
                             config.work_id,
-                            rejected=True,
+                            artwork=artwork,
                         )
 
                     await review_context.set_review_status(
@@ -330,13 +336,18 @@ class AutoPushJob(Job):
                 if auto_review is not None and auto_review.status:
                     # 获取作品信息
                     artwork = await review_context.get_artwork()
-                    artwork_images = await review_context.get_artwork_images()
 
                     # 同步到BOT_OWNER
                     if config.push_to_owner:
                         await self._send_to_owner(
-                            review_context, artwork, artwork_images, review_context.review_id, config.work_id
+                            review_context,
+                            auto_review,
+                            review_context.review_id,
+                            config.work_id,
+                            artwork=artwork,
                         )
+
+                    artwork_images = await review_context.get_artwork_images()
 
                     # 设置审核状态为通过
                     await review_context.set_review_status(
@@ -379,19 +390,17 @@ class AutoPushJob(Job):
                         )
                 elif auto_review is not None:
                     # 自动拒绝
-                    # 获取作品信息（用于发送给 BOT_OWNER）
-                    artwork = await review_context.get_artwork()
-                    artwork_images = await review_context.get_artwork_images()
-
                     # 同步到BOT_OWNER（标记为拒绝）
                     if config.push_to_owner:
+                        artwork = None
+                        if auto_review.description == "author_blacklist":
+                            artwork = await review_context.get_artwork()
                         await self._send_to_owner(
                             review_context,
-                            artwork,
-                            artwork_images,
+                            auto_review,
                             review_context.review_id,
                             config.work_id,
-                            rejected=True,
+                            artwork=artwork,
                         )
 
                     await review_context.set_review_status(
@@ -429,63 +438,67 @@ class AutoPushJob(Job):
     async def _send_to_owner(
         self,
         review_context: "ReviewCallbackContext",
-        artwork,
-        artwork_images,
+        auto_review,
         review_id: int,
         work_id: int,
-        rejected: bool = False,
+        artwork=None,
     ):
         """发送作品到BOT_OWNER
         :param review_context: ReviewCallbackContext 审核上下文对象
-        :param artwork: 作品对象
-        :param artwork_images: 作品图片列表
+        :param auto_review: 自动审核结果
         :param review_id: 审核ID
         :param work_id: 工作ID
-        :param rejected: 是否为拒绝的作品
+        :param artwork: 作品对象
         """
         try:
             bot = self.application.bot.bot  # 获取真正的 Bot 对象
             owner_id = self.application.settings.bot.owner
 
-            status_text = "自动审核拒绝" if rejected else "自动审核通过"
-            formatted_tags = await review_context.format_artwork_tags(artwork, filter_character_tags=True)
-            caption = (
-                f"[{status_text}]\n"
-                f"Title: {html.escape(artwork.title)}\n"
-                f"Tag: {html.escape(formatted_tags)}\n"
-                f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
-                f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
-                f"Review ID: {review_id} | Work ID: {work_id}"
-            )
-
-            if len(artwork_images) > 1:
-                media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
-                media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
-                media = media[:10]
-                await bot.send_media_group(
-                    chat_id=owner_id, media=media, connect_timeout=10, read_timeout=10, write_timeout=30
+            summary = format_auto_review_reason(auto_review)
+            if artwork is not None:
+                formatted_tags = await review_context.format_artwork_tags(artwork, filter_character_tags=True)
+                summary = (
+                    f"{format_auto_review_summary(auto_review, artwork, formatted_tags)}\n"
+                    f"Review ID: {review_id} | Work ID: {work_id}"
                 )
-            elif len(artwork_images) == 1:
-                if artwork.image_type == ImageType.STATIC:
-                    await bot.send_photo(
-                        chat_id=owner_id,
-                        photo=artwork_images[0],
-                        caption=caption,
-                        parse_mode=ParseMode.HTML,
-                        connect_timeout=10,
-                        read_timeout=10,
-                        write_timeout=30,
-                    )
-                elif artwork.image_type == ImageType.DYNAMIC:
-                    await bot.send_video(
-                        chat_id=owner_id,
-                        video=artwork_images[0],
-                        caption=caption,
-                        parse_mode=ParseMode.HTML,
-                        connect_timeout=10,
-                        read_timeout=10,
-                        write_timeout=30,
-                    )
+                if should_send_auto_review_images(auto_review):
+                    artwork_images = await review_context.get_artwork_images()
+                    if len(artwork_images) > 1:
+                        media = [InputMediaPhoto(media=artwork_images[0], caption=summary, parse_mode=ParseMode.HTML)]
+                        media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
+                        media = media[:10]
+                        await bot.send_media_group(
+                            chat_id=owner_id,
+                            media=media,
+                            connect_timeout=10,
+                            read_timeout=10,
+                            write_timeout=30,
+                        )
+                    elif len(artwork_images) == 1:
+                        if artwork.image_type == ImageType.STATIC:
+                            await bot.send_photo(
+                                chat_id=owner_id,
+                                photo=artwork_images[0],
+                                caption=summary,
+                                parse_mode=ParseMode.HTML,
+                                connect_timeout=10,
+                                read_timeout=10,
+                                write_timeout=30,
+                            )
+                        elif artwork.image_type == ImageType.DYNAMIC:
+                            await bot.send_video(
+                                chat_id=owner_id,
+                                video=artwork_images[0],
+                                caption=summary,
+                                parse_mode=ParseMode.HTML,
+                                connect_timeout=10,
+                                read_timeout=10,
+                                write_timeout=30,
+                            )
+                        else:
+                            raise RuntimeError  # noqa: TRY301
+                    else:
+                        raise RuntimeError  # noqa: TRY301
 
             # 发送撤销按钮
             keyboard = [
@@ -497,7 +510,9 @@ class AutoPushJob(Job):
                 ]
             ]
 
-            message_text = f"当前作品已经{status_text}\n正在获取下一个作品"
+            message_text = (
+                summary if artwork is None or not should_send_auto_review_images(auto_review) else "正在获取下一个作品"
+            )
             await bot.send_message(
                 chat_id=owner_id,
                 text=message_text,

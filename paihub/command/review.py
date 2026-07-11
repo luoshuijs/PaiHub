@@ -1,4 +1,3 @@
-import html
 from typing import TYPE_CHECKING
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, ReplyKeyboardRemove
@@ -13,7 +12,13 @@ from paihub.bot.adminhandler import AdminHandler
 from paihub.entities.artwork import ImageType
 from paihub.error import ArtWorkNotFoundError, BadRequest, RetryAfter
 from paihub.log import logger
-from paihub.system.review.entities import AutoReviewResult, ReviewAuthorRuleAction, ReviewStatus
+from paihub.system.review.entities import ReviewAuthorRuleAction, ReviewStatus
+from paihub.system.review.notifications import (
+    format_auto_review_reason,
+    format_auto_review_summary,
+    format_review_summary,
+    should_send_auto_review_images,
+)
 from paihub.system.review.services import ReviewService
 from paihub.system.work.error import WorkRuleNotFound
 from paihub.system.work.services import WorkService
@@ -68,19 +73,64 @@ class ReviewCommand(Command):
         ]
         return InlineKeyboardMarkup(keyboard)
 
-    @staticmethod
-    def format_auto_review_text(auto_review: AutoReviewResult) -> str:
-        if auto_review.description == "author_whitelist":
-            return "命中作者白名单，当前作品已自动通过"
-        if auto_review.description == "author_blacklist":
-            return "命中作者黑名单，当前作品已自动拒绝"
-        if auto_review.description == "history_pass_ratio":
-            return "根据历史审核记录，当前作品已自动通过"
-        if auto_review.description == "history_reject_ratio":
-            return "根据历史审核记录，当前作品已自动拒绝"
-        if auto_review.status:
-            return "当前作品已自动通过"
-        return "当前作品已自动拒绝"
+    async def _send_auto_review_notification(self, message, review_context, auto_review) -> None:
+        keyboard = self.build_auto_review_keyboard(review_context.review_id)
+        fallback_text = format_auto_review_reason(auto_review)
+
+        try:
+            artwork = await review_context.get_artwork()
+            formatted_tags = await review_context.format_artwork_tags(artwork, filter_character_tags=True)
+            summary = format_auto_review_summary(auto_review, artwork, formatted_tags)
+
+            if not should_send_auto_review_images(auto_review):
+                await message.reply_text(summary, reply_markup=keyboard)
+                return
+
+            artwork_images = await review_context.get_artwork_images()
+            if len(artwork_images) > 1:
+                media = [InputMediaPhoto(media=artwork_images[0], caption=summary, parse_mode=ParseMode.HTML)]
+                media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
+                media = media[:10]
+                await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
+                await message.reply_media_group(
+                    media,
+                    connect_timeout=10,
+                    read_timeout=10,
+                    write_timeout=30,
+                )
+            elif len(artwork_images) == 1:
+                if artwork.image_type == ImageType.STATIC:
+                    await message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
+                    await message.reply_photo(
+                        photo=artwork_images[0],
+                        caption=summary,
+                        parse_mode=ParseMode.HTML,
+                        connect_timeout=10,
+                        read_timeout=10,
+                        write_timeout=30,
+                    )
+                elif artwork.image_type == ImageType.DYNAMIC:
+                    await message.reply_chat_action(ChatAction.UPLOAD_VIDEO)
+                    await message.reply_video(
+                        video=artwork_images[0],
+                        caption=summary,
+                        parse_mode=ParseMode.HTML,
+                        connect_timeout=10,
+                        read_timeout=10,
+                        write_timeout=30,
+                    )
+                else:
+                    raise RuntimeError  # noqa: TRY301
+            else:
+                raise RuntimeError  # noqa: TRY301
+
+            await message.reply_text("正在获取下一个作品", reply_markup=keyboard)
+        except Exception as exc:
+            logger.warning("发送自动审核通知失败: review_id=%s", review_context.review_id, exc_info=exc)
+            try:
+                await message.reply_text(fallback_text, reply_markup=keyboard)
+            except Exception as fallback_exc:
+                logger.error("发送自动审核回退通知失败: review_id=%s", review_context.review_id, exc_info=fallback_exc)
 
     def add_handlers(self):
         conv_handler = ConversationHandler(
@@ -193,21 +243,18 @@ class ReviewCommand(Command):
                         update_by=user.id,
                         auto_reason=auto_review.description,
                     )
-                    await message.reply_text(
-                        f"{self.format_auto_review_text(auto_review)}\n正在获取下一个作品",
-                        reply_markup=self.build_auto_review_keyboard(review_context.review_id),
-                    )
+                    if auto_review.description in {"author_whitelist", "author_blacklist"}:
+                        await self._send_auto_review_notification(message, review_context, auto_review)
+                    else:
+                        await message.reply_text(
+                            f"{format_auto_review_reason(auto_review)}\n正在获取下一个作品",
+                            reply_markup=self.build_auto_review_keyboard(review_context.review_id),
+                        )
                     continue
                 artwork = await review_context.get_artwork()
                 artwork_images = await review_context.get_artwork_images()
                 formatted_tags = await review_context.format_artwork_tags(artwork, filter_character_tags=True)
-                caption = (
-                    f"Title {html.escape(artwork.title)}\n"
-                    f"Tag {html.escape(formatted_tags)}\n"
-                    f"From <a href='{artwork.url}'>{artwork.web_name}</a> "
-                    f"By <a href='{artwork.author.url}'>{html.escape(artwork.author.name)}</a>\n"
-                    f"At {artwork.create_time.strftime('%Y-%m-%d %H:%M')}"
-                )
+                caption = format_review_summary(artwork, formatted_tags)
                 if len(artwork_images) > 1:
                     media = [InputMediaPhoto(media=artwork_images[0], caption=caption, parse_mode=ParseMode.HTML)]
                     media.extend(InputMediaPhoto(media=data) for data in artwork_images[1:])
